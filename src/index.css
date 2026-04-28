@@ -1,0 +1,225 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans:
+    "Inter", "Montserrat", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  /* standardizing radius */
+  --radius-xl: 0.75rem;
+  --radius-lg: 0.5rem;
+  --radius-md: 0.375rem;
+  --radius-sm: 0.25rem;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  /* Map Semantic Colors to Theme */
+  --color-bg-base: hsl(var(--bg-base));
+  --color-bg-surface: hsl(var(--bg-surface));
+  --color-text-primary: hsl(var(--text-primary));
+  --color-text-secondary: hsl(var(--text-secondary));
+  --color-text-muted: hsl(var(--text-muted));
+  --color-border-main: hsl(var(--border-main));
+
+  /* Map Legacy Variable Names to the Theme System */
+  --color-primary-green: var(--brand-500, #3bb77e);
+  --color-primary-blue: var(--brand-500, #3e70ff);
+  --color-primary-red: #fd3d11;
+  --color-dark-blue: #253d4e;
+  --color-light-gray: #7e7e7e;
+  --color-light-background: #f4f6fa;
+  --color-primary-hover: var(--brand-600, #29a56c);
+
+  /* Global Brand Variables */
+  --color-brand-50: var(--brand-50, #eef2ff);
+  --color-brand-100: var(--brand-100, #e0e7ff);
+  --color-brand-200: var(--brand-200, #c7d2fe);
+  --color-brand-500: var(--brand-500, #3e70ff);
+  --color-brand-600: var(--brand-600, #3460e0);
+  --color-brand-700: var(--brand-700, #2a4ec2);
+  --color-brand-shadow: var(--brand-shadow, rgba(62, 112, 255, 0.15));
+
+  /* Map Standard Utilities to Brand */
+  --color-secondary: var(--brand-500, #3bb77e);
+  --color-primary: var(--brand-600, #3e70ff);
+  --color-info: var(--brand-400, #38bdf8);
+  --color-success: var(--brand-500, #10b981);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Missing utility classes from Bootstrap/Legacy */
+  --color-danger: hsl(var(--destructive));
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 20%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 215 20.2% 65.1%;
+
+    /* Brand defaults */
+    --brand-50: #eef2ff;
+    --brand-100: #e0e7ff;
+    --brand-200: #c7d2fe;
+    --brand-500: #3e70ff;
+    --brand-600: #3460e0;
+    --brand-700: #2a4ec2;
+    --brand-shadow: rgba(62, 112, 255, 0.15);
+
+    /* Sidebar & Semantic Colors */
+    --bg-base: 210 40% 98%;
+    --bg-surface: 0 0% 100%;
+    --text-primary: 222.2 84% 4.9%;
+    --text-secondary: 215.4 16.3% 46.9%;
+    --text-muted: 215.4 16.3% 56.9%;
+    --border-main: 220 13% 91%;
+
+
+  /* ===============================
+     Headings (Responsive)
+  =============================== */
+  --h1-size: clamp(2.2rem, 4vw, 3.5rem);   /* Page titles */
+  --h2-size: clamp(1.8rem, 3vw, 2.6rem);   /* Section titles */
+  --h3-size: clamp(1.4rem, 2.2vw, 2rem);   /* Sub-sections */
+  --h4-size: clamp(1.2rem, 1.6vw, 1.6rem); /* Card titles */
+  --h5-size: 1.125rem;                     /* Small headers */
+  --h6-size: 1rem;                         /* Labels / UI headers */
+
+  }
+
+  /* Preset Themes */
+  .theme-emerald {
+    --brand-50: #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-shadow: rgba(5, 150, 105, 0.15);
+  }
+
+  .theme-rose {
+    --brand-50: #fff1f2;
+    --brand-100: #ffe4e6;
+    --brand-200: #fecdd3;
+    --brand-500: #f43f5e;
+    --brand-600: #e11d48;
+    --brand-700: #be123c;
+    --brand-shadow: rgba(225, 29, 72, 0.15);
+  }
+
+  .theme-violet {
+    --brand-50: #f5f3ff;
+    --brand-100: #ede9fe;
+    --brand-200: #ddd6fe;
+    --brand-500: #8b5cf6;
+    --brand-600: #7c3aed;
+    --brand-700: #6d28d9;
+    --brand-shadow: rgba(124, 58, 237, 0.15);
+  }
+
+  .theme-amber {
+    --brand-50: #fffbeb;
+    --brand-100: #fef3c7;
+    --brand-200: #fde68a;
+    --brand-500: #f59e0b;
+    --brand-600: #d97706;
+    --brand-700: #b45309;
+    --brand-shadow: rgba(217, 119, 6, 0.15);
+  }
+
+  html,
+  body {
+    @apply bg-white text-slate-900 font-sans antialiased overflow-x-hidden;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  /* Focus Ring Reset */
+  *:focus {
+    @apply outline-none ring-0 focus-visible:ring-2 focus-visible:ring-brand-500/50;
+  }
+
+  /* Theme-aware Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-brand-700;
+  }
+
+  /* Global Soft Borders & Roundness */
+  /* Target main content containers safely */
+  /* main div:not([class*="heroui"]), 
+  aside div:not([class*="heroui"]), */
+  .custom-card,
+  .card-container {
+    @apply rounded-xl;
+  }
+}
+
+@utility rounded-component {
+  @apply rounded-xl;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
