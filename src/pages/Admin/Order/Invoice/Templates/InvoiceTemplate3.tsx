@@ -1,125 +1,93 @@
 import React from 'react';
 
-interface InvoiceTemplateProps {
-  order: any;
-}
+interface InvoiceTemplateProps { order: any; buyerInfo: any; sellerInfo: any; }
 
-const InvoiceTemplate3: React.FC<InvoiceTemplateProps> = ({ order }) => {
-  const {
-    _id,
-    createdAt,
-    billingInformation,
-    items,
-    totalAmount,
-  } = order;
+const InvoiceTemplate3: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, sellerInfo }) => {
+  const { _id, createdAt, items, totalAmount, paymentInfo, deliveryCharge, discount } = order;
+  const subtotal = totalAmount - (deliveryCharge || 0) + (discount || 0);
 
   return (
-    <div className="p-16 text-gray-800 font-sans border border-gray-100">
-      {/* Top Brand */}
-      <div className="flex justify-between items-center mb-12">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-emerald-500 rounded-md flex items-center justify-center text-white font-bold text-lg">P</div>
-          <span className="text-lg font-bold tracking-tight">BestBuy4u</span>
+    <div className="p-12 font-sans text-slate-600 bg-white">
+      <div className="text-center mb-16">
+        <h1 className="text-3xl font-light text-slate-900 tracking-widest uppercase mb-4">Invoice</h1>
+        <p className="text-xs uppercase tracking-widest">#{_id?.slice(-6).toUpperCase()} • {new Date(createdAt).toLocaleDateString()}</p>
+      </div>
+
+      <div className="flex justify-between mb-16">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-slate-400 mb-3">Billed To</p>
+          <p className="font-medium text-slate-800">{buyerInfo?.name}</p>
+          {buyerInfo?.address && <p className="text-sm mt-1">{buyerInfo.address}</p>}
+          {buyerInfo?.phone && <p className="text-sm">{buyerInfo.phone}</p>}
         </div>
-        <div className="text-right text-[8px] text-gray-400 font-medium uppercase tracking-widest">
-          <p>BestBuy4uBd Ltd.</p>
-          <p>Gulshan-1, Dhaka</p>
+        <div className="text-right">
+          <p className="text-xs uppercase tracking-widest text-slate-400 mb-3">From</p>
+          <p className="font-medium text-slate-800">{sellerInfo?.name}</p>
+          <p className="text-sm mt-1">{sellerInfo?.address}</p>
+          <p className="text-sm">Phone: {sellerInfo?.phone}</p>
+          <p className="text-sm">{sellerInfo?.email}</p>
         </div>
       </div>
 
-      {/* Invoice Title */}
-      <div className="mb-12">
-        <h1 className="text-4xl font-bold text-emerald-500 mb-6">Invoice</h1>
-        <div className="grid grid-cols-2 gap-20">
-          <div className="space-y-0.5 text-xs text-gray-500">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Information</p>
-            <p>Invoice No: <span className="text-gray-900 font-medium">#{_id?.slice(-6).toUpperCase()}</span></p>
-            <p>Date: <span className="text-gray-900 font-medium">{new Date(createdAt).toLocaleDateString()}</span></p>
-          </div>
-          <div className="text-right space-y-0.5 text-xs text-gray-500">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Bill To:</p>
-            <p className="text-gray-900 font-bold">{billingInformation?.name}</p>
-            <p>{billingInformation?.phone}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Modern Table */}
-      <div className="mb-12">
-        <div className="grid grid-cols-12 gap-4 border-b border-gray-100 pb-2 mb-2 text-[8px] font-bold text-emerald-500 uppercase tracking-widest">
-            <div className="col-span-6">Name</div>
-            <div className="col-span-2 text-right">Price</div>
-            <div className="col-span-2 text-center">Qty</div>
-            <div className="col-span-2 text-right">Subtotal</div>
-        </div>
-        <div className="space-y-4">
-            {items.map((item: any, idx: number) => (
-                <div key={idx} className="grid grid-cols-12 gap-4 text-xs items-center pb-2 border-b border-gray-50 last:border-0 hover:bg-emerald-50/10 transition-colors">
-                    <div className="col-span-6">
-                        <p className="font-bold text-gray-900">
-                          {item.product?.basicInfo?.title || item.itemKey}
-                        </p>
-                        {item.selectedVariants && Object.entries(item.selectedVariants).length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            {Object.entries(item.selectedVariants).map(([group, variants]: [string, any]) => (
-                              Array.isArray(variants) ? variants.map((v: any, vIdx: number) => (
-                                <span key={`${group}-${vIdx}`} className="text-[9px] text-emerald-500 font-bold uppercase tracking-wide">
-                                  {group}: {v.value}
-                                </span>
-                              )) : (
-                                <span key={group} className="text-[9px] text-emerald-500 font-bold uppercase tracking-wide">
-                                  {group}: {variants.value}
-                                </span>
-                              )
-                            ))}
-                          </div>
-                        )}
-                    </div>
-                    <div className="col-span-2 text-right text-gray-500">৳{item.price?.toLocaleString()}</div>
-                    <div className="col-span-2 text-center font-medium capitalize">{item.quantity}</div>
-                    <div className="col-span-2 text-right font-bold text-gray-900">৳{(item.price * item.quantity).toLocaleString()}</div>
-                </div>
+      <div className="mb-16">
+        <table className="w-full text-left">
+          <thead>
+            <tr>
+              <th className="py-4 border-b border-slate-200 font-normal text-xs uppercase tracking-widest text-slate-400">Description</th>
+              <th className="py-4 border-b border-slate-200 font-normal text-xs uppercase tracking-widest text-slate-400 text-center">Qty</th>
+              <th className="py-4 border-b border-slate-200 font-normal text-xs uppercase tracking-widest text-slate-400 text-right">Price</th>
+              <th className="py-4 border-b border-slate-200 font-normal text-xs uppercase tracking-widest text-slate-400 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items?.map((item: any, idx: number) => (
+              <tr key={idx}>
+                <td className="py-5 border-b border-slate-100">
+                  <p className="text-slate-800">{item.product?.basicInfo?.title || item.product?.title || item.itemKey}</p>
+                  {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 && (
+                    <p className="text-xs text-slate-400 mt-1">
+                      {Object.entries(item.selectedVariants)
+                        .filter(([k]) => k.toLowerCase() !== 'quantity')
+                        .map(([k, v]: any) => `${k}: ${Array.isArray(v) ? v[0]?.value : v?.value}`)
+                        .join(' • ')}
+                    </p>
+                  )}
+                </td>
+                <td className="py-5 border-b border-slate-100 text-center">{item.quantity}</td>
+                <td className="py-5 border-b border-slate-100 text-right">৳{item.price?.toLocaleString()}</td>
+                <td className="py-5 border-b border-slate-100 text-right text-slate-800">৳{(item.price * item.quantity).toLocaleString()}</td>
+              </tr>
             ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-end">
+        <div className="w-1/2">
+          <div className="flex justify-between py-2 text-sm">
+            <span>Subtotal</span>
+            <span className="text-slate-800">৳{subtotal?.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between py-2 text-sm">
+            <span>Shipping</span>
+            <span className="text-slate-800">{deliveryCharge ? `৳${deliveryCharge.toLocaleString()}` : 'Free'}</span>
+          </div>
+          {discount > 0 && (
+            <div className="flex justify-between py-2 text-sm text-slate-400">
+              <span>Discount</span>
+              <span>-৳{discount?.toLocaleString()}</span>
+            </div>
+          )}
+          <div className="flex justify-between py-6 mt-4 border-t border-slate-200">
+            <span className="text-xs uppercase tracking-widest">Total</span>
+            <span className="text-2xl text-slate-900">৳{totalAmount?.toLocaleString()}</span>
+          </div>
         </div>
       </div>
 
-      {/* Bottom Summary */}
-      <div className="flex justify-end mb-24">
-        <div className="w-56 space-y-4 text-sm">
-            <div className="flex justify-between">
-                <span className="text-gray-400">Subtotal</span>
-                <span className="font-bold">৳{totalAmount?.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-                <span className="text-gray-400">Discount</span>
-                <span className="font-bold">৳0.00</span>
-            </div>
-            <div className="flex justify-between">
-                <span className="text-gray-400">Tax</span>
-                <span className="font-bold">৳0.00</span>
-            </div>
-            <div className="flex justify-between pt-4 border-t border-gray-100">
-                <span className="font-black uppercase text-xs">Total</span>
-                <span className="text-2xl font-black text-gray-900">৳{totalAmount?.toLocaleString()}</span>
-            </div>
-        </div>
-      </div>
-
-      {/* Signature Area */}
-      <div className="flex justify-between items-end">
-        <div className="text-[10px] text-gray-400 italic leading-relaxed max-w-xs">
-            This invoice reflects the items purchased by {billingInformation?.name} for their personal/professional use under the terms of service of BestBuy4uBd.
-        </div>
-        <div className="text-center">
-            <div className="w-48 h-16 bg-emerald-50 flex items-center justify-center rounded-md mb-2 border border-emerald-100/50">
-                <span className="text-emerald-300 font-serif italic text-2xl select-none opacity-50">Signature</span>
-            </div>
-            <p className="text-[10px] font-bold text-gray-300 uppercase italic">Digital Approval</p>
-        </div>
-      </div>
-
-      <div className="mt-20 pt-8 border-t border-emerald-50 text-center">
-        <p className="text-[10px] font-medium text-emerald-400 tracking-[0.3em] uppercase">BestBuy4uBd • Fast • Reliable • Secure</p>
+      <div className="mt-24 text-center space-y-2">
+        <p className="text-sm">Payment: {paymentInfo?.paymentMethod || order.paymentMethod || 'COD'}</p>
+        <p className="text-xl uppercase tracking-wide text-slate-400 mb-2">Thank you</p>
       </div>
     </div>
   );

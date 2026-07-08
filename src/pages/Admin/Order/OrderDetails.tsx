@@ -218,7 +218,7 @@ const OrderDetails = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    window.open(`/admin/orders/invoice/${id}`, "_blank");
   };
 
   const getStatusBadge = (status: string) => {

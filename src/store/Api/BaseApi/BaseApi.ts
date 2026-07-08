@@ -68,6 +68,7 @@ const baseApi = createApi({
     "FacebookPixel",
     "Tracking",
     "Steadfast",
+    "Settings",
   ],
 });
 export default baseApi;

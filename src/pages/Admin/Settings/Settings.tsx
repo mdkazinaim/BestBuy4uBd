@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { Plus, Trash2, Check, Palette, Settings as SettingsIcon } from "lucide-react";
+import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2 } from "lucide-react";
 import { Button } from "@/common/Components/Button";
+import { toast } from "sonner";
+import { useGetSettingsQuery, useUpdateAdminInfoMutation } from "@/store/Api/SettingsApi";
 
 // Color utilities
 const hexToRgb = (hex: string) => {
@@ -31,15 +33,68 @@ const generateShades = (hex: string) => {
   };
 };
 
-const inputClass = "w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100";
+const inputClass = "w-full px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-medium bg-white dark:bg-slate-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-slate-800 dark:text-slate-100 transition-colors";
+const labelClass = "text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2 mb-1.5";
 
 export default function Settings() {
-  const { themes, currentTheme, changeTheme, addCustomTheme, deleteCustomTheme, setSiteDefault, isLoading } = useTheme();
+  const { themes, currentTheme, changeTheme, addCustomTheme, deleteCustomTheme, setSiteDefault, isLoading: themeLoading } = useTheme();
+  
+  // API Queries
+  const { data: settingsResponse, isLoading: isSettingsLoading } = useGetSettingsQuery({});
+  const [updateAdminInfo, { isLoading: isUpdating }] = useUpdateAdminInfoMutation();
+
+  const [adminInfo, setAdminInfo] = useState({
+    name: "",
+    siteName: "",
+    information: "",
+    contact: "",
+    email: "",
+    facebook: "",
+    twitter: "",
+    instagram: "",
+    workingHours: ""
+  });
+
+  useEffect(() => {
+    if (settingsResponse?.data?.adminInfo) {
+      setAdminInfo({
+        name: settingsResponse.data.adminInfo.name || "",
+        siteName: settingsResponse.data.adminInfo.siteName || "",
+        information: settingsResponse.data.adminInfo.information || "",
+        contact: settingsResponse.data.adminInfo.contact || "",
+        email: settingsResponse.data.adminInfo.email || "",
+        facebook: settingsResponse.data.adminInfo.facebook || "",
+        twitter: settingsResponse.data.adminInfo.twitter || "",
+        instagram: settingsResponse.data.adminInfo.instagram || "",
+        workingHours: settingsResponse.data.adminInfo.workingHours || ""
+      });
+    }
+  }, [settingsResponse]);
+
+  const handleAdminInfoChange = (e: any) => {
+    setAdminInfo({ ...adminInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveAdminInfo = async () => {
+    try {
+      await updateAdminInfo(adminInfo).unwrap();
+      toast.success("Site information updated successfully");
+    } catch {
+      toast.error("Failed to update site information");
+    }
+  };
+
+  // Theme states
+  const [selectedThemeId, setSelectedThemeId] = useState(currentTheme?.id || "default");
+  useEffect(() => {
+    if (currentTheme?.id) setSelectedThemeId(currentTheme.id);
+  }, [currentTheme]);
+
   const [newThemeName, setNewThemeName] = useState("");
   const [newThemeColor, setNewThemeColor] = useState("#3b82f6");
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = async () => {
+  const handleCreateTheme = async () => {
     if (!newThemeName || !newThemeColor) return;
     const variables = generateShades(newThemeColor);
     if (!variables) return;
@@ -48,158 +103,181 @@ export default function Settings() {
     setNewThemeName("");
     setNewThemeColor("#3b82f6");
     setIsCreating(false);
+    toast.success("Custom theme created!");
   };
+
+  const selectedTheme = themes.find(t => t.id === selectedThemeId);
 
   return (
     <div className="w-full space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
-        <div>
-          <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-            <SettingsIcon className="w-6 h-6 text-slate-500" />
-            <span>Theme Settings</span>
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Manage your store's brand colors and visual appearance
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-3">
+          <SettingsIcon className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+          <div>
+            <h1 className="text-xl font-semibold text-slate-900 dark:text-white">General Settings</h1>
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-0.5">
+              Manage your site information, contact details, and brand theme
+            </p>
+          </div>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => setIsCreating(!isCreating)}
-          className="flex items-center gap-1.5 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Theme</span>
-        </Button>
       </div>
 
-      {/* Creation Form (Animated) */}
-      <AnimatePresence>
-        {isCreating && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-5 space-y-5"
-          >
-            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-              <Palette className="w-4 h-4 text-blue-500" />
-              Create Custom Theme
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Theme Name</label>
-                <input
-                  type="text"
-                  value={newThemeName}
-                  onChange={(e) => setNewThemeName(e.target.value)}
-                  placeholder="e.g. Midnight Blue"
-                  className={inputClass}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Primary Color</label>
-                <div className="flex items-center gap-2.5">
-                  <input
-                    type="color"
-                    value={newThemeColor}
-                    onChange={(e) => setNewThemeColor(e.target.value)}
-                    className="w-10 h-9 p-0.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={newThemeColor}
-                    onChange={(e) => setNewThemeColor(e.target.value)}
-                    className={`${inputClass} flex-1 uppercase font-mono`}
-                    maxLength={7}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-850">
-              <Button variant="outline" size="sm" onClick={() => setIsCreating(false)}>Cancel</Button>
-              <Button variant="primary" size="sm" onClick={handleCreate} disabled={isLoading || !newThemeName}>
-                {isLoading ? "Creating..." : "Create Theme"}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Admin Info Form */}
+        <div className="lg:col-span-2">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Site Information</h2>
+              <Button variant="primary" size="sm" onClick={handleSaveAdminInfo} disabled={isUpdating} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                {isUpdating ? "Saving..." : "Save Changes"}
               </Button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Theme Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {themes.map((theme) => {
-          const isActive = currentTheme.id === theme.id;
-          return (
-            <div
-              key={theme.id}
-              className={`border rounded-xl bg-white dark:bg-slate-900/60 overflow-hidden transition-all ${
-                isActive
-                  ? "border-blue-500 dark:border-blue-600 ring-2 ring-blue-500/15"
-                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-              }`}
-            >
-              {/* Color preview strip */}
-              <div className="h-1.5 w-full" style={{ backgroundColor: theme.color }} />
-
-              <div className="p-4 space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-700 shrink-0"
-                      style={{ backgroundColor: theme.color }}
-                    />
+            <div className="p-6">
+              {isSettingsLoading ? (
+                <div className="animate-pulse space-y-6">
+                  <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg w-full"></div>
+                  <div className="h-10 bg-slate-100 dark:bg-slate-800 rounded-lg w-full"></div>
+                  <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-lg w-full"></div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-semibold text-sm text-slate-800 dark:text-slate-100">{theme.name}</h3>
-                      <p className="text-xs text-slate-450 dark:text-slate-500 font-medium mt-0.5">
-                        {theme.class ? "Preset" : "Custom"}
-                      </p>
+                      <label className={labelClass}>
+                        <Store className="w-4 h-4" /> Site Name
+                      </label>
+                      <input type="text" name="siteName" value={adminInfo.siteName} onChange={handleAdminInfoChange} placeholder="BestBuy4uBd" className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>
+                        <User className="w-4 h-4" /> Admin Name
+                      </label>
+                      <input type="text" name="name" value={adminInfo.name} onChange={handleAdminInfoChange} placeholder="e.g. John Doe" className={inputClass} />
                     </div>
                   </div>
-                  {isActive && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/20 text-blue-650 dark:text-blue-450 border border-blue-200/60 dark:border-blue-900/40 shrink-0">
-                      <Check className="w-3 h-3" /> Active
-                    </span>
-                  )}
-                </div>
 
-                <div className="space-y-2 pt-1 border-t border-slate-100 dark:border-slate-850">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => changeTheme(theme.id)}
-                    className="w-full justify-center"
-                  >
-                    Preview
-                  </Button>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setSiteDefault(theme.id)}
-                      disabled={isLoading}
-                      className="flex-1 justify-center"
-                    >
-                      Set as Default
-                    </Button>
-                    {!theme.class && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteCustomTheme(theme.id)}
-                        className="p-2 aspect-square flex items-center justify-center hover:border-red-500/30 hover:bg-red-50/20"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    )}
+                  <div>
+                    <label className={labelClass}>
+                      <Info className="w-4 h-4" /> About Information
+                    </label>
+                    <textarea name="information" value={adminInfo.information} onChange={handleAdminInfoChange} rows={3} placeholder="Brief description about the site..." className={inputClass} />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className={labelClass}>
+                        <Phone className="w-4 h-4" /> Contact Number
+                      </label>
+                      <input type="text" name="contact" value={adminInfo.contact} onChange={handleAdminInfoChange} placeholder="+880 1XXXXXXXXX" className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>
+                        <Mail className="w-4 h-4" /> Email Address
+                      </label>
+                      <input type="email" name="email" value={adminInfo.email} onChange={handleAdminInfoChange} placeholder="support@domain.com" className={inputClass} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className={labelClass}>
+                        <Clock className="w-4 h-4" /> Working Hours
+                      </label>
+                      <input type="text" name="workingHours" value={adminInfo.workingHours} onChange={handleAdminInfoChange} placeholder="Mon-Fri, 9:00 AM - 6:00 PM" className={inputClass} />
+                    </div>
+                  </div>
+
+                  <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                    <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                      <Share2 className="w-4 h-4 text-slate-500" /> Social Links
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <input type="text" name="facebook" value={adminInfo.facebook} onChange={handleAdminInfoChange} placeholder="Facebook URL" className={inputClass} />
+                      <input type="text" name="twitter" value={adminInfo.twitter} onChange={handleAdminInfoChange} placeholder="Twitter URL" className={inputClass} />
+                      <input type="text" name="instagram" value={adminInfo.instagram} onChange={handleAdminInfoChange} placeholder="Instagram URL" className={inputClass} />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
-          );
-        })}
+          </div>
+        </div>
+
+        {/* Right Column: Theme Settings */}
+        <div>
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col h-full">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800">
+              <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Palette className="w-4 h-4 text-slate-600" /> Appearance
+              </h2>
+            </div>
+            
+            <div className="p-6 space-y-6 flex-1">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                Select an active theme for your storefront, or create a custom brand color.
+              </p>
+
+              <div>
+                <label className={labelClass}>Select Theme</label>
+                <div className="relative">
+                  <select
+                    value={selectedThemeId}
+                    onChange={(e) => {
+                      setSelectedThemeId(e.target.value);
+                      changeTheme(e.target.value);
+                    }}
+                    className={`${inputClass} appearance-none pr-10`}
+                  >
+                    {themes.map(t => (
+                      <option key={t.id} value={t.id}>{t.name} {t.class ? '(Preset)' : '(Custom)'}</option>
+                    ))}
+                  </select>
+                  {selectedTheme && (
+                     <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border border-slate-200" style={{ backgroundColor: selectedTheme.color }} />
+                  )}
+                </div>
+              </div>
+
+              {selectedTheme && (
+                <div className="flex flex-col gap-3">
+                  <Button variant="primary" onClick={() => setSiteDefault(selectedTheme.id)} disabled={themeLoading} className="w-full justify-center">
+                    Set as Global Default
+                  </Button>
+                  {!selectedTheme.class && (
+                    <Button variant="outline" onClick={() => {
+                        deleteCustomTheme(selectedTheme.id);
+                        setSelectedThemeId('default');
+                    }} className="w-full justify-center text-red-600 hover:bg-red-50 hover:border-red-200 border-slate-200">
+                      <Trash2 className="w-4 h-4 mr-2" /> Delete Theme
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-slate-200 dark:border-slate-800">
+              {isCreating ? (
+                <AnimatePresence>
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-4">
+                    <input type="text" value={newThemeName} onChange={(e) => setNewThemeName(e.target.value)} placeholder="Custom Theme Name" className={inputClass} />
+                    <div className="flex items-center gap-3">
+                      <input type="color" value={newThemeColor} onChange={(e) => setNewThemeColor(e.target.value)} className="w-10 h-10 p-0 border-0 rounded-lg cursor-pointer" />
+                      <input type="text" value={newThemeColor} onChange={(e) => setNewThemeColor(e.target.value)} className={inputClass} maxLength={7} />
+                    </div>
+                    <div className="flex gap-3 mt-4">
+                      <Button variant="outline" size="sm" onClick={() => setIsCreating(false)} className="flex-1 justify-center">Cancel</Button>
+                      <Button variant="primary" size="sm" onClick={handleCreateTheme} disabled={!newThemeName} className="flex-1 justify-center">Create</Button>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              ) : (
+                <Button variant="outline" className="w-full justify-center border-dashed border-2 hover:bg-slate-50 dark:hover:bg-slate-800" onClick={() => setIsCreating(true)}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Custom Color
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

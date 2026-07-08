@@ -1,141 +1,100 @@
 import React from 'react';
 
-interface InvoiceTemplateProps {
-  order: any;
-}
+interface InvoiceTemplateProps { order: any; buyerInfo: any; sellerInfo: any; }
 
-const InvoiceTemplate2: React.FC<InvoiceTemplateProps> = ({ order }) => {
-  const {
-    _id,
-    createdAt,
-    billingInformation,
-    items,
-    totalAmount,
-    paymentInfo,
-  } = order;
+const InvoiceTemplate2: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, sellerInfo }) => {
+  const { _id, createdAt, items, totalAmount, paymentInfo, deliveryCharge, discount } = order;
+  const subtotal = totalAmount - (deliveryCharge || 0) + (discount || 0);
 
   return (
-    <div className="p-12 text-gray-700 font-sans border-t-[12px] border-teal-600">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-8">
-        <div className="space-y-4">
-          <h1 className="text-4xl font-black text-gray-900 uppercase">Invoice</h1>
-          <div className="space-y-1">
-            <p className="text-xs font-bold text-teal-600 uppercase tracking-widest">BestBuy4uBd</p>
-          </div>
+    <div className="p-10 font-sans text-slate-800 bg-white">
+      <div className="border-b-4 border-slate-900 pb-8 mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-4xl font-bold text-slate-900 uppercase tracking-widest mb-2">Invoice</h1>
+          <p className="text-slate-500 font-mono text-sm">REF: #{_id?.slice(-6).toUpperCase()}</p>
+          <p className="text-slate-500 font-mono text-sm">DATE: {new Date(createdAt).toLocaleDateString()}</p>
         </div>
         <div className="text-right">
-          <div className="w-16 h-16 bg-gray-900 flex items-center justify-center text-white text-2xl font-black rounded-sm ml-auto mb-2">
-            BB
-          </div>
-          <div className="space-y-1 text-[10px] uppercase font-bold text-gray-400">
-            <p>Invoice No: <span className="text-gray-900">#{_id?.slice(-6).toUpperCase()}</span></p>
-            <p>Date: <span className="text-gray-900">{new Date(createdAt).toLocaleDateString()}</span></p>
-          </div>
+          <h2 className="text-2xl font-bold text-slate-900">{sellerInfo?.name}</h2>
+          <p className="text-sm text-slate-600 mt-1">{sellerInfo?.address}</p>
+          <p className="text-sm text-slate-600">Phone: {sellerInfo?.phone}</p>
+          <p className="text-sm text-slate-600">{sellerInfo?.email}</p>
         </div>
       </div>
 
-      {/* Hero Info */}
-      <div className="grid grid-cols-4 gap-0 mb-8 bg-gray-900 text-white">
-        <div className="p-4 col-span-1 border-r border-gray-800">
-          <p className="text-[8px] uppercase font-bold text-teal-400 mb-1">Customer</p>
-          <p className="text-xs font-bold truncate">{billingInformation?.name || "Customer"}</p>
-        </div>
-        <div className="p-4 col-span-1 border-r border-gray-800">
-          <p className="text-[8px] uppercase font-bold text-teal-400 mb-1">Issue Date</p>
-          <p className="text-xs font-bold">{new Date(createdAt).toLocaleDateString()}</p>
-        </div>
-        <div className="p-4 col-span-1 border-r border-gray-800">
-          <p className="text-[8px] uppercase font-bold text-teal-400 mb-1">Status</p>
-          <p className="text-xs font-bold capitalize">{paymentInfo?.status || "Pending"}</p>
-        </div>
-        <div className="p-4 col-span-1 bg-teal-600">
-          <p className="text-[8px] uppercase font-bold text-white/70 mb-1">Total Due</p>
-          <p className="text-lg font-black">৳{totalAmount?.toLocaleString()}</p>
+      <div className="flex justify-between mb-12">
+        <div className="w-1/2">
+          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-3 border-b border-slate-200 pb-1">Bill To</h3>
+          <p className="font-bold text-slate-900">{buyerInfo?.name}</p>
+          {buyerInfo?.address && <p className="text-slate-600 text-sm mt-1">{buyerInfo.address}</p>}
+          {buyerInfo?.phone && <p className="text-slate-600 text-sm">{buyerInfo.phone}</p>}
         </div>
       </div>
 
-      {/* Bill To Info */}
-      <div className="mb-8">
-        <h2 className="text-[10px] uppercase font-bold text-gray-400 mb-2 border-b pb-1">Billing Information</h2>
-        <div className="grid grid-cols-2 gap-12 text-xs">
-          <div>
-            <p className="font-bold text-gray-900">{billingInformation?.name}</p>
-            <p className="text-gray-500">{billingInformation?.address}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-gray-500">{billingInformation?.phone}</p>
-            <p className="text-gray-500">{billingInformation?.email}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="mb-16">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-gray-50 uppercase text-[10px] font-black tracking-widest text-gray-500 border-y border-gray-100">
-              <th className="p-4">Item Description</th>
-              <th className="p-4 text-center">Qty</th>
-              <th className="p-4 text-right">Rate</th>
-              <th className="p-4 text-right">Total</th>
+      <table className="w-full text-left mb-8 border-collapse">
+        <thead className="bg-slate-900 text-white" style={{ WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' }}>
+          <tr>
+            <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider border border-slate-900">Description</th>
+            <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-center border border-slate-900">Qty</th>
+            <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-right border border-slate-900">Unit Price</th>
+            <th className="py-3 px-4 font-bold text-xs uppercase tracking-wider text-right border border-slate-900">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items?.map((item: any, idx: number) => (
+            <tr key={idx} className="border-b border-slate-200">
+              <td className="py-4 px-4">
+                <p className="font-semibold text-slate-900">{item.product?.basicInfo?.title || item.product?.title || item.itemKey}</p>
+                {item.selectedVariants && Object.keys(item.selectedVariants).length > 0 && (
+                  <div className="flex gap-2 mt-1">
+                    {Object.entries(item.selectedVariants)
+                      .filter(([k]) => k.toLowerCase() !== 'quantity')
+                      .map(([k, v]: any) => (
+                       <span key={k} className="text-xs text-slate-500">
+                         {k}: {Array.isArray(v) ? v[0]?.value : v?.value}
+                       </span>
+                    ))}
+                  </div>
+                )}
+              </td>
+              <td className="py-4 px-4 text-center text-slate-700">{item.quantity}</td>
+              <td className="py-4 px-4 text-right text-slate-700">৳{item.price?.toLocaleString()}</td>
+              <td className="py-4 px-4 text-right font-bold text-slate-900">৳{(item.price * item.quantity).toLocaleString()}</td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {items.map((item: any, idx: number) => (
-              <tr key={idx} className="group hover:bg-teal-50/20 transition-colors">
-                <td className="p-4">
-                  <p className="font-bold text-gray-900 text-sm">
-                    {item.product?.basicInfo?.title || item.itemKey}
-                  </p>
-                  {item.selectedVariants && Object.entries(item.selectedVariants).length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-1.5">
-                      {Object.entries(item.selectedVariants).map(([group, variants]: [string, any]) => (
-                        Array.isArray(variants) ? variants.map((v: any, vIdx: number) => (
-                          <span key={`${group}-${vIdx}`} className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter">
-                            {group}: {v.value}
-                          </span>
-                        )) : (
-                          <span key={group} className="bg-teal-50 text-teal-700 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter">
-                            {group}: {variants.value}
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                  <p className="text-[10px] text-gray-400 uppercase mt-1">PRODUCT ID: {item.product?._id?.slice(-6) || 'N/A'}</p>
-                </td>
-                <td className="p-4 text-center text-sm font-medium">{item.quantity}</td>
-                <td className="p-4 text-right text-sm text-gray-500">৳{item.price?.toLocaleString()}</td>
-                <td className="p-4 text-right text-sm font-black text-gray-900">৳{(item.price * item.quantity).toLocaleString()}</td>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="flex justify-end mb-12">
+        <div className="w-1/2 max-w-sm">
+          <table className="w-full">
+            <tbody>
+              <tr>
+                <td className="py-2 text-slate-600">Subtotal</td>
+                <td className="py-2 text-right font-medium">৳{subtotal?.toLocaleString()}</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Subtotal & Footer Info */}
-      <div className="grid grid-cols-2 gap-16">
-        <div>
-          <div className="pt-20">
-            <div className="w-48 border-b-2 border-gray-900 mb-2"></div>
-            <p className="text-[10px] font-black uppercase text-gray-400">Authorized Signature</p>
-          </div>
-        </div>
-        <div className="space-y-4">
-          <div className="flex justify-between items-center text-sm">
-            <span className="font-bold text-gray-400 uppercase text-[10px]">Subtotal:</span>
-            <span className="font-bold">৳{totalAmount?.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm pt-4 border-t border-gray-100">
-            <span className="font-black text-teal-600 uppercase text-xs">Total Amount:</span>
-            <span className="text-2xl font-black text-gray-900">৳{totalAmount?.toLocaleString()}</span>
-          </div>
+              <tr>
+                <td className="py-2 text-slate-600">Shipping</td>
+                <td className="py-2 text-right font-medium">{deliveryCharge ? `৳${deliveryCharge.toLocaleString()}` : 'Free'}</td>
+              </tr>
+              {discount > 0 && (
+                <tr>
+                  <td className="py-2 text-emerald-600">Discount</td>
+                  <td className="py-2 text-right font-medium text-emerald-600">-৳{discount?.toLocaleString()}</td>
+                </tr>
+              )}
+              <tr className="border-t-2 border-slate-900">
+                <td className="py-3 font-bold text-slate-900">Total Amount</td>
+                <td className="py-3 text-right font-bold text-xl text-slate-900">৳{totalAmount?.toLocaleString()}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="mt-24 text-center text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">
-        BestBuy4uBd • Trusted Electronics Partner • Dhaka
+      <div className="border-t border-slate-200 pt-8 mt-16 text-sm text-slate-500 text-center">
+        <p className="font-bold text-slate-900 mb-1">Thank you for your business</p>
+        <p>Payment Method: {paymentInfo?.paymentMethod || order.paymentMethod || 'COD'} {(paymentInfo?.transactionId || order.transactionId) && `| TrxID: ${paymentInfo?.transactionId || order.transactionId}`}</p>
       </div>
     </div>
   );
