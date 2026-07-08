@@ -82,19 +82,19 @@ const CategorySection = ({
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-5">
-          <h2 className="text-2xl font-bold text-brand-700 mb-2">{label}</h2>
+          <h2 className="text-2xl font-bold text-brand-700 dark:text-brand-200 mb-2">{label}</h2>
         </div>
 
         {/* Carousel Content */}
         <div className="relative flex items-center gap-4">
           {/* Left Controls */}
-          <div className="hidden md:flex flex-col items-center gap-4 bg-bg-surface p-2 rounded-component border border-border-main">
+          <div className="hidden md:flex flex-col items-center gap-4 bg-bg-surface dark:bg-slate-900 p-2 rounded-component border border-border-main dark:border-slate-800">
             <button
               onClick={prevPage}
-              className="p-1 rounded-full hover:bg-bg-base transition-colors"
+              className="p-1 rounded-full hover:bg-bg-base dark:hover:bg-slate-800 transition-colors"
               disabled={totalPages <= 1}
             >
-              <ChevronLeft className="w-5 h-5 text-text-muted" />
+              <ChevronLeft className="w-5 h-5 text-text-muted dark:text-slate-400" />
             </button>
             <VerticalPagination
               total={totalPages > 0 ? totalPages : 1}
@@ -103,10 +103,10 @@ const CategorySection = ({
             />
             <button
               onClick={nextPage}
-              className="p-1 rounded-full hover:bg-bg-base transition-colors"
+              className="p-1 rounded-full hover:bg-bg-base dark:hover:bg-slate-800 transition-colors"
               disabled={totalPages <= 1}
             >
-              <ChevronRight className="w-5 h-5 text-text-muted" />
+              <ChevronRight className="w-5 h-5 text-text-muted dark:text-slate-400" />
             </button>
           </div>
 
@@ -152,13 +152,13 @@ const CategorySection = ({
           </div>
 
           {/* Right Controls */}
-          <div className="hidden md:flex flex-col items-center gap-4 bg-bg-surface p-2 rounded-component border border-border-main">
+          <div className="hidden md:flex flex-col items-center gap-4 bg-bg-surface dark:bg-slate-900 p-2 rounded-component border border-border-main dark:border-slate-800">
             <button
               onClick={prevPage}
-              className="p-1 rounded-full hover:bg-bg-base transition-colors"
+              className="p-1 rounded-full hover:bg-bg-base dark:hover:bg-slate-800 transition-colors"
               disabled={totalPages <= 1}
             >
-              <ChevronLeft className="w-5 h-5 text-text-muted" />
+              <ChevronLeft className="w-5 h-5 text-text-muted dark:text-slate-400" />
             </button>
             <VerticalPagination
               total={totalPages > 0 ? totalPages : 1}
@@ -167,10 +167,10 @@ const CategorySection = ({
             />
             <button
               onClick={nextPage}
-              className="p-1 rounded-full hover:bg-bg-base transition-colors"
+              className="p-1 rounded-full hover:bg-bg-base dark:hover:bg-slate-800 transition-colors"
               disabled={totalPages <= 1}
             >
-              <ChevronRight className="w-5 h-5 text-text-muted" />
+              <ChevronRight className="w-5 h-5 text-text-muted dark:text-slate-400" />
             </button>
           </div>
         </div>
@@ -179,18 +179,18 @@ const CategorySection = ({
         <div className="md:hidden flex justify-center gap-4 mt-8">
           <button
             onClick={prevPage}
-            className="p-2 bg-bg-surface rounded-full border border-border-main"
+            className="p-2 bg-bg-surface dark:bg-slate-900 rounded-full border border-border-main dark:border-slate-800 cursor-pointer"
           >
-            <ChevronLeft className="text-text-primary" />
+            <ChevronLeft className="text-text-primary dark:text-slate-200" />
           </button>
-          <span className="font-semibold text-text-muted">
+          <span className="font-semibold text-text-muted dark:text-slate-400">
             {currentPage + 1} / {totalPages || 1}
           </span>
           <button
             onClick={nextPage}
-            className="p-2 bg-bg-surface rounded-full border border-border-main"
+            className="p-2 bg-bg-surface dark:bg-slate-900 rounded-full border border-border-main dark:border-slate-800 cursor-pointer"
           >
-            <ChevronRight className="text-text-primary" />
+            <ChevronRight className="text-text-primary dark:text-slate-200" />
           </button>
         </div>
       </div>

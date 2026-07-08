@@ -306,13 +306,13 @@ const Checkout = () => {
         </div>
 
         <CommonWrapper className="px-2 md:px-4">
-          <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl overflow-hidden border border-border-main">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden border border-border-main dark:border-slate-800">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Checkout Form */}
               <form
                 onSubmit={handleFormSubmit}
                 onChange={checkFormValidity}
-                className="p-3 md:p-10 bg-white order-2 md:order-none"
+                className="p-3 md:p-10 bg-white dark:bg-slate-900 order-2 md:order-none"
               >
                 {/* <h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-6 md:mb-8 flex items-center">
                   <span className="bg-secondary/10 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center mr-3 md:mr-4">
@@ -330,7 +330,7 @@ const Checkout = () => {
                       <input
                         type="text"
                         name="name"
-                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base"
+                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                         placeholder="আপনার পূর্ণ নাম"
                         required
                       />
@@ -343,7 +343,7 @@ const Checkout = () => {
                         type="tel"
                         name="phone"
                         pattern="01[2-9][0-9]{8}"
-                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base"
+                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                         placeholder="01XXXXXXXXX"
                         required
                       />
@@ -357,7 +357,7 @@ const Checkout = () => {
                     <textarea
                       name="address"
                       rows={3}
-                      className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base"
+                      className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       placeholder="আপনার সম্পূর্ণ ঠিকানা"
                       required
                     ></textarea>
@@ -370,13 +370,13 @@ const Checkout = () => {
                       </label>
                       <select
                         name="courierCharge"
-                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-secondary/20 focus:border-secondary focus:ring-0 transition-colors bg-white"
+                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-secondary/20 focus:border-secondary focus:ring-0 transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
                         required
                         onChange={handleDeliveryChargeChange}
                         value={deliveryChargeType}
                       >
-                        <option value="insideDhaka">ঢাকার ভিতরে (৳80)</option>
-                        <option value="outsideDhaka">ঢাকার বাইরে (৳150)</option>
+                        <option value="insideDhaka" className="dark:bg-slate-900">ঢাকার ভিতরে (৳80)</option>
+                        <option value="outsideDhaka" className="dark:bg-slate-900">ঢাকার বাইরে (৳150)</option>
                       </select>
                     </div>
 
@@ -388,19 +388,19 @@ const Checkout = () => {
                         </span>
                       </label>
                       <div className="flex gap-2 w-full">
-                        <div className="relative w-full border-2 border-secondary/20 rounded-xl bg-white">
+                        <div className="relative w-full border-2 border-secondary/20 rounded-xl bg-white dark:bg-slate-900">
                           <input
                             type="text"
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value)}
                             name="cuponCode"
-                            className="w-[70%] px-4 md:px-5 py-2 md:py-3 rounded-xl focus:border-secondary focus:ring-0 transition-colors bg-white"
+                            className="w-[70%] px-4 md:px-5 py-2 md:py-3 rounded-xl focus:border-secondary focus:ring-0 transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                             placeholder="কুপন কোড"
                           />
                           <button
                             onClick={applyCoupon}
                             type="button"
-                            className="px-3 md:px-4 py-2 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-colors absolute right-1 top-1/2 transform -translate-y-1/2"
+                            className="px-3 md:px-4 py-2 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-colors absolute right-1 top-1/2 transform -translate-y-1/2 cursor-pointer"
                           >
                             যাচাই করুন
                           </button>
@@ -417,7 +417,7 @@ const Checkout = () => {
                     <textarea
                       name="notes"
                       rows={2}
-                      className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base"
+                      className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-border-main focus:border-secondary focus:ring-0 transition-colors bg-bg-base text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                       placeholder="যদি কোন বিশেষ নির্দেশনা থাকে"
                     ></textarea>
                   </div>
@@ -470,7 +470,7 @@ const Checkout = () => {
               </form>
 
               {/* Order Summary Section */}
-              <div className="p-3 md:p-10 bg-gradient-to-br from-secondary/5 via-white to-secondary/5">
+              <div className="p-3 md:p-10 bg-gradient-to-br from-secondary/5 via-white dark:via-slate-900/40 to-secondary/5 border-t md:border-t-0 md:border-l border-border-main dark:border-slate-800">
                 <h2 className="text-lg md:text-2xl font-bold text-text-primary mb-4 md:mb-8 flex items-center">
                   <span className="bg-secondary/10 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center mr-2 md:mr-4">
                     <ShoppingBag className="h-4 w-4 md:h-6 md:w-6 text-secondary" />
@@ -484,7 +484,7 @@ const Checkout = () => {
                     {cartItems.map((item) => (
                       <div
                         key={item.itemKey}
-                        className="flex items-center gap-2 md:gap-4 p-2 md:p-4 bg-white rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+                        className="flex items-center gap-2 md:gap-4 p-2 md:p-4 bg-white dark:bg-slate-950 rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 dark:border-slate-800/40"
                       >
                         <div className="relative shrink-0">
                           <img
@@ -509,15 +509,15 @@ const Checkout = () => {
                   </div>
 
                   {/* Totals */}
-                  <div className="bg-white p-4 md:p-6 rounded-2xl shadow-sm">
+                  <div className="bg-white dark:bg-slate-950 p-4 md:p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800/40">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center text-sm md:text-base">
                         <span className="text-text-muted">সাবটোটাল:</span>
-                        <span className="font-medium">৳{subtotal}</span>
+                        <span className="font-medium text-text-primary">৳{subtotal}</span>
                       </div>
                       <div className="flex justify-between items-center text-sm md:text-base">
                         <span className="text-text-muted">ডেলিভারি চার্জ:</span>
-                        <span className="font-medium">৳{deliveryCharge}</span>
+                        <span className="font-medium text-text-primary">৳{deliveryCharge}</span>
                       </div>
                       {discount > 0 && (
                         <div className="flex justify-between items-center text-sm md:text-base text-secondary">
@@ -546,7 +546,7 @@ const Checkout = () => {
                       </span>
                       পেমেন্ট পদ্ধতি
                     </h2>
-                    <div className="bg-secondary/10 rounded-xl p-4">
+                    <div className="bg-secondary/10 dark:bg-secondary/5 rounded-xl p-4">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
                           <svg
@@ -568,7 +568,7 @@ const Checkout = () => {
                           <p className="text-base md:text-lg font-medium text-text-primary">
                             ক্যাশ অন ডেলিভারি
                           </p>
-                          <p className="text-xs md:text-sm text-text-muted">
+                          <p className="text-xs md:text-sm text-text-muted dark:text-slate-400">
                             পণ্য হাতে পেয়ে টাকা প্রদান করুন
                           </p>
                         </div>

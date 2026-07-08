@@ -204,21 +204,21 @@ const ProductDetails = () => {
     : 0;
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] pb-20 font-primary">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-slate-950 pb-20 font-primary transition-colors">
       {/* Dynamic Header / Breadcrumbs */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-30 transition-shadow">
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 sticky top-0 z-30 transition-shadow">
         <CommonWrapper className="py-3 px-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">
               <Link to="/" className="hover:text-secondary transition-colors">Home</Link>
               <ChevronRight className="w-3 h-3" />
               <Link to="/shop" className="hover:text-secondary transition-colors">Shop</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-gray-900 truncate max-w-[150px] md:max-w-md">{product.basicInfo.title}</span>
+              <span className="text-gray-900 dark:text-slate-100 truncate max-w-[150px] md:max-w-md">{product.basicInfo.title}</span>
             </div>
             <div className="flex gap-2">
-              <Button isIconOnly variant="light" size="sm" className="bg-gray-50 rounded-full hover:bg-gray-100">
-                <Share2 className="w-4 h-4 text-gray-600" />
+              <Button isIconOnly variant="light" size="sm" className="bg-gray-50 dark:bg-slate-800 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700">
+                <Share2 className="w-4 h-4 text-gray-600 dark:text-slate-300" />
               </Button>
             </div>
           </div>
@@ -232,7 +232,7 @@ const ProductDetails = () => {
           <div className="lg:col-span-7 xl:col-span-7 lg:sticky lg:top-20">
             <div className="flex flex-col gap-4">
               <div 
-                className="relative aspect-square bg-white rounded-xl border border-gray-200 flex items-center justify-center group overflow-hidden cursor-zoom-in group"
+                className="relative aspect-square bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex items-center justify-center group overflow-hidden cursor-zoom-in"
                 onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
@@ -265,8 +265,8 @@ const ProductDetails = () => {
                   )}
                 </div>
 
-                <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm border border-gray-200 p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <Maximize2 className="w-5 h-5 text-gray-700" />
+                <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-gray-200 dark:border-slate-800 p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <Maximize2 className="w-5 h-5 text-gray-700 dark:text-slate-200" />
                 </div>
               </div>
 
@@ -275,8 +275,8 @@ const ProductDetails = () => {
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
-                    className={`size-20 rounded-xl border transition-all p-1 bg-white flex-shrink-0 relative group ${
-                      selectedImage === idx ? "border-secondary ring-2 ring-secondary/20" : "border-gray-200 hover:border-gray-400"
+                    className={`size-20 rounded-xl border transition-all p-1 bg-white dark:bg-slate-900 flex-shrink-0 relative group cursor-pointer ${
+                      selectedImage === idx ? "border-secondary ring-2 ring-secondary/20" : "border-gray-200 dark:border-slate-800 hover:border-gray-400 dark:hover:border-slate-600"
                     }`}
                   >
                     <img src={img.url} alt="" className="w-full h-full object-contain" />
@@ -293,14 +293,14 @@ const ProductDetails = () => {
                 <Chip size="sm" variant="flat" className="font-bold uppercase tracking-wider text-[10px] bg-secondary/10 text-secondary">
                   {product.basicInfo.category}
                 </Chip>
-                <div className="flex items-center gap-1.5 bg-yellow-50 px-2.5 py-0.5 rounded-full border border-yellow-200">
+                <div className="flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-950/20 px-2.5 py-0.5 rounded-full border border-yellow-200 dark:border-yellow-900/30">
                   <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xs font-bold text-yellow-700">{product.rating?.average || 0}</span>
-                  <span className="text-[10px] text-yellow-600/80 font-medium">({product.rating?.count || 0})</span>
+                  <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">{product.rating?.average || 0}</span>
+                  <span className="text-[10px] text-yellow-600/80 dark:text-yellow-400/80 font-medium">({product.rating?.count || 0})</span>
                 </div>
               </div>
               
-              <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
+              <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-slate-100 leading-tight">
                 {product.basicInfo.title}
               </h1>
 
@@ -309,7 +309,7 @@ const ProductDetails = () => {
                    ৳{(product.price.discounted || product.price.regular).toLocaleString()}
                  </span>
                  {product.price.discounted && product.price.discounted < product.price.regular && (
-                    <span className="text-lg font-semibold line-through text-gray-400">
+                    <span className="text-lg font-semibold line-through text-gray-400 dark:text-slate-500">
                       ৳{product.price.regular.toLocaleString()}
                     </span>
                  )}
@@ -319,8 +319,8 @@ const ProductDetails = () => {
             <Divider className="opacity-60" />
 
             {/* Price Summary Card */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-5">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-5">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
                 Price Summary
               </h3>
@@ -345,8 +345,8 @@ const ProductDetails = () => {
             </div>
 
             {/* Variant Selector Section */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
-              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pl-1">
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
                 Select Options
               </h3>
               <VariantSelector
@@ -362,13 +362,13 @@ const ProductDetails = () => {
             </div>
 
             {/* Actions */}
-            <div className="sticky bottom-0 z-20 bg-white/80 backdrop-blur-md p-4 -mx-4 md:static md:bg-transparent md:p-0 md:mx-0 border-t md:border-t-0 border-gray-200">
+            <div className="sticky bottom-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 -mx-4 md:static md:bg-transparent md:p-0 md:mx-0 border-t md:border-t-0 border-gray-200 dark:border-slate-800">
                <div className="flex gap-3">
                   <Button
                     size="lg"
                     onPress={handleAddToCart}
                     isDisabled={totalQuantity === 0}
-                    className="flex-1 h-12 bg-secondary text-white font-bold text-base shadow-lg shadow-secondary/20 rounded-xl hover:shadow-secondary/40 transition-all"
+                    className="flex-1 h-12 bg-secondary text-white font-bold text-base shadow-lg shadow-secondary/20 rounded-xl hover:shadow-secondary/40 transition-all cursor-pointer"
                     startContent={<ShoppingCart className="w-5 h-5" />}
                   >
                     Add to Cart - ৳{finalTotal.toLocaleString()}
@@ -377,10 +377,10 @@ const ProductDetails = () => {
                     isIconOnly
                     size="lg"
                     onPress={handleWishlist}
-                    className={`h-12 w-12 rounded-xl border transition-all ${
+                    className={`h-12 w-12 rounded-xl border transition-all cursor-pointer ${
                       isWishlisted 
                         ? "bg-danger border-danger text-white shadow-lg" 
-                        : "bg-white border-gray-200 text-gray-400 hover:border-danger hover:text-danger"
+                        : "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-400 dark:text-slate-400 hover:border-danger hover:text-danger"
                     }`}
                   >
                     <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
@@ -390,22 +390,22 @@ const ProductDetails = () => {
 
             {/* Trust Signals */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-gray-700" />
+              <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center">
+                  <Truck className="w-5 h-5 text-gray-700 dark:text-slate-350" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase text-gray-900">Fast Delivery</h4>
-                  <p className="text-[10px] text-gray-500">2-3 Days</p>
+                  <h4 className="text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100">Fast Delivery</h4>
+                  <p className="text-[10px] text-gray-500 dark:text-slate-400">2-3 Days</p>
                 </div>
               </div>
-              <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5 text-gray-700" />
+              <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3 shadow-sm">
+                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5 text-gray-700 dark:text-slate-350" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase text-gray-900">Warranty</h4>
-                  <p className="text-[10px] text-gray-500">Verified</p>
+                  <h4 className="text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100">Warranty</h4>
+                  <p className="text-[10px] text-gray-500 dark:text-slate-400">Verified</p>
                 </div>
               </div>
             </div>
@@ -418,13 +418,13 @@ const ProductDetails = () => {
             <div className="lg:col-span-8 space-y-12">
               {/* Description */}
               <section className="space-y-6">
-                <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-slate-800">
                   <div className="h-6 w-1 bg-secondary rounded-full" />
-                  <h2 className="text-lg font-bold text-gray-900 uppercase tracking-tight">Description</h2>
+                  <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight">Description</h2>
                 </div>
-                <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm">
                   <div
-                    className="prose prose-sm max-w-none text-gray-600 leading-relaxed font-inter"
+                    className="prose prose-sm max-w-none text-gray-600 dark:text-slate-300 leading-relaxed font-inter"
                     dangerouslySetInnerHTML={{ __html: product.basicInfo.description }}
                   />
                 </div>
@@ -433,20 +433,20 @@ const ProductDetails = () => {
               {/* Specifications */}
               {product.specifications && product.specifications.length > 0 && (
                 <section className="space-y-6">
-                   <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                   <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-slate-800">
                     <div className="h-6 w-1 bg-secondary rounded-full" />
-                    <h2 className="text-lg font-bold text-gray-900 uppercase tracking-tight">Specifications</h2>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight">Specifications</h2>
                   </div>
-                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+                  <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
                     <div className="grid grid-cols-1 md:grid-cols-2">
                       {product.specifications.map((group, i) => (
-                        <div key={i} className={`p-6 ${i % 2 === 0 ? "md:border-r border-gray-100" : ""} border-b border-gray-100 last:border-b-0`}>
+                        <div key={i} className={`p-6 ${i % 2 === 0 ? "md:border-r border-gray-100 dark:border-slate-800" : ""} border-b border-gray-100 dark:border-slate-800 last:border-b-0`}>
                           <h3 className="text-secondary font-bold text-xs uppercase tracking-widest mb-4">{group.group}</h3>
                           <div className="space-y-3">
                             {group.items.map((item, j) => (
                               <div key={j} className="flex justify-between items-center group">
-                                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{item.name}</span>
-                                <span className="text-xs font-bold text-gray-900">{item.value}</span>
+                                <span className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide">{item.name}</span>
+                                <span className="text-xs font-bold text-gray-900 dark:text-slate-200">{item.value}</span>
                               </div>
                             ))}
                           </div>
@@ -460,14 +460,14 @@ const ProductDetails = () => {
 
             {/* Sidebar widgets for desktop */}
             <div className="lg:col-span-4 space-y-6">
-               <div className="bg-slate-900 p-8 rounded-xl text-white relative overflow-hidden group shadow-xl">
+               <div className="bg-slate-900 dark:bg-slate-900 p-8 rounded-xl text-white relative overflow-hidden group shadow-xl">
                   <div className="relative z-10 space-y-4">
                     <h3 className="text-xl font-bold uppercase tracking-tight">Need Help?</h3>
                     <p className="text-xs text-slate-400 leading-relaxed">
                       Have questions about this product? Contact our support team for assistance.
                     </p>
                     <Divider className="bg-white/10" />
-                    <Button className="w-full bg-white text-slate-900 font-bold text-xs uppercase tracking-widest h-10 rounded-xl">
+                    <Button className="w-full bg-white text-slate-900 font-bold text-xs uppercase tracking-widest h-10 rounded-xl cursor-pointer">
                       Contact Us
                     </Button>
                   </div>
@@ -477,11 +477,11 @@ const ProductDetails = () => {
 
           {/* Related Products Grid */}
           <section className="space-y-8">
-            <div className="flex items-end justify-between border-b border-gray-200 pb-4">
+            <div className="flex items-end justify-between border-b border-gray-200 dark:border-slate-800 pb-4">
               <div>
-                <h2 className="text-xl font-bold text-gray-900 uppercase tracking-tight">You May Also Like</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight">You May Also Like</h2>
               </div>
-              <Button as={Link} to="/shop" variant="light" color="secondary" className="font-bold text-xs uppercase tracking-wider h-8">
+              <Button as={Link} to="/shop" variant="light" color="secondary" className="font-bold text-xs uppercase tracking-wider h-8 cursor-pointer">
                 View All
               </Button>
             </div>

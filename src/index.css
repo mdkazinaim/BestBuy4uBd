@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans:
@@ -74,6 +74,9 @@
   /* Map Standard Utilities to Brand */
   --color-secondary: var(--brand-500, #3bb77e);
   --color-primary: var(--brand-600, #3e70ff);
+  --color-brand-primary: var(--brand-600, #3e70ff);
+  --color-primary-bg: #ffffff;
+  --color-bg-brand-primary: var(--brand-50, #eef2ff);
   --color-info: var(--brand-400, #38bdf8);
   --color-success: var(--brand-500, #10b981);
 
@@ -125,6 +128,8 @@
     --text-secondary: 215.4 16.3% 46.9%;
     --text-muted: 215.4 16.3% 56.9%;
     --border-main: 220 13% 91%;
+    --stepper-inactive-bg: #f3f4f6;
+    --stepper-inactive-border: #e5e7eb;
 
 
   /* ===============================
@@ -180,9 +185,40 @@
     --brand-shadow: rgba(217, 119, 6, 0.15);
   }
 
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 40% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 40% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    --bg-base: 224 71.4% 4.1%;
+    --bg-surface: 222.2 84% 4.9%;
+    --text-primary: 210 40% 98%;
+    --text-secondary: 215 20.2% 65.1%;
+    --text-muted: 215.4 16.3% 46.9%;
+    --border-main: 217.2 32.6% 17.5%;
+    --stepper-inactive-bg: #1e293b;
+    --stepper-inactive-border: #334155;
+  }
+
   html,
   body {
-    @apply bg-white text-slate-900 font-sans antialiased overflow-x-hidden;
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden transition-colors duration-250;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
   }
@@ -199,7 +235,7 @@
   h4,
   h5,
   h6 {
-    @apply text-brand-700;
+    @apply text-brand-700 dark:text-brand-200;
   }
 
   /* Global Soft Borders & Roundness */

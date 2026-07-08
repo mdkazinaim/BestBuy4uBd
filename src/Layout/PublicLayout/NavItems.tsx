@@ -73,14 +73,20 @@ const NavItems = ({
                   <Link
                     to={item.path}
                     onClick={onItemClick}
-                    className={`px-5 py-2  font-semibold inline-block no-underline flex-1 ${
-                      parentActive ? "border-b-2" : ""
+                    className={`px-5 py-2 font-semibold inline-block no-underline flex-1 transition-colors ${
+                      isFooter
+                        ? "text-white/80 hover:text-white dark:text-slate-200 dark:hover:text-white"
+                        : `text-slate-600 dark:text-slate-200 hover:text-brand-500 dark:hover:text-brand-200 ${
+                            parentActive ? "border-b-2 border-brand-500 text-brand-600 dark:text-brand-200" : ""
+                          }`
                     } ${classNameNC}`}
                   >
                     {item.label}
                   </Link>
                 ) : (
-                  <span className="px-5 py-2  font-semibold inline-block cursor-default flex-1">
+                  <span className={`px-5 py-2 font-semibold inline-block cursor-default flex-1 ${
+                    isFooter ? "text-white/80 dark:text-slate-200" : "text-slate-600 dark:text-slate-200"
+                  }`}>
                     {item.label}
                   </span>
                 )}
@@ -109,10 +115,10 @@ const NavItems = ({
                   className={`
                   ${
                     isMobile
-                      ? `w-full bg-slate-50 overflow-hidden transition-all duration-300 ${
+                      ? `w-full bg-slate-50 dark:bg-slate-950 overflow-hidden transition-all duration-300 ${
                           isDropdownOpen ? "max-h-[500px] py-2" : "max-h-0"
                         }`
-                      : "absolute left-0 top-full hidden min-w-[200px] rounded-lg bg-white shadow-lg group-hover:block border border-border z-20"
+                      : "absolute left-0 top-full hidden min-w-[200px] rounded-lg bg-white dark:bg-slate-900 shadow-lg group-hover:block border border-border dark:border-slate-800 z-20"
                   }
                 `}
                 >
@@ -127,11 +133,11 @@ const NavItems = ({
                         <Link
                           to={child.path || "#"}
                           onClick={onItemClick}
-                          className={`block px-5 py-2 text-slate-600 hover:bg-slate-100 no-underline ${
+                          className={`block px-5 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 no-underline transition-colors ${
                             isMobile ? "text-left pl-10" : "text-center"
                           } ${
                             childActive
-                              ? "bg-slate-200 border-b-2 font-semibold"
+                              ? "bg-slate-200 dark:bg-slate-800 border-b-2 border-brand-500 font-semibold text-brand-600 dark:text-brand-200"
                               : ""
                           } ${classNameC}`}
                         >

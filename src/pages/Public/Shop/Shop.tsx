@@ -9,6 +9,7 @@ import FilterSidebar from "./Components/FilterSidebar";
 import Pagination from "./Components/Pagination";
 import { SlidersHorizontal, Search, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/common/Components/Button";
 
 const Shop = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -78,18 +79,19 @@ const Shop = () => {
   };
 
   return (
-    <div className="bg-bg-base py-10 font-nunito">
+    <div className="bg-bg-base py-12 font-nunito">
       <CommonWrapper>
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row gap-10 px-4">
           {/* Mobile Sidebar Toggle */}
           <div className="lg:hidden flex items-center justify-between mb-6">
-            <button
+            <Button
               onClick={() => setIsSidebarOpen(true)}
-              className="flex items-center gap-2 px-5 py-3 bg-bg-surface rounded-xl shadow-sm border border-border-main font-semibold text-xs uppercase tracking-widest text-text-primary"
+              variant="outline"
+              className="flex items-center gap-2 px-5 py-3 bg-bg-surface border border-border-main text-xs uppercase tracking-widest text-text-primary"
             >
               <SlidersHorizontal className="w-4 h-4 text-secondary" />
               Filters
-            </button>
+            </Button>
             <div className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">
               {productsData?.meta?.total || 0} Products
             </div>
@@ -97,7 +99,7 @@ const Shop = () => {
 
           {/* Sidebar - Desktop */}
           <aside className="hidden lg:block w-80 flex-shrink-0 h-full">
-            <div className="sticky top-28 bg-bg-surface p-8 rounded-xl shadow-sm h-fit">
+            <div className="sticky top-28 bg-bg-surface p-8 rounded-xl border border-border-main h-fit">
               <FilterSidebar
                 categories={categoriesData?.data || []}
                 filters={activeFilters}
@@ -128,12 +130,15 @@ const Shop = () => {
                     <h2 className="text-2xl font-semibold text-text-primary uppercase tracking-tighter">
                       FILTERS
                     </h2>
-                    <button
+                    <Button
                       onClick={() => setIsSidebarOpen(false)}
-                      className="p-3 bg-bg-base rounded-full"
+                      variant="ghost"
+                      size="icon"
+                      roundedFull
+                      className="bg-bg-base border border-border-main text-text-muted"
                     >
-                      <X className="w-6 h-6 text-text-muted" />
-                    </button>
+                      <X className="w-6 h-6" />
+                    </Button>
                   </div>
                   <FilterSidebar
                     categories={categoriesData?.data || []}
@@ -141,12 +146,13 @@ const Shop = () => {
                     setFilters={handleUpdateFilters}
                   />
                   <div className="sticky bottom-0 left-0 right-0 pt-8 pb-4 bg-gradient-to-t from-bg-surface via-bg-surface to-transparent">
-                    <button
+                    <Button
                       onClick={() => setIsSidebarOpen(false)}
-                      className="w-full py-5 bg-secondary text-white rounded-xl font-semibold shadow-xl shadow-secondary/20 text-xs uppercase tracking-widest transition-transform active:scale-95"
+                      variant="primary"
+                      className="w-full py-4 text-xs font-semibold uppercase tracking-widest"
                     >
                       Show Results
-                    </button>
+                    </Button>
                   </div>
                 </motion.div>
               </>
@@ -227,7 +233,7 @@ const Shop = () => {
                   ))}
                 </div>
               ) : productsData?.data && productsData.data.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {productsData.data.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
@@ -238,7 +244,7 @@ const Shop = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col items-center justify-center py-32 bg-bg-surface rounded-xl border-2 border-dashed border-border-main"
                 >
-                  <div className="w-24 h-24 bg-bg-base rounded-full flex items-center justify-center mb-8 shadow-sm">
+                  <div className="w-24 h-24 bg-bg-base rounded-full flex items-center justify-center mb-8 border border-border-main">
                     <Search className="w-12 h-12 text-text-muted/30" />
                   </div>
                   <h2 className="text-3xl font-semibold text-text-primary mb-3 tracking-tighter uppercase">
@@ -247,7 +253,7 @@ const Shop = () => {
                   <p className="text-text-muted font-medium uppercase tracking-widest text-[10px] mb-10">
                     We couldn't find any items matching your filters
                   </p>
-                  <button
+                  <Button
                     onClick={() =>
                       handleUpdateFilters({
                         ...activeFilters,
@@ -259,10 +265,11 @@ const Shop = () => {
                         rating: 0,
                       })
                     }
-                    className="px-12 py-5 bg-text-primary text-white rounded-xl font-semibold shadow-xl shadow-text-primary/20 transition-transform active:scale-95 uppercase tracking-widest text-xs"
+                    variant="primary"
+                    className="px-12 py-4 font-semibold uppercase tracking-widest text-xs"
                   >
                     Clear Selection
-                  </button>
+                  </Button>
                 </motion.div>
               )}
             </div>
@@ -275,9 +282,7 @@ const Shop = () => {
                 totalPage={productsData?.meta?.totalPage || 1}
                 onPageChange={handlePageChange}
               />
-              <p className="text-[10px] font-semibold text-text-muted italic uppercase tracking-[0.2em]">
-                Displaying of {productsData?.data?.length || 0} items
-              </p>
+             
             </div>
           </main>
         </div>

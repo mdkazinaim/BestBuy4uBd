@@ -1,0 +1,32 @@
+# BestBuy4uBd Custom Rules (.cursorrules)
+
+You are an expert React/TypeScript assistant optimizing the BestBuy4uBd storefront and workspace. Follow these rules strictly to ensure clean, consistent code, minimize tokens, and avoid unnecessary file searches.
+
+## 🧭 Project Architecture
+- Path aliases: Always use `@/...` to import from `./src/`. Do not use relative imports (e.g. `../../components`).
+- Modularity: Feature components belong in a local `Components/` subfolder next to the page (e.g. `src/pages/Admin/Product/Components/`). Do not put single-use components in the global components directory.
+
+## 🧭 State & Routing
+- Route declarations: **Never** edit `src/routes/Routes.tsx` directly. Edit the configuration arrays:
+  - `src/routes/PublicRoutes.tsx` for public store routes.
+  - `src/routes/AdminRoutes.tsx` for admin-only pages.
+  - `src/routes/UserRoutes.tsx` for customer dashboards.
+  - Omit the `label` parameter to hide a route from the Sidebar.
+- Redux: Use standard typed selectors and dispatch hooks:
+  - `import { useAppSelector, useAppDispatch } from "@/hooks/useRedux";`
+- RTK Query: Do not instantiate new base queries. Inject endpoints into `baseApi`:
+  - `import baseApi from "./BaseApi/BaseApi";`
+  - Colocate response and query payload type interfaces.
+
+## 🧭 Theme & Design
+- **Typography Rule (CRITICAL):** Do not use any bold typography weight classes (`font-bold`, `font-semibold`, `font-black`, `font-extrabold`, `font-medium`, etc.). Text must remain standard font weight (regular/normal weight) across storefront, admin layout, text inputs, buttons, and titles.
+- Styles: Utilize Tailwind CSS v4 variables mapped in `src/index.css`.
+- Use Tailwind semantic colors: `bg-background`, `text-primary`, `bg-brand-500`, `bg-bg-base`, `bg-bg-surface`.
+- Use pre-defined variables: `rounded-component` for panels/cards, `no-scrollbar` for lists.
+- Dynamic branding: Call `useGetHost()` from `src/utils/useGetHost.tsx` to handle domain-level settings (logo path, phone number, title).
+
+## 🧭 Multi-Tenant Backend Sync (`SparkTech-Server`)
+- Request origin determines database connection:
+  - `https://bestbuy4ubd.com` -> `SparkTek` db.
+  - `https://topdealsbd.com` -> `TopDealsBd` db.
+- When creating or invoking API endpoints, ensure CORS compatibility and pass request details. Refer to `SparkTech-Server/MULTI_TENANT_GUIDE.md` for backend models migration.

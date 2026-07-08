@@ -104,7 +104,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="group relative card-container p-2 h-full flex flex-col hover:border-primary/20 rounded-xl"
+        className="group relative card-container p-2 h-full flex flex-col hover:border-primary/20 rounded-xl border border-gray-200 dark:border-slate-800/60"
       >
         {/* Badges */}
         <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
@@ -138,7 +138,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </button>
 
         {/* Image Container */}
-        <div className="relative h-56 flex items-center justify-center overflow-hidden card-inner group-hover:bg-bg-surface transition-colors duration-500 border border-gray-100 rounded-b-none -mb-1 hover:mb-0 rounded-t-xl ">
+        <div className="relative h-56 flex items-center justify-center overflow-hidden card-inner group-hover:bg-bg-surface transition-colors duration-500 border border-slate-100 dark:border-slate-800/60 rounded-b-none -mb-1 hover:mb-0 rounded-t-xl ">
           <motion.img
             src={images[0]?.url || "https://via.placeholder.com/300"}
             alt={basicInfo.title}
@@ -150,7 +150,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <motion.button
               whileHover={{ scale: 1.1, rotate: 5 }}
               whileTap={{ scale: 0.9 }}
-              className="w-11 h-11 rounded-full bg-bg-surface text-text-primary shadow-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
+              className="w-11 h-11 rounded-full bg-bg-surface text-text-primary border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300"
               title="Quick View"
             >
               <Eye className="w-5 h-5" />
@@ -160,10 +160,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
               whileHover={{ scale: 1.1, rotate: -5 }}
               whileTap={{ scale: 0.9 }}
               disabled={stockStatus === "Out of Stock"}
-              className={`w-11 h-11 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 ${
+              className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-300 ${
                 stockStatus === "Out of Stock"
-                  ? "bg-text-muted/20 cursor-not-allowed text-text-muted"
-                  : "bg-secondary text-white hover:bg-secondary/90"
+                  ? "bg-text-muted/20 border-slate-200 dark:border-slate-800 cursor-not-allowed text-text-muted"
+                  : "bg-secondary border-secondary text-white hover:bg-secondary/90"
               }`}
               title="Add to Cart"
             >
@@ -173,13 +173,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col p-3 shadow-sm rounded-xl">
+        <div className="flex-1 flex flex-col p-3 rounded-xl ">
           <div className="text-[10px] font-semibold text-secondary uppercase tracking-widest mb-1">
             {basicInfo.category}
           </div>
 
           <h3
-            className="text-[#0F172A] mb-2 line-clamp-2 text-sm leading-tight group-hover:text-secondary transition-colors duration-300 "
+            className="text-slate-900 dark:text-slate-100 mb-2 line-clamp-2 text-sm leading-tight group-hover:text-secondary transition-colors duration-300 "
             title={basicInfo.title}
           >
             {basicInfo.title}
@@ -208,15 +208,15 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <div className="flex items-center gap-2">
               {price.discounted ? (
                 <>
-                  <span className="text-xs text-text-muted line-through font-medium">
+                  <span className="text-xs text-text-muted dark:text-slate-400 line-through font-medium">
                     ৳{price.regular.toLocaleString()}
                   </span>
-                  <span className="text-xl font-semibold text-danger">
+                  <span className="text-xl font-semibold text-secondary">
                     ৳{price.discounted.toLocaleString()}
                   </span>
                 </>
               ) : (
-                <span className="text-xl font-semibold text-text-primary">
+                <span className="text-xl font-semibold text-secondary">
                   ৳{price.regular.toLocaleString()}
                 </span>
               )}

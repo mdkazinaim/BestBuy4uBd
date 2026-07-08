@@ -111,10 +111,10 @@ const FeaturedCategories = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-2xl font-semibold text-brand-700 mb-4 text-center">
+          <h2 className="text-2xl font-semibold text-brand-700 dark:text-brand-200 mb-4 text-center">
             Shop by Category
           </h2>
-          <p className="text-text-muted max-w-2xl mx-auto uppercase tracking-widest text-xs font-medium">
+          <p className="text-text-muted dark:text-slate-400 max-w-2xl mx-auto uppercase tracking-widest text-xs font-medium">
             Explore our curated collections of premium products across multiple
             categories
           </p>
@@ -180,7 +180,7 @@ const FeaturedCategories = () => {
                           className="group cursor-pointer w-[180px] flex-shrink-0 rounded-lg overflow-hidden"
                         >
                           {/* Simple Brand Card */}
-                          <div className="relative bg-white rounded-lg border border-gray-100 shadow-sm transition-all duration-300 flex flex-col items-center justify-center">
+                          <div className="relative bg-white dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-slate-800 shadow-sm transition-all duration-300 flex flex-col items-center justify-center">
                             {/* Image/Icon Container */}
                             <div className="w-full aspect-square flex items-center justify-center">
                               {category.image ? (
@@ -190,9 +190,9 @@ const FeaturedCategories = () => {
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                 />
                               ) : (
-                                <div className="size-16 rounded-full bg-gray-50 flex items-center justify-center">
+                                <div className="size-16 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
                                   <Icon
-                                    className="w-8 h-8 text-gray-400"
+                                    className="w-8 h-8 text-gray-400 dark:text-slate-500"
                                     strokeWidth={1.5}
                                   />
                                 </div>

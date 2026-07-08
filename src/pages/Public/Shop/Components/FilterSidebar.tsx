@@ -77,7 +77,7 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
         </div>
         <button
           onClick={resetFilters}
-          className="flex items-center gap-1.5 text-xs font-semibold text-text-muted hover:text-danger transition-colors uppercase tracking-wider"
+          className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-danger dark:hover:text-danger transition-colors uppercase tracking-wider cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Reset All
@@ -91,13 +91,13 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
           placeholder="Search products..."
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
-          className="w-full pl-11 pr-4 py-3 bg-bg-base border-none rounded-xl text-text-primary focus:ring-2 focus:ring-secondary/50 transition-all placeholder:text-text-muted font-medium"
+          className="w-full pl-11 pr-4 py-3 bg-bg-base dark:bg-slate-900 border-none rounded-xl text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium"
         />
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-secondary transition-colors" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-secondary transition-colors" />
         {localSearch && (
           <button
             onClick={() => setLocalSearch("")}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-danger"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 hover:text-danger"
           >
             <X className="w-4 h-4" />
           </button>
@@ -106,33 +106,33 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
 
       {/* Sort By - Moved from Top Bar */}
       <div className="space-y-4">
-        <h3 className="h6 uppercase tracking-widest pl-1 text-[10px] font-bold text-text-muted">Sort By</h3>
+        <h3 className="h6 uppercase tracking-widest pl-1 text-[10px] font-semibold text-text-muted">Sort By</h3>
         <div className="relative group">
           <select
             value={filters.sort}
             onChange={(e) => setFilters((prev: any) => ({ ...prev, sort: e.target.value, page: 1 }))}
-            className="w-full appearance-none bg-bg-base border-none rounded-xl px-5 py-3 text-sm font-semibold text-text-primary focus:ring-2 focus:ring-secondary/50 cursor-pointer transition-all outline-none"
+            className="w-full appearance-none bg-bg-base dark:bg-slate-900 border-none rounded-xl px-5 py-3 text-sm font-semibold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-secondary/50 cursor-pointer transition-all outline-none"
           >
-            <option value="-createdAt">Latest Arrivals</option>
-            <option value="createdAt">Oldest First</option>
-            <option value="price.regular">Price: Low to High</option>
-            <option value="-price.regular">Price: High to Low</option>
-            <option value="-sold">Most Sales</option>
-            <option value="-price.savingsPercentage">Best Discount</option>
+            <option value="-createdAt" className="dark:bg-slate-900">Latest Arrivals</option>
+            <option value="createdAt" className="dark:bg-slate-900">Oldest First</option>
+            <option value="price.regular" className="dark:bg-slate-900">Price: Low to High</option>
+            <option value="-price.regular" className="dark:bg-slate-900">Price: High to Low</option>
+            <option value="-sold" className="dark:bg-slate-900">Most Sales</option>
+            <option value="-price.savingsPercentage" className="dark:bg-slate-900">Best Discount</option>
           </select>
-          <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none rotate-90" />
+          <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500 pointer-events-none rotate-90" />
         </div>
       </div>
 
       {/* Categories */}
       <div className="space-y-4">
-        <h3 className="h6 uppercase tracking-widest pl-1 text-[10px] font-bold text-text-muted">Categories</h3>
+        <h3 className="h6 uppercase tracking-widest pl-1 text-[10px] font-semibold text-text-muted">Categories</h3>
         <div className="flex flex-col gap-1 pr-2">
           <button
             onClick={() => setFilters((prev: any) => ({ ...prev, category: "", page: 1 }))}
-            className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-300 font-medium ${filters.category === ""
-              ? "bg-secondary text-white shadow-lg shadow-secondary/20"
-              : "text-text-secondary hover:bg-bg-base"
+            className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-300 font-medium cursor-pointer ${filters.category === ""
+              ? "bg-secondary text-white"
+              : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100"
               }`}
           >
             <span className="text-sm">All Categories</span>
@@ -145,9 +145,9 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
                 if (filters.category !== cat.name) trackFilterApply("category", cat.name);
                 setFilters((prev: any) => ({ ...prev, category: cat.name, page: 1 }))
               }}
-              className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-300 font-medium ${filters.category === cat.name
-                ? "bg-secondary text-white shadow-lg shadow-secondary/20 scale-[1.02]"
-                : "text-text-secondary hover:bg-bg-base hover:translate-x-1"
+              className={`flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-300 font-medium cursor-pointer ${filters.category === cat.name
+                ? "bg-secondary text-white scale-[1.02]"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 hover:translate-x-1"
                 }`}
             >
               <span className="truncate text-sm">{cat.name}</span>
@@ -161,8 +161,8 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
       {/* Price Range */}
       <div className="space-y-6">
         <div className="flex items-center justify-between pl-1">
-          <h3 className="h6 uppercase tracking-widest text-[10px] font-bold text-text-muted">Price Range</h3>
-          <span className="text-[10px] font-bold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">
+          <h3 className="h6 uppercase tracking-widest text-[10px] font-semibold text-text-muted">Price Range</h3>
+          <span className="text-[10px] font-semibold text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">
             ৳{priceRange.min} - ৳{priceRange.max}
           </span>
         </div>
@@ -217,7 +217,7 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
 
       {/* Stock Status */}
       <div className="space-y-4">
-        <h3 className="h6 uppercase tracking-widest pl-1">Availability</h3>
+        <h3 className="h6 uppercase tracking-widest pl-1 text-[10px] font-semibold text-text-muted">Availability</h3>
         <div className="flex flex-col gap-2">
           {[
             { label: 'In Stock', value: 'In Stock', color: 'bg-success' },
@@ -231,16 +231,16 @@ const FilterSidebar = ({ categories, filters, setFilters }: FilterSidebarProps) 
                 if (newVal) trackFilterApply("stock_status", newVal);
                 setFilters((prev: any) => ({ ...prev, stockStatus: newVal, page: 1 }));
               }}
-              className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all duration-300 ${
+              className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all duration-300 cursor-pointer ${
                 filters.stockStatus === tag.value
-                  ? "border-secondary bg-secondary/5 shadow-sm"
-                  : "border-border-main hover:border-text-secondary bg-transparent"
+                  ? "border-secondary bg-secondary/5"
+                  : "border-slate-200 dark:border-slate-800 hover:border-slate-350 dark:hover:border-slate-700 bg-transparent"
               }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-2 h-2 rounded-full ${tag.color}`} />
                 <span className={`text-sm font-medium ${
-                  filters.stockStatus === tag.value ? "text-secondary" : "text-text-secondary"
+                  filters.stockStatus === tag.value ? "text-secondary" : "text-slate-600 dark:text-slate-300"
                 }`}>
                   {tag.label}
                 </span>

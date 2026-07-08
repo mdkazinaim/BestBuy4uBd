@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 import ProductFormNew from "./Components/ProductFormNew"; // New form using field configs
 import ProductPreviewNew from "./Components/ProductPreviewNew";
 import { ProductFormValues } from "./Components/Product";
+import { Button } from "@/common/Components/Button";
 import {
   useAddProductMutation,
   useUpdateProductMutation,
@@ -12,6 +14,7 @@ import {
 
 export default function ProductAdminPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const isAdd = !id || id === "new";
 
   const [preview, setPreview] = useState(false);
@@ -166,35 +169,78 @@ export default function ProductAdminPage() {
         await updateProduct({ id: id!, ...productData }).unwrap();
       }
 
-      alert(isAdd ? "Product created" : "Product updated");
+      alert(isAdd ? "Product created successfully" : "Product updated successfully");
       setPreview(false);
+      navigate("/admin/products");
     } catch (err) {
       console.error("Save product error:", err);
       alert("Failed to save product");
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] text-sm font-medium text-slate-500">
+        Loading product details...
+      </div>
+    );
+  }
 
   // Preview mode
   if (preview && draft) {
     return (
-      <div className="p-2 md:p-4">
+      <div className="p-4 md:p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+          <div>
+            <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
+              Product Preview
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Verify your product configurations before saving.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPreview(false)}
+              disabled={isSaving}
+            >
+              Back to edit
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleConfirm}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving..." : isAdd ? "Create Product" : "Save Changes"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Content Preview */}
         <ProductPreviewNew data={draft as ProductFormValues} />
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={handleConfirm}
-            className="px-4 py-2 rounded bg-green-600 text-white"
+
+        {/* Footer Actions */}
+        <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPreview(false)}
             disabled={isSaving}
           >
-            {isAdd ? "Create" : "Save"}
-          </button>
-          <button
-            onClick={() => setPreview(false)}
-            className="px-4 py-2 rounded bg-gray-200"
-          >
             Back to edit
-          </button>
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleConfirm}
+            disabled={isSaving}
+          >
+            {isSaving ? "Saving..." : isAdd ? "Create Product" : "Save Changes"}
+          </Button>
         </div>
       </div>
     );
@@ -202,10 +248,31 @@ export default function ProductAdminPage() {
 
   // Form mode
   return (
-    <div className="p-2 md:p-6">
-      <h1 className="text-xl md:text-2xl font-bold mb-4 px-1">
-        {isAdd ? "Add Product" : "Edit Product"}
-      </h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
+            {isAdd ? "Add Product" : "Edit Product"}
+          </h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {isAdd ? "Publish a new product to your storefront" : "Edit and update product information"}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/admin/products")}
+            className="flex items-center gap-1.5"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Products</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Content Form */}
       <ProductFormNew defaultValues={defaultValues} onSubmit={handleSubmit} />
     </div>
   );

@@ -1,113 +1,125 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Palette, X, Check, Sparkles } from "lucide-react";
-import { useTheme } from "@/context/ThemeContext";
-
-// Re-export specific Theme type if needed, but context handles it.
+import { Palette, Check, Sparkles, Moon, Sun } from "lucide-react";
+import { useTheme as useBrandTheme } from "@/context/ThemeContext";
+import { useTheme as useDarkTheme } from "next-themes";
 
 export const ThemeSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { currentTheme, themes, changeTheme } = useTheme();
+  const { currentTheme, themes, changeTheme } = useBrandTheme();
+  const { theme, setTheme } = useDarkTheme();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  if (!mounted) return null;
+
+  const isDark = theme === "dark";
 
   return (
-    <div className="fixed right-8 bottom-8 z-[100] flex flex-col items-end gap-4">
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Theme Settings"
+        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-755 dark:text-slate-200 transition-all cursor-pointer focus:outline-none"
+      >
+        <Palette className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-12" : ""}`} />
+      </button>
+
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="bg-white/80 backdrop-blur-2xl border border-slate-200 shadow-2xl rounded-2xl p-4 w-56 ring-1 ring-slate-900/5 overflow-hidden"
+            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute right-0 mt-2 z-[60] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 w-56 overflow-hidden shadow-lg shadow-slate-200/40 dark:shadow-none"
           >
-            <div className="flex items-center justify-between mb-4 px-1">
-              <div className="flex items-center gap-2">
-                <Sparkles size={14} className="text-brand-600" />
-                <span className="text-[10px] font-semibold uppercase text-slate-500 tracking-[0.2em]">
-                  Appearance
-                </span>
-              </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="h-6 w-6 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all"
-              >
-                <X size={14} />
-              </button>
+            {/* Header */}
+            <div className="flex items-center gap-1.5 mb-3 px-1">
+              <Sparkles className="w-3.5 h-3.5 text-blue-500" />
+              <span className="text-[10px] font-semibold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                Theme Settings
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 gap-2">
-                {themes.map((theme) => (
+            {/* Dark Mode Toggle Switch */}
+            <div className="flex items-center justify-between px-2 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all mb-2 cursor-pointer" onClick={() => setTheme(isDark ? "light" : "dark")}>
+              <div className="flex items-center gap-2.5">
+                {isDark ? (
+                  <Moon className="w-4 h-4 text-blue-500" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-500" />
+                )}
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                  Dark Mode
+                </span>
+              </div>
+              <div className={`w-8 h-4.5 rounded-full p-0.5 transition-colors duration-200 focus:outline-none ${isDark ? "bg-blue-500" : "bg-slate-200 dark:bg-slate-700"}`}>
+                <div className={`w-3.5 h-3.5 rounded-full bg-white transition-transform duration-200 ${isDark ? "translate-x-3.5" : "translate-x-0"}`} />
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 dark:border-slate-800 my-2" />
+
+            {/* Brand Colors Title */}
+            <div className="px-1 mb-2">
+              <span className="text-[9px] font-semibold uppercase text-slate-400 dark:text-slate-500 tracking-wider">
+                Brand Accent Color
+              </span>
+            </div>
+
+            {/* Brand Accent Grid */}
+            <div className="grid grid-cols-1 gap-0.5">
+              {themes.map((t) => {
+                const isActive = currentTheme.id === t.id;
+                return (
                   <button
-                    key={theme.id}
-                    onClick={() => changeTheme(theme.id)}
-                    className={`group w-full px-3 py-2.5 rounded-xl flex items-center justify-between transition-all duration-300 border ${
-                      currentTheme.id === theme.id
-                        ? "bg-white border-slate-200 shadow-sm ring-1 ring-slate-100"
-                        : "bg-transparent border-transparent hover:bg-slate-50"
+                    key={t.id}
+                    onClick={() => {
+                      changeTheme(t.id);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full px-2 py-1.5 rounded-lg flex items-center justify-between transition-all text-left border ${
+                      isActive
+                        ? "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        : "bg-transparent border-transparent hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5 min-w-0">
                       <div
-                        className="h-4 w-4 rounded-full shadow-inner ring-2 ring-white"
-                        style={{ backgroundColor: theme.color }}
+                        className="h-3.5 w-3.5 rounded-full border border-slate-200 dark:border-slate-700 shrink-0"
+                        style={{ backgroundColor: t.color }}
                       />
                       <span
-                        className={`text-sm font-semibold transition-colors ${
-                          currentTheme.id === theme.id
-                            ? "text-slate-900"
-                            : "text-slate-500 group-hover:text-slate-700"
+                        className={`text-xs font-semibold truncate ${
+                          isActive
+                            ? "text-slate-900 dark:text-slate-100"
+                            : "text-slate-600 dark:text-slate-300"
                         }`}
                       >
-                        {theme.name}
+                        {t.name}
                       </span>
                     </div>
-                    {currentTheme.id === theme.id && (
-                      <motion.div
-                        layoutId="check"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                      >
-                        <Check size={14} className="text-brand-600" />
-                      </motion.div>
-                    )}
+                    {isActive && <Check className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
                   </button>
-                ))}
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between px-1">
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-tight">
-                Active Theme
-              </span>
-              <div className="px-2 py-0.5 bg-brand-50 rounded-md">
-                <span className="text-[10px] font-bold text-brand-700 uppercase">
-                  {currentTheme.id}
-                </span>
-              </div>
+                );
+              })}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className={`h-14 w-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 group relative overflow-hidden border border-white/20 ${
-          isOpen ? "bg-slate-900" : "bg-brand-600"
-        }`}
-      >
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <Palette
-          size={24}
-          className={`text-white transition-transform duration-500 ${isOpen ? "rotate-12 scale-110" : ""}`}
-        />
-        {!isOpen && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-brand-200 border-2 border-brand-600"></span>
-          </span>
-        )}
-      </motion.button>
     </div>
   );
 };

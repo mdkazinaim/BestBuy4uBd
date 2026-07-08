@@ -135,7 +135,7 @@ export const ProductFormSchema = z.object({
     })
     .optional(),
   relatedProducts: z.array(z.string()).optional(), // ObjectId strings
-  tags: z.array(z.string()).optional(),
+  tags: z.array(z.string()).min(1, "At least one tag is required"),
   shippingDetails: ProductShippingSchema,
   additionalInfo: z
     .object({

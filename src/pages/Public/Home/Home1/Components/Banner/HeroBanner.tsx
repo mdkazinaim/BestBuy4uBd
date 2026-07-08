@@ -150,21 +150,21 @@ const HeroBanner = ({ banners }: HeroBannerProps) => {
 
       {/* Pagination / Navigation */}
       {banners.length > 1 && (
-        <div className="absolute bottom-8 right-8 bg-bg-surface/80 backdrop-blur-md rounded-component p-2 border border-border-main shadow-2xl flex items-center gap-4 z-20">
+        <div className="absolute bottom-8 right-8 bg-bg-surface/80 dark:bg-slate-900/80 backdrop-blur-md rounded-component p-2 border border-border-main dark:border-slate-800 shadow-2xl flex items-center gap-4 z-20">
           <button
             onClick={prevSlide}
-            className="w-10 h-10 hover:bg-bg-base rounded-inner transition-colors flex items-center justify-center"
+            className="w-10 h-10 hover:bg-bg-base dark:hover:bg-slate-800 rounded-inner transition-colors flex items-center justify-center cursor-pointer"
           >
-            <ChevronLeft className="w-5 h-5 text-text-primary" />
+            <ChevronLeft className="w-5 h-5 text-text-primary dark:text-slate-100" />
           </button>
-          <span className="text-xs font-semibold text-text-primary uppercase tracking-widest">
+          <span className="text-xs font-semibold text-text-primary dark:text-slate-100 uppercase tracking-widest">
             {currentSlide + 1} <span className="text-text-muted mx-1">/</span> {banners.length}
           </span>
           <button
             onClick={nextSlide}
-            className="w-10 h-10 hover:bg-bg-base rounded-inner transition-colors flex items-center justify-center"
+            className="w-10 h-10 hover:bg-bg-base dark:hover:bg-slate-800 rounded-inner transition-colors flex items-center justify-center cursor-pointer"
           >
-            <ChevronRight className="w-5 h-5 text-text-primary" />
+            <ChevronRight className="w-5 h-5 text-text-primary dark:text-slate-100" />
           </button>
         </div>
       )}

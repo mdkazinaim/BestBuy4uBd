@@ -9,7 +9,7 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 print:bg-white overflow-x-hidden">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 print:bg-white overflow-x-hidden">
       {/* 1. Sidebar Container */}
       <div 
         className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out bg-gray-700 lg:relative lg:translate-x-0 print:hidden ${

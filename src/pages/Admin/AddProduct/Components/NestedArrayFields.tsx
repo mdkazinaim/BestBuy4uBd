@@ -3,10 +3,19 @@ import {
   Control,
   UseFormRegister,
   FieldErrors,
+  useWatch,
 } from "react-hook-form";
 import { ProductFormValues } from "./Product";
-import { Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
 import { memo, useState, useEffect } from "react";
+import { Button } from "@/common/Components/Button";
+import { PopoverSelect } from "./FormHelpers";
+
+// Common input style helper
+const textInputClasses = (error: boolean) => 
+  `w-full px-3.5 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900 ${
+    error ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" : "border-slate-200 dark:border-slate-800"
+  }`;
 
 // ============================================
 // 🖼️ Images Array Component
@@ -27,53 +36,45 @@ export const ImagesField = memo(
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
             Product Images
           </h3>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => append({ url: "", alt: "", file: undefined })}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Image
-          </button>
+            <span>Add Image</span>
+          </Button>
         </div>
 
-        <div className="space-y-3">
-          {fields.map((field, index) => {
-            // Keep a temporary preview URL in state for user-selected files
-            // We can't use React state easily in this map without a sub-component,
-            // but we can register an onChange to intercept and store the file in RHF.
-            // Wait, we can extract a subcomponent or just use `watch("images")` but we don't have `watch` prop here.
-            // Since we want previews, let's actually just use a simple sub-component or let the user see the file path.
-            return (
-              <ImageUploadItem
-                key={field.id}
-                index={index}
-                register={register}
-                errors={errors}
-                onRemove={() => remove(index)}
-                isRemovable={fields.length > 1}
-                control={control}
-              />
-            );
-          })}
+        <div className="space-y-4">
+          {fields.map((field, index) => (
+            <ImageUploadItem
+              key={field.id}
+              index={index}
+              register={register}
+              errors={errors}
+              onRemove={() => remove(index)}
+              isRemovable={fields.length > 1}
+              control={control}
+            />
+          ))}
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
-            <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-500">No images added yet</p>
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <ImageIcon className="w-10 h-10 text-slate-400 dark:text-slate-600 mx-auto mb-3" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">No images added yet</p>
           </div>
         )}
       </div>
     );
   },
 );
-
-// Extracted sub-component to handle local state for file preview
-import { useWatch } from "react-hook-form";
 
 const ImageUploadItem = memo(
   ({ index, register, errors, onRemove, isRemovable, control }: any) => {
@@ -94,10 +95,10 @@ const ImageUploadItem = memo(
     const displayUrl = previewUrl || urlField || null;
 
     return (
-      <div className="p-4 border border-border rounded-xl bg-white shadow-sm">
+      <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/40 shadow-none">
         <div className="flex items-start gap-4 flex-col md:flex-row">
           <div className="flex-shrink-0">
-            <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border">
+            <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800/40 rounded-lg flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-800">
               {displayUrl ? (
                 <img
                   src={displayUrl}
@@ -105,34 +106,33 @@ const ImageUploadItem = memo(
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <ImageIcon className="w-8 h-8 text-gray-400" />
+                <ImageIcon className="w-7 h-7 text-slate-400 dark:text-slate-650" />
               )}
             </div>
           </div>
 
-          <div className="flex-1 space-y-3 w-full">
+          <div className="flex-1 space-y-4 w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Upload File OR
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                  Upload File
                 </label>
                 <input
                   {...register(`images.${index}.file`)}
                   type="file"
                   accept="image/*"
-                  className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-blue/10 file:text-primary-blue hover:file:bg-primary-blue/20"
+                  className="w-full text-sm text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-300 hover:file:bg-slate-200/85 dark:hover:file:bg-slate-700/80 transition-all cursor-pointer h-10"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL (if not uploading){" "}
-                  <span className="text-red-500">*</span>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                  Image URL (alternative to upload) <span className="text-red-500">*</span>
                 </label>
                 <input
                   {...register(`images.${index}.url`)}
                   type="url"
                   placeholder="https://example.com/image.jpg"
-                  className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                  className={textInputClasses(!!errors.images?.[index]?.url)}
                 />
                 {errors.images?.[index]?.url && (
                   <p className="text-xs text-red-500 mt-1">
@@ -143,14 +143,14 @@ const ImageUploadItem = memo(
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                 Alt Text <span className="text-red-500">*</span>
               </label>
               <input
                 {...register(`images.${index}.alt`)}
                 type="text"
-                placeholder="Descriptive alt text for accessibility"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                placeholder="Descriptive alt text for SEO & accessibility"
+                className={textInputClasses(!!errors.images?.[index]?.alt)}
               />
               {errors.images?.[index]?.alt && (
                 <p className="text-xs text-red-500 mt-1">
@@ -160,15 +160,17 @@ const ImageUploadItem = memo(
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onRemove}
             disabled={!isRemovable}
-            className="flex-shrink-0 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-shrink-0 text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9 self-start md:self-center"
             title="Remove image"
           >
-            <Trash2 className="w-5 h-5" />
-          </button>
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     );
@@ -196,11 +198,13 @@ export const VideosField = memo(
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
             Product Videos
           </h3>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() =>
               append({
                 url: "",
@@ -210,14 +214,14 @@ export const VideosField = memo(
                 file: undefined,
               })
             }
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Video
-          </button>
+            <span>Add Video</span>
+          </Button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {fields.map((field, index) => (
             <VideoUploadItem
               key={field.id}
@@ -231,11 +235,9 @@ export const VideosField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-xl">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-              <Plus className="w-6 h-6 text-gray-400" />
-            </div>
-            <p className="text-gray-500">No videos added yet</p>
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <VideoIcon className="w-10 h-10 text-slate-400 dark:text-slate-650 mx-auto mb-3" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">No videos added yet</p>
           </div>
         )}
       </div>
@@ -264,24 +266,26 @@ const VideoUploadItem = memo(
     const displayUrl = previewUrl || urlField || null;
 
     return (
-      <div className="p-4 border border-border rounded-xl bg-white shadow-sm">
-        <div className="space-y-3">
+      <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/40 shadow-none">
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-bold text-primary-blue">
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-450 uppercase tracking-wider">
               Video #{index + 1}
             </span>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={onRemove}
-              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+              className="text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-8 w-8"
               title="Remove video"
             >
-              <Trash2 className="w-5 h-5" />
-            </button>
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
 
           {displayUrl && (
-            <div className="aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center h-48 sm:h-64">
+            <div className="aspect-video bg-slate-950 rounded-lg overflow-hidden flex items-center justify-center max-h-64 mx-auto border border-slate-800">
               <video
                 src={displayUrl}
                 controls
@@ -292,26 +296,25 @@ const VideoUploadItem = memo(
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Upload Video OR
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                Upload Video
               </label>
               <input
                 {...register(`videos.${index}.file`)}
                 type="file"
                 accept="video/*"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-blue/10 file:text-primary-blue hover:file:bg-primary-blue/20"
+                className="w-full text-sm text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-300 hover:file:bg-slate-200/85 dark:hover:file:bg-slate-700/80 transition-all cursor-pointer h-10"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Video URL (if not uploading){" "}
-                <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                Video URL (alternative to upload) <span className="text-red-500">*</span>
               </label>
               <input
                 {...register(`videos.${index}.url`)}
                 type="url"
                 placeholder="https://www.youtube.com/watch?v=..."
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                className={textInputClasses(!!errors.videos?.[index]?.url)}
               />
               {errors.videos?.[index]?.url && (
                 <p className="text-xs text-red-500 mt-1">
@@ -323,14 +326,14 @@ const VideoUploadItem = memo(
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                 Video Title <span className="text-red-500">*</span>
               </label>
               <input
                 {...register(`videos.${index}.title`)}
                 type="text"
-                placeholder="Review Video, Unboxing, etc."
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                placeholder="Review Video, Unboxing, Demo, etc."
+                className={textInputClasses(!!errors.videos?.[index]?.title)}
               />
               {errors.videos?.[index]?.title && (
                 <p className="text-xs text-red-500 mt-1">
@@ -340,29 +343,31 @@ const VideoUploadItem = memo(
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                 Platform
               </label>
-              <select
-                {...register(`videos.${index}.platform`)}
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white"
-              >
-                <option value="youtube">YouTube</option>
-                <option value="vimeo">Vimeo</option>
-                <option value="direct">Direct URL</option>
-              </select>
+              <PopoverSelect
+                name={`videos.${index}.platform`}
+                control={control}
+                options={[
+                  { value: "youtube", label: "YouTube" },
+                  { value: "vimeo", label: "Vimeo" },
+                  { value: "direct", label: "Direct URL" },
+                ]}
+                placeholder="Select Platform"
+              />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
               Thumbnail URL (Optional)
             </label>
             <input
               {...register(`videos.${index}.thumbnail`)}
               type="url"
               placeholder="Custom thumbnail image URL"
-              className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+              className={textInputClasses(false)}
             />
           </div>
         </div>
@@ -386,47 +391,53 @@ export const KeyFeaturesField = memo(
       name: "basicInfo.keyFeatures" as any,
     });
 
-    const handleAppend = () => {
-      append("" as any);
-    };
-
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">Key Features</h3>
-          <button
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">Key Features</h3>
+          <Button
             type="button"
-            onClick={handleAppend}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            variant="outline"
+            size="sm"
+            onClick={() => append("" as any)}
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Feature
-          </button>
+            <span>Add Feature</span>
+          </Button>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center gap-2">
-              <span className="flex-shrink-0 w-8 h-8 bg-primary-blue/10 text-primary-blue rounded-full flex items-center justify-center text-sm font-medium">
+            <div key={field.id} className="flex items-center gap-3">
+              <span className="flex-shrink-0 w-7 h-7 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-medium border border-blue-150/40 dark:border-blue-900/30">
                 {index + 1}
               </span>
               <input
                 {...register(`basicInfo.keyFeatures.${index}` as const)}
                 type="text"
-                placeholder="Enter a key feature"
-                className="flex-1 p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                placeholder="Enter a highlights / selling point..."
+                className={textInputClasses(false)}
               />
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => remove(index)}
-                className="flex-shrink-0 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                className="flex-shrink-0 text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9"
                 title="Remove feature"
               >
-                <Trash2 className="w-5 h-5" />
-              </button>
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
           ))}
         </div>
+
+        {fields.length === 0 && (
+          <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <p className="text-sm text-slate-400 dark:text-slate-500">No key features added yet.</p>
+          </div>
+        )}
       </div>
     );
   },
@@ -453,22 +464,24 @@ export const VariantsField = memo(
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
             Product Variants
           </h3>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() =>
               append({ group: "", items: [{ value: "", price: 0, stock: 0 }] })
             }
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Variant Group
-          </button>
+            <span>Add Variant Group</span>
+          </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {fields.map((field, variantIndex) => (
             <VariantGroup
               key={field.id}
@@ -480,6 +493,12 @@ export const VariantsField = memo(
             />
           ))}
         </div>
+
+        {fields.length === 0 && (
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <p className="text-sm text-slate-400 dark:text-slate-500">No variant groups defined (e.g. Size, Color, etc.)</p>
+          </div>
+        )}
       </div>
     );
   },
@@ -487,7 +506,6 @@ export const VariantsField = memo(
 
 VariantsField.displayName = "VariantsField";
 
-// Variant Group Component
 function VariantGroup({
   variantIndex,
   control,
@@ -507,102 +525,101 @@ function VariantGroup({
   });
 
   return (
-    <div className="p-4 border-2 border-border rounded-xl bg-gray-50">
-      <div className="flex items-center justify-between mb-4">
+    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/40 dark:bg-slate-900/20 shadow-none">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <input
           {...register(`variants.${variantIndex}.group`)}
           type="text"
           placeholder="Variant group name (e.g., Color, Size)"
-          className="flex-1 p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white"
+          className={textInputClasses(!!errors.variants?.[variantIndex]?.group)}
         />
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={onRemove}
-          className="ml-2 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+          className="text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9 shrink-0"
           title="Remove variant group"
         >
-          <Trash2 className="w-5 h-5" />
-        </button>
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
       {errors.variants?.[variantIndex]?.group && (
-        <p className="text-xs text-red-500 mb-2">
+        <p className="text-xs text-red-500 mb-3 -mt-2">
           {errors.variants[variantIndex]?.group?.message}
         </p>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-4 gap-2 p-3 bg-white rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-850 rounded-lg"
           >
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Value
               </label>
               <input
-                {...register(
-                  `variants.${variantIndex}.items.${itemIndex}.value`,
-                )}
+                {...register(`variants.${variantIndex}.items.${itemIndex}.value`)}
                 type="text"
-                placeholder="e.g., Red"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue text-sm"
+                placeholder="e.g., XL, Blue"
+                className={textInputClasses(false)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Price
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                Surcharge Price (৳)
               </label>
               <input
-                {...register(
-                  `variants.${variantIndex}.items.${itemIndex}.price`,
-                  {
-                    valueAsNumber: true,
-                  },
-                )}
+                {...register(`variants.${variantIndex}.items.${itemIndex}.price`, {
+                  valueAsNumber: true,
+                })}
                 type="number"
                 placeholder="0"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue text-sm"
+                className={textInputClasses(false)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Stock
               </label>
               <input
-                {...register(
-                  `variants.${variantIndex}.items.${itemIndex}.stock`,
-                  {
-                    valueAsNumber: true,
-                  },
-                )}
+                {...register(`variants.${variantIndex}.items.${itemIndex}.stock`, {
+                  valueAsNumber: true,
+                })}
                 type="number"
                 placeholder="0"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue text-sm"
+                className={textInputClasses(false)}
               />
             </div>
             <div className="flex items-end">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => remove(itemIndex)}
                 disabled={fields.length === 1}
-                className="w-full p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 border border-transparent disabled:opacity-30 disabled:pointer-events-none"
                 title="Remove item"
               >
                 <Trash2 className="w-4 h-4 mx-auto" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}
       </div>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onClick={() => append({ value: "", price: 0, stock: 0 })}
-        className="mt-2 w-full py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-blue hover:text-primary-blue transition-colors"
+        className="mt-3 w-full border border-dashed border-slate-350 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
       >
-        + Add Item
-      </button>
+        <Plus className="w-3.5 h-3.5 mr-1" />
+        Add Item
+      </Button>
     </div>
   );
 }
@@ -626,22 +643,24 @@ export const SpecificationsField = memo(
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
             Specifications
           </h3>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() =>
               append({ group: "", items: [{ name: "", value: "" }] })
             }
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Specification Group
-          </button>
+            <span>Add Specification Group</span>
+          </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {fields.map((field, specIndex) => (
             <SpecificationGroup
               key={field.id}
@@ -653,6 +672,12 @@ export const SpecificationsField = memo(
             />
           ))}
         </div>
+
+        {fields.length === 0 && (
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <p className="text-sm text-slate-400 dark:text-slate-500">No specifications defined (e.g. Dimensions, Processor, etc.)</p>
+          </div>
+        )}
       </div>
     );
   },
@@ -660,7 +685,6 @@ export const SpecificationsField = memo(
 
 SpecificationsField.displayName = "SpecificationsField";
 
-// Specification Group Component
 function SpecificationGroup({
   specIndex,
   control,
@@ -680,86 +704,90 @@ function SpecificationGroup({
   });
 
   return (
-    <div className="p-4 border-2 border-border rounded-xl bg-gray-50">
-      <div className="flex items-center justify-between mb-4">
+    <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/40 dark:bg-slate-900/20 shadow-none">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <input
           {...register(`specifications.${specIndex}.group`)}
           type="text"
-          placeholder="Specification group name (e.g., General, Display)"
-          className="flex-1 p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white"
+          placeholder="Specification group name (e.g., Technical specs, General)"
+          className={textInputClasses(!!errors.specifications?.[specIndex]?.group)}
         />
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={onRemove}
-          className="ml-2 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+          className="text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9 shrink-0"
           title="Remove specification group"
         >
-          <Trash2 className="w-5 h-5" />
-        </button>
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
       {errors.specifications?.[specIndex]?.group && (
-        <p className="text-xs text-red-500 mb-2">
+        <p className="text-xs text-red-500 mb-3 -mt-2">
           {errors.specifications[specIndex]?.group?.message}
         </p>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-3 gap-2 p-3 bg-white rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-850 rounded-lg"
           >
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Name
               </label>
               <input
-                {...register(
-                  `specifications.${specIndex}.items.${itemIndex}.name`,
-                )}
+                {...register(`specifications.${specIndex}.items.${itemIndex}.name`)}
                 type="text"
-                placeholder="e.g., Screen Size"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue text-sm"
+                placeholder="e.g., Screen Size, Material"
+                className={textInputClasses(false)}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Value
               </label>
               <input
-                {...register(
-                  `specifications.${specIndex}.items.${itemIndex}.value`,
-                )}
+                {...register(`specifications.${specIndex}.items.${itemIndex}.value`)}
                 type="text"
-                placeholder="e.g., 6.5 inches"
-                className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue text-sm"
+                placeholder="e.g., 6.5 inches, Leather"
+                className={textInputClasses(false)}
               />
             </div>
             <div className="flex items-end">
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => remove(itemIndex)}
                 disabled={fields.length === 1}
-                className="w-full p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 border border-transparent disabled:opacity-30 disabled:pointer-events-none"
                 title="Remove item"
               >
                 <Trash2 className="w-4 h-4 mx-auto" />
-              </button>
+              </Button>
             </div>
           </div>
         ))}
       </div>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="sm"
         onClick={() => append({ name: "", value: "" })}
-        className="mt-2 w-full py-2 border-2 border-dashed border-gray-300 text-gray-600 rounded-lg hover:border-primary-blue hover:text-primary-blue transition-colors"
+        className="mt-3 w-full border border-dashed border-slate-350 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
       >
-        + Add Item
-      </button>
+        <Plus className="w-3.5 h-3.5 mr-1" />
+        Add Item
+      </Button>
     </div>
   );
 }
+
 // ============================================
 // 💰 Combo Pricing Array Component
 // ============================================
@@ -780,30 +808,32 @@ export const ComboPricingField = memo(
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
             Combo Pricing (Buy More, Save More)
           </h3>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() =>
               append({ minQuantity: 2, discount: 0, discountType: "total" })
             }
-            className="flex items-center gap-2 px-4 py-2 bg-primary-blue text-white rounded-lg hover:bg-primary-blue/90 transition-colors"
+            className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            Add Offer
-          </button>
+            <span>Add Offer Tier</span>
+          </Button>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="p-4 border border-border rounded-xl bg-white shadow-sm"
+              className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/40 shadow-none space-y-3"
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                     Min Quantity <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -812,7 +842,7 @@ export const ComboPricingField = memo(
                     })}
                     type="number"
                     placeholder="2"
-                    className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                    className={textInputClasses(!!errors.comboPricing?.[index]?.minQuantity)}
                   />
                   {errors.comboPricing?.[index]?.minQuantity && (
                     <p className="text-xs text-red-500 mt-1">
@@ -822,7 +852,7 @@ export const ComboPricingField = memo(
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                     Discount Amount (৳) <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -831,7 +861,7 @@ export const ComboPricingField = memo(
                     })}
                     type="number"
                     placeholder="0"
-                    className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue"
+                    className={textInputClasses(!!errors.comboPricing?.[index]?.discount)}
                   />
                   {errors.comboPricing?.[index]?.discount && (
                     <p className="text-xs text-red-500 mt-1">
@@ -841,42 +871,46 @@ export const ComboPricingField = memo(
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                     Apply Discount To <span className="text-red-500">*</span>
                   </label>
-                  <select
-                    {...register(`comboPricing.${index}.discountType`)}
-                    className="w-full p-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-blue bg-white"
-                    defaultValue="total"
-                  >
-                    <option value="total">Total Amount</option>
-                    <option value="per_product">Each Product</option>
-                  </select>
+                  <PopoverSelect
+                    name={`comboPricing.${index}.discountType`}
+                    control={control}
+                    options={[
+                      { value: "total", label: "Total Amount" },
+                      { value: "per_product", label: "Each Product" },
+                    ]}
+                    placeholder="Select Type"
+                  />
                 </div>
 
-                <div className="flex justify-end">
-                  <button
+                <div className="flex justify-end md:justify-center md:pb-1">
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => remove(index)}
-                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    className="text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9"
                     title="Remove tier"
                   >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                    <Trash2 className="w-4.5 h-4.5" />
+                  </Button>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-2 italic">
+              
+              <p className="text-xs text-slate-450 dark:text-slate-500 mt-2 italic">
                 {watch(`comboPricing.${index}.discountType`) === "per_product"
-                  ? `User will get ৳${watch(`comboPricing.${index}.discount`) || 0} OFF on EACH product when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more items (Total: ৳${(watch(`comboPricing.${index}.discount`) || 0) * (watch(`comboPricing.${index}.minQuantity`) || 0)} OFF for ${watch(`comboPricing.${index}.minQuantity`) || 0} items)`
-                  : `User will get ৳${watch(`comboPricing.${index}.discount`) || 0} OFF on TOTAL amount when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more items`}
+                  ? `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF on EACH unit purchased when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more (Total: ৳${(watch(`comboPricing.${index}.discount`) || 0) * (watch(`comboPricing.${index}.minQuantity`) || 0)} discount).`
+                  : `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF the aggregate total when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`}
               </p>
             </div>
           ))}
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-            <p className="text-gray-500">No bulk pricing tiers defined.</p>
+          <div className="text-center py-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+            <p className="text-sm text-slate-400 dark:text-slate-500">No bulk pricing tier guidelines defined.</p>
           </div>
         )}
       </div>

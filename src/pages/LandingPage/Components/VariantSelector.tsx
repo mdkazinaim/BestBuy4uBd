@@ -65,7 +65,7 @@ const VariantSelector = ({
                           : "border-brand-500 bg-brand-50 text-brand-700 shadow-sm ring-1 ring-brand-200"
                         : isDark
                           ? "border-white/10 hover:border-white/20 text-white/70 bg-white/5"
-                          : "border-gray-200 hover:border-brand-300 hover:bg-gray-50 text-gray-700 bg-white",
+                          : "border-gray-200 hover:border-brand-200 hover:bg-gray-50 text-gray-700 bg-white",
                     )}
                   >
                     <div className="flex flex-col items-center gap-0.5">
@@ -161,7 +161,7 @@ const VariantSelector = ({
                     }}
                     title={isColor ? item.value : undefined}
                     className={cn(
-                      "relative transition-all duration-200 ease-out group",
+                      "relative transition-all duration-200 ease-out group animate-none cursor-pointer",
                       isDark ? "bg-white/5" : "bg-white",
                       isColor
                         ? (item.price ?? 0) > 0
@@ -181,10 +181,10 @@ const VariantSelector = ({
                         : isColor
                           ? isDark
                             ? "border-white/10 hover:border-emerald-500/50 ring-transparent"
-                            : "border-gray-200 hover:border-brand-300 ring-transparent"
+                            : "border-gray-200 hover:border-brand-200 ring-transparent"
                           : isDark
                             ? "border-white/10 hover:border-white/20 text-white/70"
-                            : "border-gray-200 hover:border-brand-300 hover:bg-gray-50 text-gray-700"
+                            : "border-gray-200 hover:border-brand-200 hover:bg-gray-50 text-gray-700"
                     )}
                     style={
                       isColor && (item.price ?? 0) === 0

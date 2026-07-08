@@ -2,6 +2,8 @@ import React from "react";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import NavItems from "./NavItems";
 import { useTracking } from "@/hooks/useTracking";
+import { Button } from "@/common/Components/Button";
+import CommonWrapper from "@/common/CommonWrapper";
 
 const Footer: React.FC = () => {
   const { trackContact, trackSubscribe } = useTracking();
@@ -13,15 +15,15 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-brand-700 text-white py-12 transition-colors duration-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-brand-700 dark:bg-slate-950 text-white py-12 transition-colors duration-500 border-t border-brand-800 dark:border-slate-900">
+      <CommonWrapper className="px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* About Section */}
           <div className="space-y-4">
             <h3 className="h6 text-white uppercase tracking-widest">
               About Us
             </h3>
-            <p className="text-sm opacity-70 leading-relaxed">
+            <p className="text-sm text-slate-200 leading-relaxed">
               We are a team of passionate developers building amazing web
               applications with modern technologies. BestBuy4uBd is your
               one-stop shop for premium products.
@@ -90,32 +92,33 @@ const Footer: React.FC = () => {
             <h3 className="h6 text-white uppercase tracking-widest">
               Newsletter
             </h3>
-            <p className="text-sm opacity-70">
+            <p className="text-sm text-slate-200">
               Subscribe to our newsletter to get the latest updates.
             </p>
             <form onSubmit={handleSubscribe} className="flex flex-col gap-2">
               <input
                 type="email"
                 placeholder="Your email"
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-component text-white focus:outline-none focus:border-secondary transition-colors"
+                className="w-full px-4 py-3 bg-white/5 dark:bg-slate-900/60 border border-white/10 dark:border-slate-800 rounded-lg text-white placeholder:text-white/40 dark:placeholder:text-slate-500 focus:outline-none focus:border-secondary transition-colors font-medium"
               />
-              <button
+              <Button
                 type="submit"
-                className="w-full bg-secondary text-white py-3 rounded-component font-semibold uppercase tracking-widest text-[10px] hover:bg-secondary/90 shadow-xl shadow-secondary/10 transition-all"
+                variant="primary"
+                className="w-full py-3 text-[10px] font-semibold uppercase tracking-widest bg-secondary hover:bg-secondary/90 border-secondary text-white"
               >
                 Subscribe
-              </button>
+              </Button>
             </form>
           </div>
         </div>
 
         {/* Copyright Section */}
         <div className="border-t border-white/5 mt-12 pt-8 text-center">
-          <p className="text-xs opacity-50 uppercase tracking-widest">
+          <p className="text-xs text-white/60 dark:text-slate-400 uppercase tracking-widest">
             &copy; {new Date().getFullYear()} BestBuy4uBd. All rights reserved.
           </p>
         </div>
-      </div>
+      </CommonWrapper>
     </footer>
   );
 };

@@ -43,22 +43,22 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
   }, [price.regular, price.discounted]);
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary-blue to-blue-600 text-white p-6 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-2">Product Preview</h1>
-        <p className="text-blue-100">
-          Review your product details before publishing
+    <div className="max-w-7xl mx-auto space-y-6">
+      {/* Header Info Panel */}
+      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-none">
+        <h1 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Product Preview</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Review your product configuration below before committing changes.
         </p>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Images */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5 text-primary-blue" />
+        {/* Left Column - Media */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-850">
+              <Package className="w-5 h-5 text-blue-600 dark:text-blue-450" />
               Product Images
             </h2>
             <div className="space-y-4">
@@ -66,7 +66,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                 images.map((img, idx) => (
                   <div
                     key={idx}
-                    className="border border-border rounded-lg overflow-hidden"
+                    className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50/50 dark:bg-slate-950/20"
                   >
                     <img
                       src={img.url || "https://via.placeholder.com/400"}
@@ -79,13 +79,13 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                         }
                       }}
                     />
-                    <div className="p-2 bg-gray-50 text-xs text-gray-600">
+                    <div className="p-3 border-t border-slate-100 dark:border-slate-850 text-xs text-slate-500 dark:text-slate-400 font-medium">
                       {img.alt}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-10 text-slate-400 dark:text-slate-650 text-sm">
                   No images added
                 </div>
               )}
@@ -93,9 +93,9 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           </div>
 
           {/* Videos Preview */}
-          <div className="bg-white rounded-xl shadow-sm border border-border p-6 mt-6">
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <Video className="w-5 h-5 text-primary-blue" />
+          <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-850">
+              <Video className="w-5 h-5 text-blue-600 dark:text-blue-450" />
               Product Videos
             </h2>
             <div className="space-y-4">
@@ -103,17 +103,17 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                 videos.map((vid, idx) => (
                   <div
                     key={idx}
-                    className="border border-border rounded-lg overflow-hidden bg-gray-50"
+                    className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-slate-50/20 dark:bg-slate-950/10 p-4"
                   >
-                    <div className="p-3">
-                      <p className="text-sm font-bold text-gray-800 truncate mb-1">
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
                         {vid.title || "Untitled Video"}
                       </p>
-                      <p className="text-xs text-primary-blue truncate mb-2">
+                      <p className="text-xs text-blue-600 dark:text-blue-400 truncate font-mono">
                         {vid.url}
                       </p>
                       <div className="flex gap-2">
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold rounded uppercase">
+                        <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 text-[10px] font-semibold rounded uppercase tracking-wider border border-blue-100 dark:border-blue-900/30">
                           {vid.platform || "Direct"}
                         </span>
                       </div>
@@ -121,7 +121,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-10 text-slate-400 dark:text-slate-650 text-sm">
                   No videos added
                 </div>
               )}
@@ -132,27 +132,27 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
         {/* Right Column - Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Info */}
-          <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+            <div className="flex items-start justify-between flex-wrap gap-4 mb-5 pb-5 border-b border-slate-100 dark:border-slate-850">
+              <div className="flex-1 min-w-[240px]">
+                <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
                   {basicInfo.title}
                 </h2>
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="px-3 py-1 bg-primary-blue/10 text-primary-blue rounded-full text-sm font-medium">
+                  <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/30 border border-blue-100/50 dark:border-blue-900/20 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium">
                     {basicInfo.brand}
                   </span>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                  <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 rounded-full text-xs font-medium">
                     {basicInfo.category}
                   </span>
                   {basicInfo.subcategory && (
-                    <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                    <span className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60 rounded-full text-xs font-medium">
                       {basicInfo.subcategory}
                     </span>
                   )}
                 </div>
                 {basicInfo.productCode && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-slate-450 dark:text-slate-500 font-mono">
                     SKU: {basicInfo.productCode}
                   </p>
                 )}
@@ -161,69 +161,69 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
               {/* Stock Status Badge */}
               <div className="flex-shrink-0">
                 {stockStatus === "In Stock" ? (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">In Stock</span>
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200/50 dark:border-green-900/30 text-sm font-medium">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>In Stock</span>
                   </div>
                 ) : stockStatus === "Out of Stock" ? (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-700 rounded-lg">
-                    <XCircle className="w-5 h-5" />
-                    <span className="font-medium">Out of Stock</span>
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200/50 dark:border-red-900/30 text-sm font-medium">
+                    <XCircle className="w-4 h-4" />
+                    <span>Out of Stock</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg">
-                    <Clock className="w-5 h-5" />
-                    <span className="font-medium">Pre-order</span>
+                  <div className="flex items-center gap-2 px-3.5 py-1.5 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-750 dark:text-yellow-400 rounded-lg border border-yellow-200/50 dark:border-yellow-900/30 text-sm font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>Pre-order</span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Price */}
-            <div className="mb-4 p-4 bg-gradient-to-r from-primary-blue/5 to-transparent rounded-lg">
-              <div className="flex items-baseline gap-3">
-                <span className="text-3xl font-bold text-primary-blue">
+            {/* Price section */}
+            <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="text-2xl md:text-3xl font-semibold text-blue-600 dark:text-blue-400">
                   ৳{price.discounted || price.regular}
                 </span>
                 {price.discounted && (
                   <>
-                    <span className="text-xl text-gray-400 line-through">
+                    <span className="text-lg text-slate-400 dark:text-slate-500 line-through">
                       ৳{price.regular}
                     </span>
-                    <span className="px-2 py-1 bg-red-500 text-white text-sm font-bold rounded">
+                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
                       -{savingsPercentage}%
                     </span>
                   </>
                 )}
               </div>
               {stockQuantity !== undefined && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Available: {stockQuantity} units
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                  Available Stock: {stockQuantity} units
                 </p>
               )}
             </div>
 
             {/* Description */}
-            <div className="mb-4">
-              <h3 className="font-semibold text-gray-800 mb-2">Description</h3>
-              <p className="text-gray-600 leading-relaxed">
+            <div className="mb-6 space-y-2">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-205 text-sm uppercase tracking-wider">Description</h3>
+              <p className="text-slate-650 dark:text-slate-350 leading-relaxed text-sm whitespace-pre-line">
                 {basicInfo.description}
               </p>
             </div>
 
             {/* Key Features */}
             {basicInfo.keyFeatures && basicInfo.keyFeatures.length > 0 && (
-              <div className="mb-4">
-                <h3 className="font-semibold text-gray-800 mb-2">
+              <div className="mb-6 space-y-3">
+                <h3 className="font-semibold text-slate-800 dark:text-slate-205 text-sm uppercase tracking-wider">
                   Key Features
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-2.5">
                   {basicInfo.keyFeatures.map((feature, idx) => (
                     <li
                       key={idx}
-                      className="flex items-start gap-2 text-gray-600"
+                      className="flex items-start gap-2.5 text-slate-600 dark:text-slate-350 text-sm"
                     >
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </li>
                   ))}
@@ -233,46 +233,48 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
             {/* Tags */}
             {tags && tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm flex items-center gap-1"
-                  >
-                    <Tag className="w-3 h-3" />
-                    {tag}
-                  </span>
-                ))}
+              <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-850">
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 border border-slate-200 dark:border-slate-700 rounded-full text-xs flex items-center gap-1 font-medium"
+                    >
+                      <Tag className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
           {/* Variants */}
           {variants && variants.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-gray-800 mb-4">Variants</h3>
-              <div className="space-y-4">
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">Variants</h3>
+              <div className="space-y-5">
                 {variants.map((variant, idx) => (
-                  <div key={idx}>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                  <div key={idx} className="space-y-2">
+                    <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                       {variant.group}
                     </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {variant.items.map((item, itemIdx) => (
                         <div
                           key={itemIdx}
-                          className="p-3 border border-border rounded-lg hover:border-primary-blue transition-colors"
+                          className="p-3 border border-slate-200 dark:border-slate-800 rounded-lg bg-slate-50/30 dark:bg-slate-950/20"
                         >
-                          <div className="font-medium text-sm">
+                          <div className="font-semibold text-sm text-slate-800 dark:text-slate-200">
                             {item.value}
                           </div>
-                          {item.price !== undefined && (
-                            <div className="text-xs text-gray-600">
-                              ৳{item.price}
+                          {item.price !== undefined && item.price > 0 && (
+                            <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mt-0.5">
+                              +৳{item.price}
                             </div>
                           )}
                           {item.stock !== undefined && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-slate-455 dark:text-slate-500 mt-0.5">
                               Stock: {item.stock}
                             </div>
                           )}
@@ -287,24 +289,24 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
           {/* Specifications */}
           {specifications && specifications.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-gray-800 mb-4">
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">
                 Specifications
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {specifications.map((spec, idx) => (
-                  <div key={idx}>
-                    <h4 className="text-sm font-medium text-gray-700 mb-2 pb-2 border-b border-border">
+                  <div key={idx} className="space-y-1">
+                    <h4 className="text-xs font-semibold text-blue-600 dark:text-blue-450 uppercase tracking-wider mb-2">
                       {spec.group}
                     </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                    <div className="divide-y divide-slate-100 dark:divide-slate-850 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
                       {spec.items.map((item, itemIdx) => (
                         <div
                           key={itemIdx}
-                          className="flex justify-between py-2 text-sm"
+                          className="flex justify-between p-3 text-sm bg-white dark:bg-slate-900/10 even:bg-slate-50/40 dark:even:bg-slate-900/30"
                         >
-                          <span className="text-gray-600">{item.name}:</span>
-                          <span className="font-medium text-gray-800">
+                          <span className="text-slate-500 dark:text-slate-400 font-medium">{item.name}</span>
+                          <span className="font-medium text-slate-800 dark:text-slate-205">
                             {item.value}
                           </span>
                         </div>
@@ -319,35 +321,35 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           {/* Shipping & Additional Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Shipping */}
-            <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Truck className="w-5 h-5 text-primary-blue" />
-                Shipping Details
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-850">
+                <Truck className="w-4 h-4 text-blue-600 dark:text-blue-450" />
+                Shipping
               </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Dimensions:</span>
-                  <span className="font-medium">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Dimensions</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-350">
                     {shippingDetails.length} × {shippingDetails.width} ×{" "}
                     {shippingDetails.height} {shippingDetails.dimensionUnit}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Weight:</span>
-                  <span className="font-medium">
+                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium">Weight</span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-350">
                     {shippingDetails.weight} {shippingDetails.weightUnit}
                   </span>
                 </div>
                 {additionalInfo?.estimatedDelivery && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Delivery:</span>
-                    <span className="font-medium">
+                  <div className="flex justify-between py-1">
+                    <span className="text-slate-500 dark:text-slate-400 font-medium">Delivery Est.</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-350">
                       {additionalInfo.estimatedDelivery}
                     </span>
                   </div>
                 )}
                 {additionalInfo?.freeShipping && (
-                  <div className="mt-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-center font-medium">
+                  <div className="mt-4 px-3 py-2 bg-green-50 dark:bg-green-950/20 text-green-705 dark:text-green-400 rounded-lg text-center font-medium border border-green-200/30 dark:border-green-900/30 text-xs uppercase tracking-wider">
                     Free Shipping Available
                   </div>
                 )}
@@ -355,43 +357,43 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
             </div>
 
             {/* Additional Info */}
-            <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-primary-blue" />
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-850">
+                <Shield className="w-4 h-4 text-blue-600 dark:text-blue-450" />
                 Additional Info
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {additionalInfo?.warranty && (
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle className="w-4.5 h-4.5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-sm font-medium">Warranty</div>
-                      <div className="text-xs text-gray-600">
+                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Warranty</div>
+                      <div className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-0.5">
                         {additionalInfo.warranty}
                       </div>
                     </div>
                   </div>
                 )}
                 {additionalInfo?.returnPolicy && (
-                  <div className="flex items-start gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  <div className="flex items-start gap-2.5">
+                    <CheckCircle className="w-4.5 h-4.5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-sm font-medium">Return Policy</div>
-                      <div className="text-xs text-gray-600">
+                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Return Policy</div>
+                      <div className="text-sm text-slate-700 dark:text-slate-300 font-medium mt-0.5">
                         {additionalInfo.returnPolicy}
                       </div>
                     </div>
                   </div>
                 )}
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-105 dark:border-slate-850">
                   {additionalInfo?.isFeatured && (
-                    <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full flex items-center gap-1">
-                      <Star className="w-3 h-3" />
+                    <span className="px-2.5 py-0.5 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200/50 dark:border-yellow-900/30 text-xs rounded-full flex items-center gap-1 font-medium">
+                      <Star className="w-3 h-3 fill-current" />
                       Featured
                     </span>
                   )}
                   {additionalInfo?.isOnSale && (
-                    <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full flex items-center gap-1">
+                    <span className="px-2.5 py-0.5 bg-red-50 dark:bg-red-950/20 text-red-800 dark:text-red-400 border border-red-200/50 dark:border-red-900/30 text-xs rounded-full flex items-center gap-1 font-medium">
                       <Tag className="w-3 h-3" />
                       On Sale
                     </span>
@@ -403,35 +405,35 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
           {/* SEO Info */}
           {seo && (seo.metaTitle || seo.metaDescription || seo.slug) && (
-            <div className="bg-white rounded-xl shadow-sm border border-border p-6">
-              <h3 className="font-semibold text-gray-800 mb-4">
-                SEO Information
+            <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">
+                SEO Configuration
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {seo.metaTitle && (
                   <div>
-                    <div className="text-sm font-medium text-gray-700">
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
                       Meta Title
                     </div>
-                    <div className="text-sm text-gray-600">{seo.metaTitle}</div>
+                    <div className="text-sm text-slate-750 dark:text-slate-300 font-medium">{seo.metaTitle}</div>
                   </div>
                 )}
                 {seo.metaDescription && (
                   <div>
-                    <div className="text-sm font-medium text-gray-700">
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
                       Meta Description
                     </div>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-slate-750 dark:text-slate-300 leading-relaxed font-medium">
                       {seo.metaDescription}
                     </div>
                   </div>
                 )}
                 {seo.slug && (
                   <div>
-                    <div className="text-sm font-medium text-gray-700">
-                      URL Slug
+                    <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                      Slug URL Path
                     </div>
-                    <div className="text-sm text-primary-blue font-mono">
+                    <div className="text-sm text-blue-600 dark:text-blue-400 font-mono font-medium">
                       /{seo.slug}
                     </div>
                   </div>

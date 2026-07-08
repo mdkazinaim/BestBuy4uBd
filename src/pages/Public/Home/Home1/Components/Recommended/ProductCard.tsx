@@ -39,12 +39,12 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
   };
   return (
     <Link to={`/product/${product.id}`} className="h-full block">
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="card-container p-4 flex flex-col group h-full relative"
-    >
+      <motion.div
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="card-container bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 p-4 flex flex-col group h-full relative"
+      >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {product.tag && (
@@ -71,7 +71,7 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
       </button>
 
       {/* Image Container */}
-      <div className="relative h-48 mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base group-hover:bg-bg-surface transition-colors rounded-xl shadow-sm">
+      <div className="relative h-48 mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
           {product.discount && (
               <span className="absolute top-4 left-4 text-[10px] font-bold text-white bg-brand-600 rounded-full px-1.5 py-0.5 z-10">
                 {product.discount}% OFF
@@ -109,7 +109,7 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
       {/* Content */}
       <div className="flex-1 flex flex-col">
         <h3
-          className="text-sm text-[#0F172A] mb-1 line-clamp-2 min-h-[40px] group-hover:text-[#0F172A] transition-colors"
+          className="text-sm text-[#0F172A] dark:text-slate-100 mb-1 line-clamp-2 min-h-[40px] group-hover:text-[#0F172A] dark:group-hover:text-white transition-colors font-medium"
           title={product.title}
         >
           {product.title}
@@ -135,12 +135,12 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-center">
             {product.oldPrice && (
-              <span className="text-xs text-text-muted line-through mr-2">
+              <span className="text-xs text-text-muted dark:text-slate-500 line-through mr-2">
                 ৳{product.oldPrice.toFixed(0)}
               </span>
             )}
           
-            <div className="text-sm font-bold text-text-primary">
+            <div className="text-sm font-bold text-text-primary dark:text-slate-100">
               ৳
               {product.price.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -149,7 +149,7 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
           </div>
 
           <div className="flex flex-col items-end">
-            <span className="text-[10px] text-text-muted uppercase font-bold tracking-widest">
+            <span className="text-[10px] text-text-muted dark:text-slate-400 uppercase font-bold tracking-widest">
               {product.purchases} Sold
             </span>
           </div>

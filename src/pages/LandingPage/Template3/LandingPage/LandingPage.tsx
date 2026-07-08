@@ -272,8 +272,8 @@ const LandingPage = ({ product }: { product: Product }) => {
                     onClick={() => setCurrentImage(img)}
                     className={`size-16 rounded-xl overflow-hidden border-2 transition-all duration-200 ${
                       currentImage?.url === img.url
-                        ? "border-brand-600 ring-2 ring-brand-300 scale-110"
-                        : "border-gray-200 hover:border-brand-400"
+                        ? "border-brand-600 ring-2 ring-brand-200 scale-110"
+                        : "border-gray-200 hover:border-brand-500"
                     }`}
                   >
                     <img
@@ -383,7 +383,7 @@ const LandingPage = ({ product }: { product: Product }) => {
               </div>
             )}
 
-            <div className="text-center mt-10 bg-brand-100 py-4 rounded-xl border-2 border-dashed border-brand-300">
+            <div className="text-center mt-10 bg-brand-100 py-4 rounded-xl border-2 border-dashed border-brand-500">
               <h3 className="text-2xl md:text-4xl font-black text-brand-700">
                 {product.price.discounted || product.price.regular}{" "}
                 <span className="text-brand-900 text-base">টাকা মাত্র</span>

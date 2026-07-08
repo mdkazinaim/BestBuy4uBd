@@ -3,9 +3,9 @@ import {
   useGetOrderByIdQuery,
   useUpdateOrderMutation,
 } from "@/store/Api/OrderApi";
-import { Card, Chip, Button } from "@heroui/react";
+import { Card, Button } from "@heroui/react";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -18,11 +18,17 @@ import {
   Mail,
   Send,
   RefreshCw,
+  ChevronDown,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Truck,
 } from "lucide-react";
 import { useCreateSteadfastOrderMutation } from "@/store/Api/SteadfastApi";
 import DashboardSkeleton from "@/common/Skeleton/DashboardSkeleton";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 const orderSchema = z.object({
   status: z.string().min(1, "Status is required"),
@@ -60,6 +66,53 @@ const STATUS_OPTIONS = [
   { value: "unknown", label: "Unknown" },
 ];
 
+// Custom Popover Select for Order Status
+const OrderStatusPopover = ({
+  currentStatus,
+  onSelect,
+}: {
+  currentStatus: string;
+  onSelect: (val: string) => void;
+}) => {
+  const [open, setOpen] = useState(false);
+  const currentOption = STATUS_OPTIONS.find((opt) => opt.value?.toLowerCase() === currentStatus?.toLowerCase());
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="flex items-center justify-between w-full p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 font-semibold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer text-sm"
+        >
+          <span>{currentOption?.label || currentStatus}</span>
+          <ChevronDown className="w-4 h-4 text-slate-450 shrink-0 ml-2" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg">
+        <div className="max-h-64 overflow-y-auto no-scrollbar py-1">
+          {STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => {
+                onSelect(opt.value);
+                setOpen(false);
+              }}
+              className={`w-full text-left px-3 py-2 text-xs font-medium rounded-md transition-colors ${
+                currentStatus?.toLowerCase() === opt.value?.toLowerCase()
+                  ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 const OrderDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -71,13 +124,11 @@ const OrderDetails = () => {
   const handleSendToSteadfast = async () => {
     if (!order) return;
     try {
-      // Align with backend payload structure
       const payload = {
-        invoice: order.orderId?.toString() || order._id?.toString(), // Use orderId (human-readable) with fallback
+        invoice: order.orderId?.toString() || order._id?.toString(),
         recipient_name: order.billingInformation?.name || order.name || "N/A",
         recipient_phone: order.billingInformation?.phone || order.phone || "N/A",
         recipient_address: order.billingInformation?.address || order.address || "N/A",
-        // Always send totalAmount for COD orders (case-insensitive check)
         cod_amount: order.paymentMethod?.toLowerCase() === "cod" || 
                     order.paymentMethod?.toLowerCase() === "cash on delivery" 
                     ? order.totalAmount 
@@ -85,14 +136,12 @@ const OrderDetails = () => {
         note: order.billingInformation?.notes || order.note || "Handle with care",
       };
       
-      // Log payload for debugging
       console.log("Steadfast Payload:", JSON.stringify(payload, null, 2));
-      
       const result = await createSteadfastOrder(payload).unwrap();
       toast.success(
         `Sent to Steadfast! Consignment ID: ${result?.consignment?.consignment_id}`
       );
-      refetch(); // Refresh order details to show new status and disable button
+      refetch();
     } catch (err: any) {
       console.error("Steadfast Error:", err);
       toast.error(err?.data?.message || "Failed to send to Steadfast");
@@ -102,32 +151,31 @@ const OrderDetails = () => {
   const handleCheckStatus = async () => {
     if (!order?.consignment_id) return;
     try {
-        // We use fetch standardly but since checkSteadfastStatus is a query hook, 
-        // we can trigger it manually or just use the lazy query if we had one.
-        // For now, let's just use the fetch API directly to trigger the backend sync logic
-        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
-        const response = await fetch(`${baseUrl}/steadfast/status/${order.consignment_id}`, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        });
-        const result = await response.json();
-        if(result.success){
-            toast.success(`Status updated: ${result.data.delivery_status}`);
-            refetch(); // Refresh order to show updated status
-        } else {
-            toast.error(result.message || "Failed to sync status");
+      const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
+      const response = await fetch(`${baseUrl}/steadfast/status/${order.consignment_id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         }
+      });
+      const result = await response.json();
+      if(result.success){
+        toast.success(`Status updated: ${result.data.delivery_status}`);
+        refetch();
+      } else {
+        toast.error(result.message || "Failed to sync status");
+      }
     } catch {
-        toast.error("An error occurred while syncing status");
+      toast.error("An error occurred while syncing status");
     }
   };
 
   const order = orderData?.data;
 
-  const { register, handleSubmit, reset } = useForm<OrderFormValues>({
+  const { register, handleSubmit, reset, setValue, watch } = useForm<OrderFormValues>({
     resolver: zodResolver(orderSchema),
   });
+
+  const currentStatus = watch("status");
 
   useEffect(() => {
     if (order) {
@@ -173,13 +221,101 @@ const OrderDetails = () => {
     window.print();
   };
 
-  if (isLoading) return <DashboardSkeleton />;
+  const getStatusBadge = (status: string) => {
+    const s = status?.toLowerCase();
+    const formatStatus = (str: string) => {
+      return str
+        ?.split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
+    const formattedStatus = formatStatus(status);
 
+    switch (s) {
+      case "delivered":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-950/20 text-green-800 dark:text-green-400">
+            <CheckCircle className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "partial_delivered":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-400">
+            <CheckCircle className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "processing":
+      case "shipped":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-950/20 text-blue-800 dark:text-blue-400">
+            <Truck className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "in_review":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-950/20 text-indigo-800 dark:text-indigo-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "pending":
+      case "hold":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "delivered_approval_pending":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 dark:bg-teal-950/20 text-teal-800 dark:text-teal-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "partial_delivered_approval_pending":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-100 dark:bg-cyan-950/20 text-cyan-800 dark:text-cyan-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "cancelled_approval_pending":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-950/20 text-orange-800 dark:text-orange-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "unknown_approval_pending":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-950/20 text-purple-800 dark:text-purple-400">
+            <Clock className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "cancelled":
+      case "canceled":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-400">
+            <XCircle className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      case "unknown":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-350">
+            <XCircle className="w-3 h-3" /> {formattedStatus}
+          </span>
+        );
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-300">
+            {formattedStatus || status}
+          </span>
+        );
+    }
+  };
+
+  if (isLoading) return <DashboardSkeleton />;
   if (!order)
-    return <div className="p-10 text-center text-red-500">Order not found</div>;
+    return <div className="p-10 text-center text-red-500 font-medium">Order not found</div>;
 
   return (
-    <div className="space-y-4 md:space-y-6 container mx-auto px-2 md:px-0 pb-10">
+    <div className="space-y-6 pb-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between no-print">
         <div className="flex items-center gap-3">
@@ -187,36 +323,16 @@ const OrderDetails = () => {
             isIconOnly
             variant="flat"
             onClick={() => navigate("/admin/orders")}
+            className="rounded-lg border border-slate-200 dark:border-slate-800"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </Button>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold flex flex-wrap items-center gap-2">
+            <h1 className="text-xl md:text-2xl font-semibold flex flex-wrap items-center gap-2 text-slate-800 dark:text-slate-100">
               Order #{order._id?.slice(-6).toUpperCase()}
-              <Chip
-                size="sm"
-                color={(() => {
-                  const s = order.status?.toLowerCase();
-                  if (s?.includes("delivered")) return "success";
-                  if (s?.includes("cancelled") || s?.includes("canceled"))
-                    return "danger";
-                  if (
-                    s?.includes("processing") ||
-                    s?.includes("shipped") ||
-                    s === "in_review"
-                  )
-                    return "primary";
-                  return "warning";
-                })()}
-                variant="flat"
-              >
-                {order.status
-                  ?.split("_")
-                  .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-                  .join(" ")}
-              </Chip>
+              {getStatusBadge(order.status)}
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-medium">
               Placed on {new Date(order.createdAt).toLocaleString()}
             </p>
           </div>
@@ -226,7 +342,7 @@ const OrderDetails = () => {
             color="secondary"
             size="sm"
             variant="flat"
-            className="flex-1 md:flex-none"
+            className="flex-1 md:flex-none rounded-lg font-semibold"
             startContent={<Printer className="w-4 h-4" />}
             onClick={handlePrint}
           >
@@ -236,11 +352,11 @@ const OrderDetails = () => {
             color="primary"
             size="sm"
             variant="flat"
-            className="flex-1 md:flex-none"
+            className="flex-1 md:flex-none rounded-lg font-semibold"
             startContent={<Send className="w-4 h-4" />}
             onClick={handleSendToSteadfast}
             isLoading={isSteadfastLoading}
-            isDisabled={!!order.consignment_id}
+            disabled={!!order.consignment_id}
           >
             {order.consignment_id ? "Sent to Steadfast" : "Send to Steadfast"}
           </Button>
@@ -249,7 +365,7 @@ const OrderDetails = () => {
                 color="success"
                 size="sm"
                 variant="flat"
-                className="flex-1 md:flex-none"
+                className="flex-1 md:flex-none rounded-lg font-semibold"
                 startContent={<RefreshCw className="w-4 h-4" />}
                 onClick={handleCheckStatus}
              >
@@ -259,7 +375,7 @@ const OrderDetails = () => {
           <Button
             color="primary"
             size="sm"
-            className="flex-1 md:flex-none"
+            className="flex-1 md:flex-none rounded-lg font-semibold"
             isLoading={isUpdating}
             startContent={<Save className="w-4 h-4" />}
             onClick={handleSubmit(onSubmit)}
@@ -274,92 +390,100 @@ const OrderDetails = () => {
         className="grid grid-cols-1 lg:grid-cols-3 gap-6"
       >
         {/* Left Column: Order Items */}
-        <div className="lg:col-span-2 space-y-4 md:space-y-6">
-          <Card className="p-3 md:p-4 shadow-sm border border-gray-100">
-            <h3 className="text-base md:text-lg font-bold mb-3 md:mb-4 flex items-center gap-2">
-              <Package className="w-4 h-5 md:w-5 md:h-5 text-gray-500" /> Order Items
+        <div className="lg:col-span-2 space-y-6">
+          <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
+            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <Package className="w-4 h-5 text-slate-400" /> Order Items
             </h3>
-            <div className="overflow-x-auto -mx-3 md:mx-0">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+            <div className="overflow-x-auto -mx-6 md:mx-0">
+              <table className="w-full text-sm text-left border-collapse">
+                <thead className="bg-slate-100/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 uppercase text-xs">
                   <tr>
-                    <th className="px-4 py-3 rounded-l-lg">Product</th>
-                    <th className="px-4 py-3 text-center">Unit Price</th>
-                    <th className="px-4 py-3 text-center">Qty</th>
-                    <th className="px-4 py-3 text-right rounded-r-lg">Total</th>
+                    <th className="px-4 py-3 font-semibold rounded-l-lg">Product</th>
+                    <th className="px-4 py-3 font-semibold text-center">Unit Price</th>
+                    <th className="px-4 py-3 font-semibold text-center">Qty</th>
+                    <th className="px-4 py-3 font-semibold text-right rounded-r-lg">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {order.items?.map((item: any, idx: number) => (
-                    <tr key={idx} className="hover:bg-gray-50/50">
-                      <td className="px-2 md:px-4 py-3 md:py-4 flex items-center gap-2 md:gap-3 lg:min-w-[300px]">
-                        <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-100 rounded-lg shrink-0 overflow-hidden">
-                          {item.product?.images?.[0] && (
-                            <img
-                              src={typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url}
-                              alt={item.product.title}
-                              className="w-full h-full object-cover"
-                            />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">
-                            {item.product?.basicInfo?.title || item.product?.title || "Product Deleted"}
-                          </p>
-                          {item.selectedVariants && Object.entries(item.selectedVariants).length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {Object.entries(item.selectedVariants).map(([group, variant]: [string, any]) => (
-                                Array.isArray(variant) ? (
-                                  variant.map((v: any, vIdx: number) => (
-                                    <Chip key={`${group}-${vIdx}`} size="sm" variant="flat" color="secondary" className="text-[10px] h-5">
-                                      {group}: {v.value}
-                                    </Chip>
-                                  ))
-                                ) : (
-                                  <Chip key={group} size="sm" variant="flat" color="secondary" className="text-[10px] h-5">
-                                    {group}: {variant.value}
-                                  </Chip>
-                                )
-                              ))}
-                            </div>
-                          )}
-                          <p className="text-xs text-gray-500 mt-1">
-                            {item.product?.basicInfo?.brand}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-2 md:px-4 py-3 md:py-4 text-center text-xs md:text-sm">
-                        ৳{item.price?.toLocaleString()}
-                      </td>
-                      <td className="px-2 md:px-4 py-3 md:py-4 text-center font-medium text-xs md:text-sm">
-                        x {item.quantity}
-                      </td>
-                      <td className="px-2 md:px-4 py-3 md:py-4 text-right font-bold text-xs md:text-sm">
-                        ৳{(item.price * item.quantity).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {order.items?.map((item: any, idx: number) => {
+                    const isEven = idx % 2 === 0;
+                    return (
+                      <tr
+                        key={idx}
+                        className={`hover:bg-slate-50/50 transition-colors ${
+                          isEven ? "bg-white dark:bg-slate-900/10" : "bg-slate-50/20 dark:bg-slate-850/10"
+                        }`}
+                      >
+                        <td className="px-4 py-4 flex items-center gap-3 lg:min-w-[300px]">
+                          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg shrink-0 overflow-hidden border border-slate-100 dark:border-slate-850">
+                            {item.product?.images?.[0] && (
+                              <img
+                                src={typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url}
+                                alt={item.product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
+                              {item.product?.basicInfo?.title || item.product?.title || "Product Deleted"}
+                            </p>
+                            {item.selectedVariants && Object.entries(item.selectedVariants).length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {Object.entries(item.selectedVariants).map(([group, variant]: [string, any]) => (
+                                  Array.isArray(variant) ? (
+                                    variant.map((v: any, vIdx: number) => (
+                                      <span key={`${group}-${vIdx}`} className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350">
+                                        {group}: {v.value}
+                                      </span>
+                                    ))
+                                  ) : (
+                                    <span key={group} className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350">
+                                      {group}: {variant.value}
+                                    </span>
+                                  )
+                                ))}
+                              </div>
+                            )}
+                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-medium">
+                              {item.product?.basicInfo?.brand}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-center text-xs md:text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                          ৳{item.price?.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-4 text-center font-medium text-xs md:text-sm text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                          x {item.quantity}
+                        </td>
+                        <td className="px-4 py-4 text-right font-semibold text-xs md:text-sm text-slate-800 dark:text-slate-100 whitespace-nowrap">
+                          ৳{(item.price * item.quantity).toLocaleString()}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
-                <tfoot className="border-t-2 border-dashed border-gray-200">
+                <tfoot className="border-t-2 border-dashed border-slate-200 dark:border-slate-800">
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-2 md:px-4 py-3 text-right text-gray-600 font-medium text-xs md:text-sm"
+                      className="px-4 py-3 text-right text-slate-500 dark:text-slate-400 font-medium text-xs md:text-sm"
                     >
                       Subtotal
                     </td>
-                    <td className="px-2 md:px-4 py-2 text-right font-bold text-gray-500 text-xs md:text-sm">
+                    <td className="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300 text-xs md:text-sm">
                       ৳{(order.totalAmount - (order.deliveryCharge || 0) + (order.discount || 0)).toLocaleString()}
                     </td>
                   </tr>
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-2 md:px-4 py-2 text-right text-gray-400 font-bold text-xs md:text-sm"
+                      className="px-4 py-2 text-right text-slate-500 dark:text-slate-400 font-semibold text-xs md:text-sm"
                     >
                       Shipping
                     </td>
-                    <td className="px-2 md:px-4 py-2 text-right font-bold text-gray-500 text-xs md:text-sm">
+                    <td className="px-4 py-2 text-right font-semibold text-slate-600 dark:text-slate-300 text-xs md:text-sm">
                       {order.deliveryCharge ? `৳${order.deliveryCharge.toLocaleString()}` : 'Free'}
                     </td>
                   </tr>
@@ -367,11 +491,11 @@ const OrderDetails = () => {
                     <tr>
                       <td
                         colSpan={3}
-                        className="px-2 md:px-4 py-2 text-right text-red-400 font-bold text-xs md:text-sm"
+                        className="px-4 py-2 text-right text-red-400 dark:text-red-555 font-semibold text-xs md:text-sm"
                       >
                         Discount
                       </td>
-                      <td className="px-2 md:px-4 py-2 text-right font-bold text-red-500 text-xs md:text-sm">
+                      <td className="px-4 py-2 text-right font-semibold text-red-500 dark:text-red-450 text-xs md:text-sm">
                         -৳{order.discount.toLocaleString()}
                       </td>
                     </tr>
@@ -379,11 +503,11 @@ const OrderDetails = () => {
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-2 md:px-4 py-4 text-right text-gray-900 font-black text-sm md:text-lg"
+                      className="px-4 py-4 text-right text-slate-800 dark:text-slate-100 font-semibold text-sm md:text-base"
                     >
                       Total Amount
                     </td>
-                    <td className="px-2 md:px-4 py-4 text-right font-black text-sm md:text-lg text-primary-link">
+                    <td className="px-4 py-4 text-right font-semibold text-sm md:text-base text-blue-600 dark:text-blue-450">
                       ৳{order.totalAmount?.toLocaleString()}
                     </td>
                   </tr>
@@ -394,73 +518,67 @@ const OrderDetails = () => {
         </div>
 
         {/* Right Column: Customer & Status */}
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-6">
           {/* Status Card */}
-          <Card className="p-3 md:p-5 shadow-sm border border-gray-100 border-l-4 border-l-primary-blue">
-            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">
+          <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60 border-l-4 border-l-blue-500">
+            <h3 className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
               Order Status
             </h3>
             <div className="relative">
-              <select
-                {...register("status")}
-                className="w-full p-3 rounded-lg border border-gray-200 bg-gray-50 font-semibold text-gray-800 focus:ring-2 focus:ring-primary-blue focus:border-transparent outline-none transition-all cursor-pointer"
-              >
-                {STATUS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              <OrderStatusPopover
+                currentStatus={currentStatus}
+                onSelect={(val) => setValue("status", val)}
+              />
             </div>
-            <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
-              <span>Payment Method</span>
-              <span className="font-bold text-gray-700 capitalize">
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/65 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+              <span className="font-medium">Payment Method</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-200 capitalize">
                 {order.paymentMethod || "COD"}
               </span>
             </div>
           </Card>
 
           {/* Customer Info Card */}
-          <Card className="p-3 md:p-5 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <User className="w-5 h-5 text-gray-500" /> Customer Details
+          <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
+            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <User className="w-4 h-5 text-slate-400" /> Customer Details
             </h3>
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 uppercase">
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Full Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                   <input
                     {...register("name")}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-1 outline-none"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-1 focus:ring-blue-500/50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none"
                     placeholder="Name"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 uppercase">
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                   <input
                     {...register("email")}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-1 outline-none"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-1 focus:ring-blue-500/50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none"
                     placeholder="Email"
                   />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 uppercase">
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Phone Number
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <Phone className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                   <input
                     {...register("phone")}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-1 outline-none"
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-1 focus:ring-blue-500/50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none"
                     placeholder="Phone"
                   />
                 </div>
@@ -469,29 +587,29 @@ const OrderDetails = () => {
           </Card>
 
           {/* Shipping Address */}
-          <Card className="p-3 md:p-5 shadow-sm border border-gray-100">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-gray-500" /> Shipping Info
+          <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
+            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+              <MapPin className="w-4 h-5 text-slate-400" /> Shipping Info
             </h3>
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 uppercase">
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Address
                 </label>
                 <textarea
                   {...register("address")}
                   rows={3}
-                  className="w-full p-3 text-sm border border-gray-200 rounded-md focus:ring-1 outline-none"
+                  className="w-full p-3 text-sm border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-1 focus:ring-blue-500/50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none resize-none"
                   placeholder="Address"
                 ></textarea>
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-gray-500 uppercase">
+                <label className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   City / Region
                 </label>
                 <input
                   {...register("city")}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:ring-1 outline-none"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-800 rounded-lg focus:ring-1 focus:ring-blue-500/50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 outline-none"
                   placeholder="City"
                 />
               </div>

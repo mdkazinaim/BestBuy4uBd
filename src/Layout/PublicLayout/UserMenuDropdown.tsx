@@ -35,9 +35,9 @@ const UserMenuDropdown = ({ user, onClose, isOpen }: UserMenuDropdownProps) => {
     : isOpen ? "opacity-100 visible" : "opacity-0 invisible";
 
   return (
-    <div className={`absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl shadow-xl border border-border-main py-2 ${visibilityClasses} transition-all duration-200 transform origin-top-right z-50 overflow-hidden`}>
+    <div className={`absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-border-main dark:border-slate-800 py-2 ${visibilityClasses} transition-all duration-200 transform origin-top-right z-50 overflow-hidden`}>
       {/* User Header */}
-      <div className="px-4 py-3 border-b border-border-main bg-bg-base/50">
+      <div className="px-4 py-3 border-b border-border-main dark:border-slate-800 bg-bg-base/30 dark:bg-slate-850/50">
         <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
           Signed in as
         </p>
@@ -58,16 +58,16 @@ const UserMenuDropdown = ({ user, onClose, isOpen }: UserMenuDropdownProps) => {
         )}
       </div>
 
-      <div className="h-px bg-border-main my-1" />
+      <div className="h-px bg-border-main dark:bg-slate-800 my-1" />
 
       {/* Menu Links */}
       <div className="px-2">
         <Link
           to={user.role === "admin" ? "/admin/dashboard" : "/user/dashboard"}
           onClick={onClose}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-text-primary hover:bg-bg-base transition-colors group/item"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-text-primary hover:bg-bg-base dark:hover:bg-slate-800 transition-colors group/item"
         >
-          <div className="p-1.5 rounded-md bg-bg-base group-hover/item:bg-white transition-colors text-text-secondary">
+          <div className="p-1.5 rounded-md bg-bg-base dark:bg-slate-800 group-hover/item:bg-white dark:group-hover/item:bg-slate-700 transition-colors text-text-secondary">
              <LayoutDashboard className="w-4 h-4" />
           </div>
           Go to Dashboard
@@ -76,7 +76,7 @@ const UserMenuDropdown = ({ user, onClose, isOpen }: UserMenuDropdownProps) => {
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-danger hover:bg-danger/5 transition-colors group/item"
         >
-          <div className="p-1.5 rounded-md bg-danger/10 text-danger">
+          <div className="p-1.5 rounded-md bg-danger/10 text-danger dark:bg-danger/20">
             <LogOut className="w-4 h-4" />
           </div>
           Sign Out
@@ -97,27 +97,27 @@ const AdminStats = () => {
 
   return (
     <div className="grid grid-cols-2 gap-2 p-2">
-      <div className="bg-orange-50 p-2 rounded-lg">
-        <div className="flex items-center gap-1.5 text-orange-600 mb-1">
+      <div className="bg-orange-50 dark:bg-orange-950/20 p-2 rounded-lg border border-orange-100/50 dark:border-orange-900/20">
+        <div className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400 mb-1">
           <Clock className="w-3.5 h-3.5" />
           <span className="text-[10px] font-bold uppercase">Pending</span>
         </div>
-        <p className="text-lg font-bold text-gray-900 leading-none">{stats.pendingCount || 0}</p>
+        <p className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-none">{stats.pendingCount || 0}</p>
       </div>
-       <div className="bg-blue-50 p-2 rounded-lg">
-        <div className="flex items-center gap-1.5 text-blue-600 mb-1">
+       <div className="bg-blue-50 dark:bg-blue-950/20 p-2 rounded-lg border border-blue-100/50 dark:border-blue-900/20">
+        <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 mb-1">
           <ShoppingCart className="w-3.5 h-3.5" />
           <span className="text-[10px] font-bold uppercase">Sales (Mo)</span>
         </div>
-        <p className="text-lg font-bold text-gray-900 leading-none">{stats.currentMonthOrders || 0}</p>
+        <p className="text-lg font-bold text-gray-900 dark:text-slate-100 leading-none">{stats.currentMonthOrders || 0}</p>
       </div>
-      <div className="bg-green-50 p-2 rounded-lg col-span-2">
+      <div className="bg-green-50 dark:bg-green-950/20 p-2 rounded-lg col-span-2 border border-green-100/50 dark:border-green-900/20">
         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-green-600 mb-1">
+            <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400 mb-1">
             <DollarSign className="w-3.5 h-3.5" />
             <span className="text-[10px] font-bold uppercase">Rev (Mo)</span>
             </div>
-             <p className="text-base font-black text-gray-900 leading-none">৳{(stats.currentMonthSales || 0).toLocaleString()}</p>
+             <p className="text-base font-black text-gray-900 dark:text-slate-100 leading-none">৳{(stats.currentMonthSales || 0).toLocaleString()}</p>
         </div>
       </div>
     </div>

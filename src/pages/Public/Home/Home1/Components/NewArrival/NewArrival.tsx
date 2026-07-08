@@ -87,19 +87,19 @@ const NewArrival: React.FC = () => {
   };
 
   return (
-    <section className="pb-20 bg-white">
+    <section className="pb-20 bg-white dark:bg-slate-950 transition-colors">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
           <div className="flex items-baseline gap-2">
-            <h2 className="text-2xl font-semibold text-brand-700 mb-0">
+            <h2 className="text-2xl font-semibold text-brand-700 dark:text-brand-200 mb-0">
               New Arrival
             </h2>
           </div>
 
           <button
             onClick={handleViewAll}
-            className="hidden md:block text-[10px] font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-[0.2em]"
+            className="hidden md:block text-[10px] font-bold text-gray-400 hover:text-primary-green transition-colors uppercase tracking-[0.2em] cursor-pointer"
           >
             View All
           </button>
@@ -153,7 +153,7 @@ const NewArrival: React.FC = () => {
         <div className="mt-12 md:hidden text-center">
           <button
             onClick={handleViewAll}
-            className="text-[10px] font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-[0.2em]"
+            className="text-[10px] font-bold text-gray-400 hover:text-primary-green transition-colors uppercase tracking-[0.2em] cursor-pointer"
           >
             View All
           </button>

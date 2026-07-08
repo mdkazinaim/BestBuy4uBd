@@ -32,19 +32,19 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl mx-auto md:my-8 overflow-hidden"
+              className="relative bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-4xl mx-auto md:my-8 overflow-hidden border border-gray-100 dark:border-slate-800"
             >
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-10"
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors z-10"
               >
-                <X className="w-6 h-6 text-gray-500" />
+                <X className="w-6 h-6 text-gray-500 dark:text-slate-400" />
               </button>
 
               <div className="flex flex-col md:flex-row h-full">
                 {/* Image Section */}
-                <div className="w-full md:w-1/2 bg-gray-50 p-8 flex items-center justify-center relative">
+                <div className="w-full md:w-1/2 bg-gray-50 dark:bg-slate-950 p-8 flex items-center justify-center relative">
                   <motion.img
                     src={product.image}
                     alt={product.title}
@@ -58,15 +58,15 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                   )}
                 </div>
 
-                {/* Details Section */}
+                 {/* Details Section */}
                 <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col">
                   <div className="mb-auto">
                     {product.brand && (
-                      <h4 className="text-light-gray font-semibold text-sm uppercase tracking-wider mb-2">
+                      <h4 className="text-light-gray dark:text-slate-400 font-semibold text-sm uppercase tracking-wider mb-2">
                         {product.brand}
                       </h4>
                     )}
-                    <h2 className="text-xl font-bold text-dark-blue mb-2 leading-tight line-clamp-2">
+                    <h2 className="text-xl font-bold text-dark-blue dark:text-slate-100 mb-2 leading-tight line-clamp-2">
                       {product.title}
                     </h2>
 
@@ -79,12 +79,12 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                             className={`w-4 h-4 ${
                               i < Math.floor(product.rating)
                                 ? "fill-current"
-                                : "text-gray-300"
+                                : "text-gray-300 dark:text-slate-700"
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-slate-400">
                         Based on {product.reviews} reviews
                       </span>
                     </div>
@@ -95,7 +95,7 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                         ৳{product.price.toFixed(2)}
                       </span>
                       {product.oldPrice && (
-                        <span className="text-xl text-gray-400 line-through">
+                        <span className="text-xl text-gray-400 dark:text-slate-500 line-through">
                           ৳{product.oldPrice.toFixed(2)}
                         </span>
                       )}
@@ -106,46 +106,46 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                       )}
                     </div>
 
-                    <p className="text-gray-600 mb-8 leading-relaxed line-clamp-2">
+                    <p className="text-gray-600 dark:text-slate-300 mb-8 leading-relaxed line-clamp-2">
                       {product.description ||
                         "Experience premium quality and exceptional performance with this top-rated product. Designed for durability and comfort."}
                     </p>
 
                     {/* Quantity & Actions */}
                     <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                      <div className="flex items-center bg-gray-100 rounded-lg px-4 py-2 w-max">
+                      <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg px-4 py-2 w-max">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 hover:text-dark-blue"
+                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200"
                         >
                           -
                         </button>
-                        <span className="w-8 text-center font-semibold text-dark-blue">
+                        <span className="w-8 text-center font-semibold text-dark-blue dark:text-slate-100">
                           {quantity}
                         </span>
                         <button
                           onClick={() => setQuantity(quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 hover:text-dark-blue"
+                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200"
                         >
                           +
                         </button>
                       </div>
 
-                      <button className="flex-1 bg-dark-blue text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                      <button className="flex-1 bg-dark-blue dark:bg-brand-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 dark:hover:bg-brand-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                         <ShoppingCart className="w-5 h-5" />
                         Add to Cart
                       </button>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-6">
-                    <button className="flex items-center gap-2 text-gray-500 hover:text-primary-red transition-colors">
+                  <div className="flex items-center justify-between border-t border-gray-100 dark:border-slate-800 pt-6">
+                    <button className="flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-primary-red transition-colors">
                       <Heart className="w-5 h-5" />
                       <span className="text-sm font-medium">
                         Add to Wishlist
                       </span>
                     </button>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-400 dark:text-slate-500">
                       {product.purchases.toLocaleString()} people bought this
                     </span>
                   </div>
