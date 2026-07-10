@@ -26,23 +26,12 @@ jobs:
         env:
           VITE_API_URL: https://spark-tech-server.vercel.app/api/v1
 
-      # - name: Deploy TopDealsBd
-      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      #   with:
-      #     server: ${{ secrets.FTP_HOST_A }}
-      #     username: ${{ secrets.FTP_USERNAME_A }}
-      #     password: ${{ secrets.FTP_PASSWORD_A }}
-      #     port: 21
-      #     local-dir: dist/
-      #     server-dir: /
-      #     dangerous-clean-slate: false
-
-      - name: Deploy BestBuy4uBd
+      - name: Deploy TopDealsBd
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST_B }}
-          username: ${{ secrets.FTP_USERNAME_B }}
-          password: ${{ secrets.FTP_PASSWORD_B }}
+          server: ${{ secrets.FTP_HOST_A }}
+          username: ${{ secrets.FTP_USERNAME_A }}
+          password: ${{ secrets.FTP_PASSWORD_A }}
           port: 21
           local-dir: dist/
           server-dir: /
@@ -51,10 +40,10 @@ jobs:
       - name: Deploy NeedOnlineShop
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST_C }}
-          username: ${{ secrets.FTP_USERNAME_C }}
-          password: ${{ secrets.FTP_PASSWORD_C }}
+          server: ${{ secrets.FTP_HOST_B }}
+          username: ${{ secrets.FTP_USERNAME_B }}
+          password: ${{ secrets.FTP_PASSWORD_B }}
           port: 21
           local-dir: dist/
-          server-dir: /public_html/
+          server-dir: /
           dangerous-clean-slate: false
