@@ -29,9 +29,9 @@ jobs:
       - name: Deploy TopDealsBd
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
+          server: ${{ secrets.FTP_HOST_A }}
+          username: ${{ secrets.FTP_USERNAME_A }}
+          password: ${{ secrets.FTP_PASSWORD_A }}
           port: 21
           local-dir: dist/
           server-dir: /
@@ -46,4 +46,15 @@ jobs:
           port: 21
           local-dir: dist/
           server-dir: /
+          dangerous-clean-slate: false
+
+      - name: Deploy NeedOnlineShop
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST_C }}
+          username: ${{ secrets.FTP_USERNAME_C }}
+          password: ${{ secrets.FTP_PASSWORD_C }}
+          port: 21
+          local-dir: dist/
+          server-dir: /public_html/
           dangerous-clean-slate: false
