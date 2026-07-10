@@ -26,7 +26,7 @@ jobs:
         env:
           VITE_API_URL: https://spark-tech-server.vercel.app/api/v1
 
-      - name: Deploy TopDealsBd
+      - name: Deploy BestBuy4uBd
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST_A }}
@@ -40,9 +40,9 @@ jobs:
       - name: Deploy NeedOnlineShop
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ${{ secrets.FTP_HOST_B }}
-          username: ${{ secrets.FTP_USERNAME_B }}
-          password: ${{ secrets.FTP_PASSWORD_B }}
+          server: ${{ secrets.FTP_HOST_C }}
+          username: ${{ secrets.FTP_USERNAME_C }}
+          password: ${{ secrets.FTP_PASSWORD_C }}
           port: 21
           local-dir: dist/
           server-dir: /
