@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2 } from "lucide-react";
+import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2, Lock } from "lucide-react";
 import { Button } from "@/common/Components/Button";
 import { toast } from "sonner";
 import { useGetSettingsQuery, useUpdateAdminInfoMutation } from "@/store/Api/SettingsApi";
+import { useChangePasswordMutation } from "@/store/Api/AuthApi";
 
 // Color utilities
 const hexToRgb = (hex: string) => {
@@ -81,6 +82,40 @@ export default function Settings() {
       toast.success("Site information updated successfully");
     } catch {
       toast.error("Failed to update site information");
+    }
+  };
+
+  // Password change states
+  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
+  });
+
+  const handlePasswordChange = (e: any) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  const handleSavePassword = async () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmNewPassword) {
+      toast.error("All password fields are required");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    try {
+      await changePassword(passwordData).unwrap();
+      toast.success("Password updated successfully");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+      });
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to update password");
     }
   };
 
@@ -199,6 +234,59 @@ export default function Settings() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Change Password Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 mt-6">
+            <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-slate-500" /> Change Password
+              </h2>
+              <Button variant="primary" size="sm" onClick={handleSavePassword} disabled={isChangingPassword} className="flex items-center gap-2">
+                <Save className="w-4 h-4" />
+                {isChangingPassword ? "Updating..." : "Update Password"}
+              </Button>
+            </div>
+
+            <div className="p-6">
+              <div className="space-y-6">
+                <div>
+                  <label className={labelClass}>Current Password</label>
+                  <input
+                    type="password"
+                    name="currentPassword"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter current password"
+                    className={inputClass}
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className={labelClass}>New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Enter new password"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Confirm New Password</label>
+                    <input
+                      type="password"
+                      name="confirmNewPassword"
+                      value={passwordData.confirmNewPassword}
+                      onChange={handlePasswordChange}
+                      placeholder="Confirm new password"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
