@@ -8,8 +8,18 @@ import {
 } from "@reduxjs/toolkit/query";
 import { createApi } from "@reduxjs/toolkit/query/react";
 
+const getBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname;
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return "http://localhost:5000/api/v1";
+    }
+  }
+  return "https://spark-tech-server.vercel.app/api/v1";
+};
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL,
+  baseUrl: getBaseUrl(),
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as any;
     const token = state.auth.user?.accessToken;
