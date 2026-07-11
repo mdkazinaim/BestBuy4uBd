@@ -75,7 +75,7 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-6 text-light-gray/80 dark:text-slate-400/80">
               <div className="flex items-center gap-1.5 opacity-70">
                 <Truck className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">FREE SHIPPING OVER ৳199</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider">FREE SHIPPING OVER ৳999</span>
               </div>
               <div className="flex items-center gap-1.5 opacity-70">
                 <RefreshCw className="w-3.5 h-3.5" />
