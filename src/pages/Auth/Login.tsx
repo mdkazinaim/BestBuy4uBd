@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTracking } from "@/hooks/useTracking";
+import { useGetHost } from "@/utils/useGetHost";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -18,6 +19,7 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const Login = () => {
+  const host = useGetHost();
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ const Login = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-blue to-primary-green bg-clip-text text-transparent">
             Welcome Back
           </h2>
-          <p className="text-text-muted mt-2">Sign in to continue to BestBuy4uBd</p>
+          <p className="text-text-muted mt-2">Sign in to continue to {host.title || "our store"}</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

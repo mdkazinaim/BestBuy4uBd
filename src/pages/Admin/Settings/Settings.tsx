@@ -44,9 +44,11 @@ export default function Settings() {
   const { data: settingsResponse, isLoading: isSettingsLoading } = useGetSettingsQuery({});
   const [updateAdminInfo, { isLoading: isUpdating }] = useUpdateAdminInfoMutation();
 
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [adminInfo, setAdminInfo] = useState({
     name: "",
     siteName: "",
+    logo: "",
     information: "",
     contact: "",
     email: "",
@@ -61,6 +63,7 @@ export default function Settings() {
       setAdminInfo({
         name: settingsResponse.data.adminInfo.name || "",
         siteName: settingsResponse.data.adminInfo.siteName || "",
+        logo: settingsResponse.data.adminInfo.logo || "",
         information: settingsResponse.data.adminInfo.information || "",
         contact: settingsResponse.data.adminInfo.contact || "",
         email: settingsResponse.data.adminInfo.email || "",
@@ -76,10 +79,25 @@ export default function Settings() {
     setAdminInfo({ ...adminInfo, [e.target.name]: e.target.value });
   };
 
+  const handleLogoChange = (e: any) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogoFile(e.target.files[0]);
+    }
+  };
+
   const handleSaveAdminInfo = async () => {
     try {
-      await updateAdminInfo(adminInfo).unwrap();
+      const formData = new FormData();
+      Object.entries(adminInfo).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      if (logoFile) {
+        formData.append("logo", logoFile);
+      }
+      
+      await updateAdminInfo(formData).unwrap();
       toast.success("Site information updated successfully");
+      setLogoFile(null); // Reset logo file after successful upload
     } catch {
       toast.error("Failed to update site information");
     }
@@ -184,13 +202,30 @@ export default function Settings() {
                       <label className={labelClass}>
                         <Store className="w-4 h-4" /> Site Name
                       </label>
-                      <input type="text" name="siteName" value={adminInfo.siteName} onChange={handleAdminInfoChange} placeholder="BestBuy4uBd" className={inputClass} />
+                      <input type="text" name="siteName" value={adminInfo.siteName} onChange={handleAdminInfoChange} placeholder="Site Name" className={inputClass} />
                     </div>
                     <div>
                       <label className={labelClass}>
                         <User className="w-4 h-4" /> Admin Name
                       </label>
                       <input type="text" name="name" value={adminInfo.name} onChange={handleAdminInfoChange} placeholder="e.g. John Doe" className={inputClass} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>
+                      <Store className="w-4 h-4" /> Site Logo
+                    </label>
+                    <div className="flex items-center gap-4">
+                      {adminInfo.logo && !logoFile && (
+                        <img src={adminInfo.logo} alt="Logo" className="w-12 h-12 object-contain rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1" />
+                      )}
+                      {logoFile && (
+                        <div className="w-12 h-12 flex items-center justify-center rounded border border-blue-200 bg-blue-50 text-blue-500 font-bold text-xs p-1 text-center overflow-hidden">
+                          New
+                        </div>
+                      )}
+                      <input type="file" accept="image/*" onChange={handleLogoChange} className={inputClass} />
                     </div>
                   </div>
 

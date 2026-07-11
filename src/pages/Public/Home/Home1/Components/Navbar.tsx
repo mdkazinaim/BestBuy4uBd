@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Phone, Globe, GitCompare, Shield, Truck, RefreshCw, ChevronDown, Menu, X, Search, Heart, ShoppingCart, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useGetHost } from "@/utils/useGetHost";
 
 const Navbar = () => {
+  const host = useGetHost();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -67,7 +69,7 @@ const Navbar = () => {
               </div>
               <div className="flex flex-col leading-none">
                 <span className="text-xl font-semibold text-text-primary uppercase tracking-tighter">
-                  BESTBUY4UBD
+                  {host.title || "BESTBUY4UBD"}
                 </span>
               </div>
             </div>

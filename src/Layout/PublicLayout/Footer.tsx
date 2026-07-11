@@ -2,10 +2,12 @@ import React from "react";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import NavItems from "./NavItems";
 import { useTracking } from "@/hooks/useTracking";
+import { useGetHost } from "@/utils/useGetHost";
 import { Button } from "@/common/Components/Button";
 import CommonWrapper from "@/common/CommonWrapper";
 
 const Footer: React.FC = () => {
+  const host = useGetHost();
   const { trackContact, trackSubscribe } = useTracking();
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -25,7 +27,7 @@ const Footer: React.FC = () => {
             </h3>
             <p className="text-sm text-slate-200 leading-relaxed">
               We are a team of passionate developers building amazing web
-              applications with modern technologies. BestBuy4uBd is your
+              applications with modern technologies. {host.title || "Our store"} is your
               one-stop shop for premium products.
             </p>
           </div>
@@ -115,7 +117,7 @@ const Footer: React.FC = () => {
         {/* Copyright Section */}
         <div className="border-t border-white/5 mt-12 pt-8 text-center">
           <p className="text-xs text-white/60 dark:text-slate-400 uppercase tracking-widest">
-            &copy; {new Date().getFullYear()} BestBuy4uBd. All rights reserved.
+            &copy; {new Date().getFullYear()} {host.title || "BestBuy4uBd"}. All rights reserved.
           </p>
         </div>
       </CommonWrapper>

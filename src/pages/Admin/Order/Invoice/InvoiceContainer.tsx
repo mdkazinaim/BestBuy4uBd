@@ -2,6 +2,7 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useGetOrderByIdQuery } from "@/store/Api/OrderApi";
 import { useGetSettingsQuery } from "@/store/Api/SettingsApi";
+import { useGetHost } from "@/utils/useGetHost";
 
 import { Button } from "@heroui/react";
 import { Printer, ArrowLeft, LayoutTemplate, Store, User } from "lucide-react";
@@ -13,6 +14,7 @@ const inputClass = "w-full px-3 py-2 border border-slate-200 dark:border-slate-7
 const labelClass = "text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5 mb-1.5";
 
 const InvoiceContainer = () => {
+  const host = useGetHost();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,14 +42,14 @@ const InvoiceContainer = () => {
     if (settingsResponse?.data?.adminInfo) {
        const info = settingsResponse.data.adminInfo;
        setSellerInfo({
-         name: info.siteName || "BestBuy4uBd",
+         name: info.siteName || host.title || "BestBuy4uBd",
          address: info.information || "Dhaka, Bangladesh",
-         phone: info.contact || "+880 1XXXXXXXXX",
-         email: info.email || "support@bestbuy4ubd.com",
-         web: "www.bestbuy4ubd.com"
+         phone: info.contact || host.phone || "+880 1XXXXXXXXX",
+         email: info.email || host.email || "support@bestbuy4ubd.com",
+         web: host.title ? `www.${host.title.toLowerCase().replace(/\s/g, "")}.com` : "www.bestbuy4ubd.com"
        });
     }
-  }, [settingsResponse]);
+  }, [settingsResponse, host]);
 
   if (orderLoading || settingsLoading) {
     return (

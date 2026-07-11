@@ -116,7 +116,7 @@ const InvoiceTemplate5: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, se
             </span>
           </div>
   
-          <p className="text-center text-[11px] text-[#666] mt-5">Thank you for your order!<br/>support@bestbuy4ubd.com</p>
+          <p className="text-center text-[11px] text-[#666] mt-5">Thank you for your order!<br/>{sellerInfo?.email || "support@bestbuy4ubd.com"}</p>
   
           <div className="barcode-strip mt-6"></div>
           <p className="text-center text-[10px] tracking-[0.3em] text-[#666] mt-1 pb-6 uppercase">{_id}</p>

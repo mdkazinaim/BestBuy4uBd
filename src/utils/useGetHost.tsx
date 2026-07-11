@@ -1,23 +1,23 @@
-import { BRAND_CONFIG, BrandConfig } from "@/config/BuildConfig";
 import { useGetSettingsQuery } from "@/store/Api/SettingsApi";
 
-export const useGetHost = (): BrandConfig => {
-  const host = window.location.hostname;
-  const { data: settingsResponse } = useGetSettingsQuery({});
+export type HostConfig = {
+  title: string;
+  name?: string;
+  logo: string;
+  phone: string;
+  email: string;
+};
 
-  const defaultBrand = BRAND_CONFIG[host] || {
-    title: "BestBuy4uBd",
-    logo: "/logos/bestbuy4ubd.png",
-    phone: "01610403011",
-    email: "support@bestbuy4ubd.com",
-  };
+export const useGetHost = (): HostConfig => {
+  const { data: settingsResponse } = useGetSettingsQuery({});
 
   const adminInfo = settingsResponse?.data?.adminInfo;
 
   return {
-    title: adminInfo?.siteName || defaultBrand.title,
-    logo: defaultBrand.logo,
-    phone: adminInfo?.contact || defaultBrand.phone,
-    email: adminInfo?.email || defaultBrand.email,
+    title: adminInfo?.siteName || "",
+    name: adminInfo?.name || "",
+    logo: adminInfo?.logo || "",
+    phone: adminInfo?.contact || "",
+    email: adminInfo?.email || "",
   };
 };

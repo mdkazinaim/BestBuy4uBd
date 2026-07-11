@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Search,
   Heart,
-  ShoppingCart,
   User,
   ChevronDown,
   Menu,
@@ -12,6 +11,7 @@ import {
   Shield,
   Truck,
   RefreshCw,
+  ShoppingCart,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -102,9 +102,6 @@ const Navbar = () => {
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary-green rounded-full flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-white" />
-              </div>
               <div className="flex flex-col leading-none">
                 <Link
                   to="/"

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Mail, Lock, User, ImagePlus, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTracking } from "@/hooks/useTracking";
+import { useGetHost } from "@/utils/useGetHost";
 
 const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -19,6 +20,7 @@ const signupSchema = z.object({
 type SignupFormInputs = z.infer<typeof signupSchema>;
 
 const Signup = () => {
+  const host = useGetHost();
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [registerUser, { isLoading }] = useRegisterMutation();
@@ -76,7 +78,7 @@ const Signup = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-blue to-primary-green bg-clip-text text-transparent">
             Create Account
           </h2>
-          <p className="text-text-muted mt-2">Join BestBuy4uBd today</p>
+          <p className="text-text-muted mt-2">Join {host.title || "us"} today</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

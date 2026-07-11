@@ -5,8 +5,10 @@ import { Mail, Phone, MapPin, Clock, Send, Facebook, Twitter, Instagram, Linkedi
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet";
 import { Button } from "@/common/Components/Button";
+import { useGetHost } from "@/utils/useGetHost";
 
 const Contact = () => {
+  const host = useGetHost();
   const { trackContact } = useTracking();
   const [formData, setFormData] = useState({
     name: "",
@@ -34,7 +36,7 @@ const Contact = () => {
     {
       icon: <Mail className="text-secondary" size={24} />,
       title: "Email Us",
-      details: "support@bestbuy4ubd.com",
+      details: host.email || "support@bestbuy4ubd.com",
       subDetails: "Online support 24/7",
     },
     {
@@ -73,8 +75,8 @@ const Contact = () => {
   return (
     <CommonWrapper>
       <Helmet>
-        <title>Contact Us | BestBuy4uBd - Premium Ecommerce Experience</title>
-        <meta name="description" content="Reach out to BestBuy4uBd for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs." />
+        <title>Contact Us | {host.title || "BestBuy4uBd"} - Premium Ecommerce Experience</title>
+        <meta name="description" content={`Reach out to ${host.title || "BestBuy4uBd"} for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs.`} />
       </Helmet>
       <div className="py-12">
         {/* Header Section */}
@@ -222,7 +224,7 @@ const Contact = () => {
 
               <div className="flex items-center gap-4 my-2">
                 <div className="flex-1 border-t border-slate-200 dark:border-slate-800/80" />
-                <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold tracking-wider">BESTBUY4UBD SUPPORT</span>
+                <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold tracking-wider">{(host.title || "BESTBUY4UBD").toUpperCase()} SUPPORT</span>
                 <div className="flex-1 border-t border-slate-200 dark:border-slate-800/80" />
               </div>
             </form>
