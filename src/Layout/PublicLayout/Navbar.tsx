@@ -76,7 +76,7 @@ const Navbar = () => {
               <div className="flex items-center gap-1.5 opacity-70">
                 <Truck className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">FREE SHIPPING OVER ৳999</span>
-              </div>
+              </div>https://spark-tech-server.vercel.app/api/v1/auth/change-password
               <div className="flex items-center gap-1.5 opacity-70">
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">30 DAYS MONEY BACK</span>

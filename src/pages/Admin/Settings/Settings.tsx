@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2, Lock, Image } from "lucide-react";
+import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2, Lock, Image, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/common/Components/Button";
 import { toast } from "sonner";
 import { useGetSettingsQuery, useUpdateAdminInfoMutation } from "@/store/Api/SettingsApi";
@@ -109,6 +109,11 @@ export default function Settings() {
     currentPassword: "",
     newPassword: "",
     confirmNewPassword: ""
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
   });
 
   const handlePasswordChange = (e: any) => {
@@ -322,37 +327,64 @@ export default function Settings() {
               <div className="space-y-6">
                 <div>
                   <label className={labelClass}>Current Password</label>
+                <div className="relative">
                   <input
-                    type="password"
+                    type={showPasswords.current ? "text" : "password"}
                     name="currentPassword"
                     value={passwordData.currentPassword}
                     onChange={handlePasswordChange}
                     placeholder="Enter current password"
-                    className={inputClass}
+                    className={`${inputClass} pr-10`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswords({ ...showPasswords, current: !showPasswords.current })}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none"
+                  >
+                    {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className={labelClass}>New Password</label>
-                    <input
-                      type="password"
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="Enter new password"
-                      className={inputClass}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPasswords.new ? "text" : "password"}
+                        name="newPassword"
+                        value={passwordData.newPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="Enter new password"
+                        className={`${inputClass} pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords({ ...showPasswords, new: !showPasswords.new })}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none"
+                      >
+                        {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className={labelClass}>Confirm New Password</label>
-                    <input
-                      type="password"
-                      name="confirmNewPassword"
-                      value={passwordData.confirmNewPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="Confirm new password"
-                      className={inputClass}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPasswords.confirm ? "text" : "password"}
+                        name="confirmNewPassword"
+                        value={passwordData.confirmNewPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="Confirm new password"
+                        className={`${inputClass} pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswords({ ...showPasswords, confirm: !showPasswords.confirm })}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 focus:outline-none"
+                      >
+                        {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
