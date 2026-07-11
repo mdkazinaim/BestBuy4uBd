@@ -25,7 +25,7 @@ const InvoiceContainer = () => {
   const order = response?.data;
 
   const [buyerInfo, setBuyerInfo] = useState({ name: "", address: "", phone: "", email: "" });
-  const [sellerInfo, setSellerInfo] = useState({ name: "", address: "", phone: "", email: "", web: "" });
+  const [sellerInfo, setSellerInfo] = useState({ name: "", logo: "", address: "", phone: "", email: "", web: "" });
 
   useEffect(() => {
     if (order?.billingInformation) {
@@ -43,6 +43,7 @@ const InvoiceContainer = () => {
        const info = settingsResponse.data.adminInfo;
        setSellerInfo({
          name: info.siteName || host.title || "",
+         logo: info.logo || host.logo || "",
          address: info.information || "Dhaka, Bangladesh",
          phone: info.contact || host.phone || "+880 1XXXXXXXXX",
          email: info.email || host.email || "support@bestbuy4ubd.com",

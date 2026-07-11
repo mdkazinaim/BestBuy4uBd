@@ -14,8 +14,9 @@ const InvoiceTemplate2: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, se
           <p className="text-slate-500 font-mono text-sm">REF: #{_id?.slice(-6).toUpperCase()}</p>
           <p className="text-slate-500 font-mono text-sm">DATE: {new Date(createdAt).toLocaleDateString()}</p>
         </div>
-        <div className="text-right">
-          <h2 className="text-2xl font-bold text-slate-900">{sellerInfo?.name}</h2>
+        <div className="text-right flex flex-col items-end">
+          {sellerInfo?.logo && <img src={sellerInfo.logo} alt="Logo" className="h-12 object-contain mb-2" />}
+          {sellerInfo?.name && <h2 className="text-2xl font-bold text-slate-900">{sellerInfo?.name}</h2>}
           <p className="text-sm text-slate-600 mt-1">{sellerInfo?.address}</p>
           <p className="text-sm text-slate-600">Phone: {sellerInfo?.phone}</p>
           <p className="text-sm text-slate-600">{sellerInfo?.email}</p>

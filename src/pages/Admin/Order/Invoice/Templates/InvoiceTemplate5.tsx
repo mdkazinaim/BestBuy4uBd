@@ -49,8 +49,9 @@ const InvoiceTemplate5: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, se
       `}</style>
       <div className="w-full max-w-[380px] mx-auto print:mx-0 print:ml-0 print:mr-auto filter drop-shadow-sm print:drop-shadow-none mb-10">
         <div className="zigzag-top bg-white pt-6 px-6">
-          <div className="text-center font-mono">
-            <p className="font-bold text-base tracking-wide">{sellerInfo?.name}</p>
+          <div className="text-center font-mono flex flex-col items-center">
+            {sellerInfo?.logo && <img src={sellerInfo.logo} alt="Logo" className="h-10 object-contain mb-2 grayscale" />}
+            {sellerInfo?.name && <p className="font-bold text-base tracking-wide">{sellerInfo?.name}</p>}
             <p className="text-[11px] text-[#666] mt-0.5">{sellerInfo?.web || sellerInfo?.email}</p>
             <p className="text-[11px] text-[#666]">Phone: {sellerInfo?.phone}</p>
             <p className="text-[11px] text-[#666]">Order confirmation receipt</p>

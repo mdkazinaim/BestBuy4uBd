@@ -111,11 +111,13 @@ const Navbar = () => {
                   to="/"
                   className="flex items-center gap-2 text-xl font-bold text-dark-blue dark:text-white hover:text-primary-green dark:hover:text-primary-green transition-colors"
                 >
-                  {host.logo ? (
+                  {host.logo && (
                     <img src={host.logo} alt={host.title || "Logo"} className="h-10 object-contain" />
-                  ) : host.title ? (
+                  )}
+                  {host.title && (
                     <span>{host.title}</span>
-                  ) : (
+                  )}
+                  {!host.logo && !host.title && (
                     <div className="w-32 h-6 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></div>
                   )}
                 </Link>

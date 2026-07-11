@@ -22,8 +22,10 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* About Section */}
           <div className="space-y-4">
-            <h3 className="h6 text-white uppercase tracking-widest">
-              About Us
+            <h3 className="h6 text-white flex items-center gap-2">
+              {host.logo && <img src={host.logo} alt="Logo" className="h-8 object-contain" />}
+              {host.title && <span className="uppercase tracking-widest">{host.title}</span>}
+              {!host.logo && !host.title && <span className="uppercase tracking-widest">About Us</span>}
             </h3>
             <p className="text-sm text-slate-200 leading-relaxed">
               We are a team of passionate developers building amazing web

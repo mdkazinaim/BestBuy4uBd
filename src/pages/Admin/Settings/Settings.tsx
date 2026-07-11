@@ -216,19 +216,50 @@ export default function Settings() {
                     <label className={labelClass}>
                       <Image className="w-4 h-4" /> Site Logo
                     </label>
-                    <div className="flex items-center gap-4">
-                      {adminInfo.logo && !logoFile && (
-                        <img src={adminInfo.logo} alt="Logo" className="w-12 h-12 object-contain rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1" />
-                      )}
-                      {logoFile && (
-                        <div className="relative w-12 h-12 rounded border border-blue-200 bg-blue-50 overflow-hidden flex-shrink-0">
-                          <img src={URL.createObjectURL(logoFile)} alt="Preview" className="w-full h-full object-contain p-1" />
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                            <span className="text-white text-[10px] font-bold">NEW</span>
+                    <div className="flex items-start gap-6 mt-3">
+                      <div className="relative w-24 h-24 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center overflow-hidden group transition-colors hover:border-blue-500">
+                        {(logoFile || adminInfo.logo) ? (
+                          <>
+                            <img 
+                              src={logoFile ? URL.createObjectURL(logoFile) : adminInfo.logo} 
+                              alt="Logo Preview" 
+                              className="w-full h-full object-contain p-2" 
+                            />
+                            <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="text-white text-xs font-semibold mb-2">Change</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-slate-400">
+                            <Image className="w-8 h-8 mb-2 opacity-50" />
+                            <span className="text-[10px] font-semibold uppercase tracking-wider">No Logo</span>
                           </div>
-                        </div>
-                      )}
-                      <input type="file" accept="image/*" onChange={handleLogoChange} className={inputClass} />
+                        )}
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleLogoChange} 
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                        />
+                      </div>
+                      
+                      <div className="flex flex-col gap-2 pt-2">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium max-w-[200px]">
+                          Upload a high-res image (PNG, JPG, SVG). Max 2MB. Transparent background recommended.
+                        </p>
+                        {(logoFile || adminInfo.logo) && (
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              setLogoFile(null);
+                              setAdminInfo({ ...adminInfo, logo: "" });
+                            }}
+                            className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors self-start mt-2 flex items-center gap-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Remove Logo
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 

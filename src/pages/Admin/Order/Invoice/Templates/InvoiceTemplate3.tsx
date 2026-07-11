@@ -20,9 +20,10 @@ const InvoiceTemplate3: React.FC<InvoiceTemplateProps> = ({ order, buyerInfo, se
           {buyerInfo?.address && <p className="text-sm mt-1">{buyerInfo.address}</p>}
           {buyerInfo?.phone && <p className="text-sm">{buyerInfo.phone}</p>}
         </div>
-        <div className="text-right">
+        <div className="text-right flex flex-col items-end">
           <p className="text-xs uppercase tracking-widest text-slate-400 mb-3">From</p>
-          <p className="font-medium text-slate-800">{sellerInfo?.name}</p>
+          {sellerInfo?.logo && <img src={sellerInfo.logo} alt="Logo" className="h-10 object-contain mb-2" />}
+          {sellerInfo?.name && <p className="font-medium text-slate-800">{sellerInfo?.name}</p>}
           <p className="text-sm mt-1">{sellerInfo?.address}</p>
           <p className="text-sm">Phone: {sellerInfo?.phone}</p>
           <p className="text-sm">{sellerInfo?.email}</p>
