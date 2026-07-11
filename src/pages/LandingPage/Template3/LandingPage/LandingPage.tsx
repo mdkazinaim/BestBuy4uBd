@@ -500,7 +500,7 @@ const LandingPage = ({ product }: { product: Product }) => {
       {/* Footer */}
       <div className="bg-gray-100 py-10 text-center text-gray-500 text-sm border-t border-gray-200">
         <div className="container mx-auto px-4">
-          <p>Copyright © 2026 {host.title || "BestBuy4uBd"}</p>
+          <p>Copyright © 2026 {host.title}</p>
         </div>
       </div>
     </div>

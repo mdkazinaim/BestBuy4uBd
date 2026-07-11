@@ -64,7 +64,11 @@ const Navbar = () => {
             <div className="flex items-center gap-2 text-dark-blue dark:text-slate-200">
               <Phone className="w-4 h-4" />
               <span className="hidden sm:inline font-medium">Hotline 24/7</span>
-              <span className="font-semibold">01610403011</span>
+              {host.phone ? (
+                <span className="font-semibold">{host.phone}</span>
+              ) : (
+                <div className="w-24 h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></div>
+              )}
             </div>
 
             {/* Center - Trust Badges */}
@@ -105,9 +109,15 @@ const Navbar = () => {
               <div className="flex flex-col leading-none">
                 <Link
                   to="/"
-                  className="text-xl font-bold text-dark-blue dark:text-white hover:text-primary-green dark:hover:text-primary-green transition-colors"
+                  className="flex items-center gap-2 text-xl font-bold text-dark-blue dark:text-white hover:text-primary-green dark:hover:text-primary-green transition-colors"
                 >
-                  {host.title || "BestBuy4uBd"}
+                  {host.logo ? (
+                    <img src={host.logo} alt={host.title || "Logo"} className="h-10 object-contain" />
+                  ) : host.title ? (
+                    <span>{host.title}</span>
+                  ) : (
+                    <div className="w-32 h-6 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></div>
+                  )}
                 </Link>
               </div>
             </div>

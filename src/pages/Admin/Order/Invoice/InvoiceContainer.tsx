@@ -42,7 +42,7 @@ const InvoiceContainer = () => {
     if (settingsResponse?.data?.adminInfo) {
        const info = settingsResponse.data.adminInfo;
        setSellerInfo({
-         name: info.siteName || host.title || "BestBuy4uBd",
+         name: info.siteName || host.title || "",
          address: info.information || "Dhaka, Bangladesh",
          phone: info.contact || host.phone || "+880 1XXXXXXXXX",
          email: info.email || host.email || "support@bestbuy4ubd.com",

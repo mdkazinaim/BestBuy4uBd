@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
-import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2, Lock } from "lucide-react";
+import { Plus, Trash2, Palette, Settings as SettingsIcon, Save, Store, Mail, Phone, Clock, Info, User, Share2, Lock, Image } from "lucide-react";
 import { Button } from "@/common/Components/Button";
 import { toast } from "sonner";
 import { useGetSettingsQuery, useUpdateAdminInfoMutation } from "@/store/Api/SettingsApi";
@@ -214,15 +214,18 @@ export default function Settings() {
 
                   <div>
                     <label className={labelClass}>
-                      <Store className="w-4 h-4" /> Site Logo
+                      <Image className="w-4 h-4" /> Site Logo
                     </label>
                     <div className="flex items-center gap-4">
                       {adminInfo.logo && !logoFile && (
                         <img src={adminInfo.logo} alt="Logo" className="w-12 h-12 object-contain rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1" />
                       )}
                       {logoFile && (
-                        <div className="w-12 h-12 flex items-center justify-center rounded border border-blue-200 bg-blue-50 text-blue-500 font-bold text-xs p-1 text-center overflow-hidden">
-                          New
+                        <div className="relative w-12 h-12 rounded border border-blue-200 bg-blue-50 overflow-hidden flex-shrink-0">
+                          <img src={URL.createObjectURL(logoFile)} alt="Preview" className="w-full h-full object-contain p-1" />
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                            <span className="text-white text-[10px] font-bold">NEW</span>
+                          </div>
                         </div>
                       )}
                       <input type="file" accept="image/*" onChange={handleLogoChange} className={inputClass} />

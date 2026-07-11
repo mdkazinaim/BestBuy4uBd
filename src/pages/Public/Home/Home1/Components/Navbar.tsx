@@ -64,14 +64,22 @@ const Navbar = () => {
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-secondary rounded-component flex items-center justify-center">
-                <ShoppingCart className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex flex-col leading-none">
-                <span className="text-xl font-semibold text-text-primary uppercase tracking-tighter">
-                  {host.title || "BESTBUY4UBD"}
-                </span>
-              </div>
+              {host.logo ? (
+                <img src={host.logo} alt={host.title || "Logo"} className="h-10 object-contain" />
+              ) : host.title ? (
+                <>
+                  <div className="w-10 h-10 bg-secondary rounded-component flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-xl font-semibold text-text-primary uppercase tracking-tighter">
+                      {host.title}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="w-32 h-6 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></div>
+              )}
             </div>
 
             {/* Desktop Navigation Menu */}

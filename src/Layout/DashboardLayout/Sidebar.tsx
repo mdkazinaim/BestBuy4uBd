@@ -113,10 +113,16 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
   return (
     <aside className="w-64 h-screen bg-gray-700 text-white sticky top-0 z-40 flex flex-col print:hidden">
       <div className="p-4 h-16 text-xl font-bold border-b border-gray-600 flex items-center justify-between">
-        <Link to="/" className="no-underline" onClick={onClose}>
-          <p className="text-xl font-bold text-white mb-0 truncate">
-            {host.title || "BestBuy4uBd"}
-          </p>
+        <Link to="/" className="no-underline flex items-center gap-2" onClick={onClose}>
+          {host.logo ? (
+            <img src={host.logo} alt={host.title || "Logo"} className="h-8 max-w-[180px] object-contain" />
+          ) : host.title ? (
+            <p className="text-xl font-bold text-white mb-0 truncate">
+              {host.title}
+            </p>
+          ) : (
+            <div className="w-32 h-6 bg-gray-600 animate-pulse rounded"></div>
+          )}
         </Link>
         <button
           onClick={onClose}

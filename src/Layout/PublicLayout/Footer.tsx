@@ -117,7 +117,7 @@ const Footer: React.FC = () => {
         {/* Copyright Section */}
         <div className="border-t border-white/5 mt-12 pt-8 text-center">
           <p className="text-xs text-white/60 dark:text-slate-400 uppercase tracking-widest">
-            &copy; {new Date().getFullYear()} {host.title || "BestBuy4uBd"}. All rights reserved.
+            &copy; {new Date().getFullYear()} {host.title ? host.title : <span className="inline-block w-24 h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></span>}. All rights reserved.
           </p>
         </div>
       </CommonWrapper>

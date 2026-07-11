@@ -75,8 +75,8 @@ const Contact = () => {
   return (
     <CommonWrapper>
       <Helmet>
-        <title>Contact Us | {host.title || "BestBuy4uBd"} - Premium Ecommerce Experience</title>
-        <meta name="description" content={`Reach out to ${host.title || "BestBuy4uBd"} for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs.`} />
+        <title>Contact Us | {host.title} - Premium Ecommerce Experience</title>
+        <meta name="description" content={`Reach out to ${host.title} for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs.`} />
       </Helmet>
       <div className="py-12">
         {/* Header Section */}
