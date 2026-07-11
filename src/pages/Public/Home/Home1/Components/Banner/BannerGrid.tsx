@@ -87,47 +87,44 @@ const BannerGrid = () => {
     );
   }
 
+  const hasHero = heroBanners.length > 0;
+  const hasRightCard = productCards.length > 0;
+  const bottomCards = productCards.slice(1);
+
+  if (!hasHero && !hasRightCard) {
+    return null;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 space-y-6 space-x-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Large Hero Banner Carousel */}
-        <div className="lg:col-span-2 lg:row-span-2 h-[500px] rounded-xl overflow-hidden">
-          {heroBanners.length > 0 ? (
+        {hasHero && (
+          <div className={`${hasRightCard ? "lg:col-span-2" : "lg:col-span-3"} h-[500px] rounded-xl overflow-hidden`}>
             <HeroBanner banners={heroBanners} />
-          ) : (
-            <div className="h-full bg-border-main/20 rounded-container animate-pulse" />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Right Column - Top Right Product Card */}
-        <div className="space-y-6 h-[500px] w-full">
-          {productCards.length > 0 ? (
+        {hasRightCard && (
+          <div className={`${hasHero ? "lg:col-span-1" : "lg:col-span-3"} h-[500px] w-full`}>
             <ProductCard1
               key={productCards[0].id}
               data={productCards[0]}
               index={0}
             />
-          ) : (
-            <div className="h-full bg-border-main/20 rounded-component animate-pulse" />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Bottom Row - Remaining Product Cards */}
-        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {productCards.length > 1 ? (
-            productCards
-              .slice(1)
-              .map((card, index) => (
-                <ProductCard2 key={card.id} data={card} index={index + 1} />
-              ))
-          ) : (
-            <>
-              <div className="h-[200px] bg-border-main/20 rounded-component animate-pulse" />
-              <div className="h-[200px] bg-border-main/20 rounded-component animate-pulse" />
-            </>
-          )}
-        </div>
+        {bottomCards.length > 0 && (
+          <div className={`lg:col-span-3 grid grid-cols-1 sm:grid-cols-${Math.min(bottomCards.length, 2)} gap-6`}>
+            {bottomCards.map((card, index) => (
+              <ProductCard2 key={card.id} data={card} index={index + 1} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
