@@ -37,7 +37,6 @@ jobs:
           server-dir: /
           dangerous-clean-slate: false
 
-          
       - name: Deploy NeedOnlineShop
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -46,5 +45,5 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD_C }}
           port: 21
           local-dir: dist/
-          server-dir: /
+          server-dir: public_html/
           dangerous-clean-slate: false
