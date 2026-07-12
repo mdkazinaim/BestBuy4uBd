@@ -6,8 +6,8 @@ export const uploadToCloudinary = async (
   file: File,
   resourceType: "image" | "video" = "image"
 ): Promise<string> => {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "djv5hybnk";
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "bestbuy_preset";
 
   if (!cloudName || !uploadPreset) {
     throw new Error(
