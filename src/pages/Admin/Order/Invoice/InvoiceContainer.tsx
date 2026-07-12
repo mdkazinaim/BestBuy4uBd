@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { useGetOrderByIdQuery } from "@/store/Api/OrderApi";
 import { useGetSettingsQuery } from "@/store/Api/SettingsApi";
 import { useGetHost } from "@/utils/useGetHost";
-
 import { Button } from "@heroui/react";
 import { Printer, ArrowLeft, LayoutTemplate, Store, User } from "lucide-react";
 import InvoiceTemplate2 from "./Templates/InvoiceTemplate2";
