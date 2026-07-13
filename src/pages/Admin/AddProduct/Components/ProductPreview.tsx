@@ -72,11 +72,15 @@ export default function ProductPreview({ data }: Props) {
       )}
 
       <h2 className="text-xl font-semibold mt-4">Shipping</h2>
-      <p>
-        {data.shippingDetails.length}×{data.shippingDetails.width}×
-        {data.shippingDetails.height} {data.shippingDetails.dimensionUnit} –{" "}
-        {data.shippingDetails.weight} {data.shippingDetails.weightUnit}
-      </p>
+      {data.shippingDetails ? (
+        <p>
+          {data.shippingDetails.length || 0}×{data.shippingDetails.width || 0}×
+          {data.shippingDetails.height || 0} {data.shippingDetails.dimensionUnit || 'cm'} –{" "}
+          {data.shippingDetails.weight || 0} {data.shippingDetails.weightUnit || 'kg'}
+        </p>
+      ) : (
+        <p>No shipping details provided</p>
+      )}
 
       {data.seo?.metaTitle && (
         <>

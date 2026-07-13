@@ -327,19 +327,25 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                 Shipping
               </h3>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Dimensions</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-350">
-                    {shippingDetails.length} × {shippingDetails.width} ×{" "}
-                    {shippingDetails.height} {shippingDetails.dimensionUnit}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Weight</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-350">
-                    {shippingDetails.weight} {shippingDetails.weightUnit}
-                  </span>
-                </div>
+                {shippingDetails ? (
+                  <>
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Dimensions</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-350">
+                        {shippingDetails.length || 0} × {shippingDetails.width || 0} ×{" "}
+                        {shippingDetails.height || 0} {shippingDetails.dimensionUnit || 'cm'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Weight</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-350">
+                        {shippingDetails.weight || 0} {shippingDetails.weightUnit || 'kg'}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-slate-500 dark:text-slate-400 py-1">No shipping details provided</div>
+                )}
                 {additionalInfo?.estimatedDelivery && (
                   <div className="flex justify-between py-1">
                     <span className="text-slate-500 dark:text-slate-400 font-medium">Delivery Est.</span>
