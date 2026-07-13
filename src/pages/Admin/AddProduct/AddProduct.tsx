@@ -11,6 +11,7 @@ import {
   useUpdateProductMutation,
   useGetProductByIdQuery,
 } from "@/store/Api/ProductApi";
+import { toast } from "sonner";
 
 export default function ProductAdminPage() {
   const { id } = useParams<{ id: string }>();
@@ -136,14 +137,14 @@ export default function ProductAdminPage() {
                   value: item.value,
                 })),
             })) || [],
-        shippingDetails: {
-          length: Number(draft.shippingDetails.length),
-          width: Number(draft.shippingDetails.width),
-          height: Number(draft.shippingDetails.height),
-          weight: Number(draft.shippingDetails.weight),
+        shippingDetails: draft.shippingDetails ? {
+          length: draft.shippingDetails.length ? Number(draft.shippingDetails.length) : undefined,
+          width: draft.shippingDetails.width ? Number(draft.shippingDetails.width) : undefined,
+          height: draft.shippingDetails.height ? Number(draft.shippingDetails.height) : undefined,
+          weight: draft.shippingDetails.weight ? Number(draft.shippingDetails.weight) : undefined,
           dimensionUnit: draft.shippingDetails.dimensionUnit,
           weightUnit: draft.shippingDetails.weightUnit,
-        },
+        } : undefined,
         additionalInfo: {
           freeShipping: Boolean(draft.additionalInfo?.freeShipping),
           isFeatured: Boolean(draft.additionalInfo?.isFeatured),
@@ -169,12 +170,12 @@ export default function ProductAdminPage() {
         await updateProduct({ id: id!, ...productData }).unwrap();
       }
 
-      alert(isAdd ? "Product created successfully" : "Product updated successfully");
+      toast.success(isAdd ? "Product created successfully" : "Product updated successfully");
       setPreview(false);
       navigate("/admin/products");
     } catch (err) {
       console.error("Save product error:", err);
-      alert("Failed to save product");
+      toast.error("Failed to save product");
     }
   };
 

@@ -145,28 +145,24 @@ export const shippingFields: FieldConfig[] = [
     type: "number",
     label: "Length",
     placeholder: "0",
-    required: true,
   },
   {
     name: "shippingDetails.width",
     type: "number",
     label: "Width",
     placeholder: "0",
-    required: true,
   },
   {
     name: "shippingDetails.height",
     type: "number",
     label: "Height",
     placeholder: "0",
-    required: true,
   },
   {
     name: "shippingDetails.weight",
     type: "number",
     label: "Weight",
     placeholder: "0",
-    required: true,
   },
   {
     name: "shippingDetails.dimensionUnit",
@@ -286,6 +282,7 @@ export const tagsField: FieldConfig[] = [
     type: "tags",
     label: "Product Tags",
     placeholder: "Add tags...",
+    required: true,
     helpText: "Press Enter to add tags",
     suggestions: [
       "New Arrival",

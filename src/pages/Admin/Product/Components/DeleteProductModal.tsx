@@ -40,7 +40,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} placement="center">
-      <ModalContent>
+      <ModalContent className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
         <ModalHeader className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-danger">
             <AlertTriangle className="w-5 h-5" />

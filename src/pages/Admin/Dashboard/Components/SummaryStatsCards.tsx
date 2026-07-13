@@ -82,7 +82,7 @@ const SummaryStatsCards = ({ overview }: SummaryStatsCardsProps) => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: i * 0.04 }}
-          className="bg-slate-50/50 dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
+          className="bg-white dark:bg-slate-800/30 border border-slate-200 dark:border-slate-800/60 rounded-2xl p-4 flex flex-col justify-between hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors"
         >
           <div className="flex items-center justify-between gap-4">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">

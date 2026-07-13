@@ -158,6 +158,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
               {...register(field.name, {
                 valueAsNumber: field.type === "number",
               })}
+              step={field.type === "number" ? "any" : undefined}
               placeholder={field.placeholder}
               disabled={field.disabled}
               readOnly={field.readOnly}

@@ -11,7 +11,7 @@ import { z } from "zod";
 const ProductImageSchema = z
   .object({
     url: z.string().optional(),
-    alt: z.string().min(1, "Alt text is required"),
+    alt: z.string().optional(),
     file: z.any().optional(),
   })
   .refine((data) => data.url || data.file, {
@@ -86,12 +86,12 @@ const ComboPricingSchema = z.object({
 });
 
 const ProductShippingSchema = z.object({
-  length: z.number().positive(),
-  width: z.number().positive(),
-  height: z.number().positive(),
-  weight: z.number().positive(),
-  dimensionUnit: z.enum(["cm", "in"]),
-  weightUnit: z.enum(["kg", "lb"]),
+  length: z.number().nonnegative().optional(),
+  width: z.number().nonnegative().optional(),
+  height: z.number().nonnegative().optional(),
+  weight: z.number().nonnegative().optional(),
+  dimensionUnit: z.enum(["cm", "in"]).optional(),
+  weightUnit: z.enum(["kg", "lb"]).optional(),
 });
 
 const ProductSEOSchema = z.object({
@@ -136,7 +136,7 @@ export const ProductFormSchema = z.object({
     .optional(),
   relatedProducts: z.array(z.string()).optional(), // ObjectId strings
   tags: z.array(z.string()).min(1, "At least one tag is required"),
-  shippingDetails: ProductShippingSchema,
+  shippingDetails: ProductShippingSchema.optional(),
   additionalInfo: z
     .object({
       freeShipping: z.boolean().default(false),

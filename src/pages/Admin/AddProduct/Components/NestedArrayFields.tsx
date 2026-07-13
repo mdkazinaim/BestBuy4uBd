@@ -126,7 +126,7 @@ const ImageUploadItem = memo(
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
-                  Image URL (alternative to upload) <span className="text-red-500">*</span>
+                  Image URL (alternative to upload)
                 </label>
                 <input
                   {...register(`images.${index}.url`)}
@@ -144,7 +144,7 @@ const ImageUploadItem = memo(
 
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
-                Alt Text <span className="text-red-500">*</span>
+                Alt Text
               </label>
               <input
                 {...register(`images.${index}.alt`)}
