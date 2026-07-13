@@ -46,7 +46,7 @@ const Dashboard = () => {
   } = data.data;
 
   return (
-    <div className="space-y-4 md:space-y-8">
+    <div className="space-y-4 md:space-y-6">
       {/* Header / Last Order Status */}
       {overview?.lastOrder && (
         <LastOrderStatusCard lastOrder={overview.lastOrder} formatStatus={formatStatus} />
@@ -55,7 +55,7 @@ const Dashboard = () => {
       {/* Summary Cards */}
       <SummaryStatsCards overview={overview} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Monthly Sales Bar Chart */}
         <MonthlySalesChart monthlyStats={monthlyStats} />
 
@@ -63,7 +63,7 @@ const Dashboard = () => {
         <RevenueAnalysisChart monthlyStats={monthlyStats} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Orders */}
         <RecentOrdersTable recentOrders={recentOrders} formatStatus={formatStatus} />
 
