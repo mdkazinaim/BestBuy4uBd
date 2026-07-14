@@ -1,19 +1,20 @@
 import { motion } from "framer-motion";
-import { Heart, ShoppingCart, Eye } from "lucide-react";
+import { Heart, Eye } from "lucide-react";
 import { ProductData } from "./types";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist, removeFromWishlist } from "@/store/Slices/wishlistSlice";
 import { openWishlist } from "@/store/Slices/UISlice";
 import { RootState } from "@/store/store";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { addToCart } from "@/store/Slices/CartSlice";
 
 interface ProductCardProps {
   product: ProductData;
-  onOpen: (product: ProductData) => void;
 }
 
-const ProductCard = ({ product, onOpen }: ProductCardProps) => {
+const ProductCard = ({ product }: ProductCardProps) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { wishlistItems } = useSelector((state: RootState) => state.wishlist);
   const isWishlisted = wishlistItems.some(item => item._id === product.id);
 
@@ -24,7 +25,6 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
     if (isWishlisted) {
       dispatch(removeFromWishlist(product.id));
     } else {
-      // Map mock product to WishlistItem structure if needed, or just send it
       const wishlistItem = {
         _id: product.id,
         basicInfo: { title: product.title },
@@ -37,14 +37,27 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
       dispatch(openWishlist());
     }
   };
+
+  const handleOrderNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(addToCart({
+      id: product.id,
+      name: product.title,
+      price: product.price,
+      image: product.image,
+      quantity: 1
+    }));
+    navigate('/checkout');
+  };
+
   return (
-    <Link to={`/product/${product.id}`} className="h-full block">
-      <motion.div
-        layout
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="card-container bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 p-4 flex flex-col group h-full relative"
-      >
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="card-container bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 p-4 flex flex-col group h-full relative"
+    >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
         {product.tag && (
@@ -71,66 +84,31 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
       </button>
 
       {/* Image Container */}
-      <div className="relative h-48 mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
-          {product.discount && (
-              <span className="absolute top-4 left-4 text-[10px] font-bold text-white bg-brand-600 rounded-full px-1.5 py-0.5 z-10">
-                {product.discount}% OFF
-              </span>
-            )}
-        <motion.img
-          src={product.image}
-          alt={product.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 rounded-xl"
-        />
-
-        {/* Hover Actions Overlay */}
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-          <motion.button
-            onClick={() => onOpen(product)}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 rounded-full bg-bg-surface text-text-primary shadow-lg flex items-center justify-center hover:bg-text-primary hover:text-white transition-colors"
-            title="Quick View"
-          >
-            <Eye className="w-5 h-5" />
-          </motion.button>
-          <motion.button
-            onClick={() => onOpen(product)} // For now, both open detailed modal
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-10 h-10 rounded-full bg-secondary text-white shadow-lg flex items-center justify-center hover:bg-secondary/90 transition-colors"
-            title="Add to Cart"
-          >
-            <ShoppingCart className="w-5 h-5" />
-          </motion.button>
+      <Link to={`/product/${product.id}`} className="block">
+        <div className="relative h-48 mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
+            {product.discount && (
+                <span className="absolute top-4 left-4 text-[10px] font-bold text-white bg-brand-600 rounded-full px-1.5 py-0.5 z-10">
+                  {product.discount}% OFF
+                </span>
+              )}
+          <motion.img
+            src={product.image}
+            alt={product.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 rounded-xl"
+          />
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="flex-1 flex flex-col">
-        <h3
-          className="text-sm text-[#0F172A] dark:text-slate-100 mb-1 line-clamp-2 min-h-[40px] group-hover:text-[#0F172A] dark:group-hover:text-white transition-colors font-medium"
-          title={product.title}
-        >
-          {product.title}
-        </h3>
-
-        {/* Rating */}
-        {/* <div className="flex items-center gap-1 mb-3">
-          <div className="flex text-accent">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`w-3 h-3 ${
-                  i < Math.floor(product.rating)
-                    ? "fill-current"
-                    : "text-text-muted/20"
-                }`}
-              />
-            ))}
-          </div>
-          <span className="small">({product.reviews})</span>
-        </div> */}
+        <Link to={`/product/${product.id}`} className="block">
+          <h3
+            className="text-sm text-[#0F172A] dark:text-slate-100 mb-1 line-clamp-2 min-h-[40px] group-hover:text-[#0F172A] dark:group-hover:text-white transition-colors font-medium hover:text-brand-600"
+            title={product.title}
+          >
+            {product.title}
+          </h3>
+        </Link>
 
         <div className="mt-auto flex items-center justify-between">
           <div className="flex items-center">
@@ -154,9 +132,28 @@ const ProductCard = ({ product, onOpen }: ProductCardProps) => {
             </span>
           </div>
         </div>
+
+        {/* Action Buttons */}
+        <div className="mt-3 flex gap-2 w-full relative z-20">
+          <button 
+            className="w-10 h-10 bg-dark-blue dark:bg-slate-800 text-white rounded-md flex items-center justify-center hover:opacity-90 transition-colors shrink-0 cursor-pointer shadow-sm"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(`/product/${product.id}`);
+            }}
+          >
+            <Eye className="w-5 h-5" />
+          </button>
+          <button
+            className="flex-1 bg-secondary text-white rounded-md font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+            onClick={handleOrderNow}
+          >
+            অর্ডার করুন
+          </button>
+        </div>
       </div>
     </motion.div>
-    </Link>
   );
 };
 

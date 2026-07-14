@@ -1,7 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Heart, ShoppingCart, Star } from "lucide-react";
+import { X, Heart, Star } from "lucide-react";
 import { ProductData } from "./types";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/store/Slices/CartSlice";
 
 interface ProductModalProps {
   product: ProductData | null;
@@ -11,8 +13,24 @@ interface ProductModalProps {
 
 const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
 
   if (!product) return null;
+
+  const handleOrder = () => {
+    dispatch(
+      addToCart({
+        id: product.id,
+        name: product.title,
+        price: product.price,
+        image: product.image,
+        quantity: quantity,
+      })
+    );
+    onClose();
+    // Redirect to checkout
+    window.location.href = "/checkout";
+  };
 
   return (
     <AnimatePresence>
@@ -116,24 +134,26 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                       <div className="flex items-center bg-gray-100 dark:bg-slate-800 rounded-lg px-4 py-2 w-max">
                         <button
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200"
+                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200 cursor-pointer"
                         >
                           -
                         </button>
-                        <span className="w-8 text-center font-semibold text-dark-blue dark:text-slate-100">
+                        <span className="w-8 text-center font-semibold text-dark-blue dark:text-slate-100 select-none">
                           {quantity}
                         </span>
                         <button
                           onClick={() => setQuantity(quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200"
+                          className="w-8 h-8 flex items-center justify-center font-bold text-gray-600 dark:text-slate-400 hover:text-dark-blue dark:hover:text-slate-200 cursor-pointer"
                         >
                           +
                         </button>
                       </div>
 
-                      <button className="flex-1 bg-dark-blue dark:bg-brand-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 dark:hover:bg-brand-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
-                        <ShoppingCart className="w-5 h-5" />
-                        Add to Cart
+                      <button
+                        onClick={handleOrder}
+                        className="flex-1 bg-secondary text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl cursor-pointer"
+                      >
+                        অর্ডার করুন
                       </button>
                     </div>
                   </div>

@@ -96,6 +96,10 @@ const ProductDetails = () => {
   } = useVariantQuantity(product?.variants, product);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (product) {
       trackViewItem({
         id: product._id,

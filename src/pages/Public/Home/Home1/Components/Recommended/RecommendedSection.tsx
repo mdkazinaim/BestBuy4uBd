@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "./ProductCard";
-import ProductModal from "./ProductModal";
 import VerticalPagination from "./VerticalPagination";
 import { ProductData } from "./types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -42,11 +41,9 @@ const mapProductData = (item: any): ProductData => ({
 const CategorySection = ({
   category,
   label,
-  onOpenModal,
 }: {
   category: string;
   label: string;
-  onOpenModal: (product: ProductData) => void;
 }) => {
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -137,13 +134,12 @@ const CategorySection = ({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 h-full"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 h-full space-x-4"
                 >
                   {currentProducts.map((product) => (
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onOpen={onOpenModal}
                     />
                   ))}
                 </motion.div>
@@ -199,11 +195,6 @@ const CategorySection = ({
 };
 
 const RecommendedSection = () => {
-  const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(
-    null,
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   const { data: categoriesData, isLoading: isCategoriesLoading } =
     useGetAllCategoriesQuery({});
 
@@ -215,11 +206,6 @@ const RecommendedSection = () => {
       })) || []
     );
   }, [categoriesData]);
-
-  const handleOpenModal = (product: ProductData) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
 
   if (isCategoriesLoading) {
     return (
@@ -262,16 +248,8 @@ const RecommendedSection = () => {
           key={category.id}
           category={category.name}
           label={category.name}
-          onOpenModal={handleOpenModal}
         />
       ))}
-
-      {/* Shared Modal */}
-      <ProductModal
-        product={selectedProduct}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 };

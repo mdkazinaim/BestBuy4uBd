@@ -216,6 +216,10 @@
     --stepper-inactive-border: #334155;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   html,
   body {
     @apply bg-background text-foreground font-sans antialiased overflow-x-hidden transition-colors duration-250;
