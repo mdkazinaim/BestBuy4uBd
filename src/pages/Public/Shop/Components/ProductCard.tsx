@@ -95,8 +95,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       {/* Badges */}
       <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-10 flex flex-col gap-1.5">
         {discountPercentage > 0 && (
-          <span className="tag bg-danger text-white shadow-lg text-[9px] sm:text-xs px-1.5 py-0.5 sm:px-2 rounded">
-            -{discountPercentage}%
+          <span className="tag bg-primary-green text-white shadow-lg text-[9px] sm:text-xs px-1.5 py-0.5 sm:px-2 rounded">
+            {discountPercentage}% OFF
           </span>
         )}
         {product.additionalInfo?.isFeatured && (

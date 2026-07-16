@@ -344,8 +344,8 @@ const ProductDetails = () => {
 
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
                   {discountPercentage > 0 && (
-                    <Chip color="danger" size="sm" className="font-bold shadow-md">
-                      -{discountPercentage}% OFF
+                    <Chip color="success" size="sm" className="font-bold shadow-md text-white">
+                      {discountPercentage}% OFF
                     </Chip>
                   )}
                   {product.additionalInfo?.isFeatured && (
