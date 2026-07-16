@@ -17,9 +17,9 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-brand-700 dark:bg-slate-950 text-white py-12 transition-colors duration-500 border-t border-brand-800 dark:border-slate-900">
+    <footer className="bg-brand-700 dark:bg-slate-950 text-white py-8 sm:py-12 transition-colors duration-500 border-t border-brand-800 dark:border-slate-900">
       <CommonWrapper className="px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
           {/* About Section */}
           <div className="space-y-4">
             <h3 className="h6 text-white flex items-center gap-2">
@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
             </h3>
             <NavItems
               isFooter={true}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start justify-start gap-4 text-white"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 items-start justify-start gap-x-4 gap-y-2 sm:gap-4 text-white"
               classNameC="px-0!"
               classNameNC="px-0!"
             />
@@ -103,12 +103,12 @@ const Footer: React.FC = () => {
               <input
                 type="email"
                 placeholder="Your email"
-                className="w-full px-4 py-3 bg-white/5 dark:bg-slate-900/60 border border-white/10 dark:border-slate-800 rounded-lg text-white placeholder:text-white/40 dark:placeholder:text-slate-500 focus:outline-none focus:border-secondary transition-colors font-medium"
+                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/5 dark:bg-slate-900/60 border border-white/10 dark:border-slate-800 rounded-lg text-white placeholder:text-white/40 dark:placeholder:text-slate-500 focus:outline-none focus:border-secondary transition-colors font-medium text-xs sm:text-sm"
               />
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full py-3 text-[10px] font-semibold uppercase tracking-widest bg-secondary hover:bg-secondary/90 border-secondary text-white"
+                className="w-full py-2.5 sm:py-3 text-[9px] sm:text-[10px] font-semibold uppercase tracking-widest bg-secondary hover:bg-secondary/90 border-secondary text-white"
               >
                 Subscribe
               </Button>
@@ -117,7 +117,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Copyright Section */}
-        <div className="border-t border-white/5 mt-12 pt-8 text-center">
+        <div className="border-t border-white/5 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
           <p className="text-xs text-white/60 dark:text-slate-400 uppercase tracking-widest">
             &copy; {new Date().getFullYear()} {host.title ? host.title : <span className="inline-block w-24 h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></span>}. All rights reserved.
           </p>

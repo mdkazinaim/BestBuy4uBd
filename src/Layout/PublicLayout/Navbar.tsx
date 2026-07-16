@@ -4,16 +4,17 @@ import {
   Heart,
   User,
   ChevronDown,
-  Menu,
-  X,
   Phone,
   GitCompare,
   Shield,
   Truck,
   RefreshCw,
   ShoppingCart,
+  Home,
+  ShoppingBag,
+  Menu,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import NavItems from "./NavItems";
 import CartSidebar from "./CartSidebar";
@@ -35,7 +36,9 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 const Navbar = () => {
   const host = useGetHost();
   const dispatch = useDispatch();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const { isCartOpen, isWishlistOpen } = useSelector(
@@ -137,6 +140,14 @@ const Navbar = () => {
               {/* Theme Switcher */}
               <ThemeSwitcher />
 
+              {/* Mobile Search Toggle */}
+              <button
+                onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full hover:bg-light-background dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <Search className="w-5 h-5 text-dark-blue dark:text-slate-200" />
+              </button>
+
               {/* Wishlist Button */}
               <button
                 onClick={() => dispatch(toggleWishlist())}
@@ -216,24 +227,14 @@ const Navbar = () => {
               </button>
 
 
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
+
             </div>
           </div>
         </div>
       </div>
 
       {/* Search Bar & Categories */}
-      <div className="bg-primary-green">
+      <div className={`bg-primary-green transition-all duration-300 ${isMobileSearchOpen ? "block" : "hidden lg:block"}`}>
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row items-center justify-between py-3 gap-6">
             {/* Search Section - Reverted to previous design */}
@@ -270,17 +271,28 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Backdrop */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Mobile Menu Bottom Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden bg-white dark:bg-slate-900 border-t border-border dark:border-slate-800 overflow-hidden"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 220 }}
+            className="lg:hidden fixed bottom-[56px] left-0 right-0 bg-white dark:bg-slate-900 border-t border-border dark:border-slate-800 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.15)] z-40 max-h-[70vh] overflow-y-auto"
           >
-            <div className="container mx-auto px-4 py-4 space-y-3">
+            {/* Drag Handle Indicator */}
+            <div className="w-12 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto my-3" />
+            
+            <div className="container mx-auto px-6 pb-6 space-y-4">
               <NavItems
                 isMobile={true}
                 onItemClick={() => setIsMobileMenuOpen(false)}
@@ -340,6 +352,72 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 dark:bg-slate-950/95 border-t border-slate-800/80 backdrop-blur-md py-2 px-4 flex items-center justify-between z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.15)]">
+        {/* Home */}
+        <Link
+          to="/"
+          className={`flex flex-col items-center gap-1 flex-1 transition-colors ${
+            location.pathname === "/" ? "text-primary-green" : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <Home className="w-5 h-5" />
+          <span className="text-[10px] font-medium tracking-wide">Home</span>
+        </Link>
+
+        {/* Shop */}
+        <Link
+          to="/shop"
+          className={`flex flex-col items-center gap-1 flex-1 transition-colors ${
+            location.pathname === "/shop" ? "text-primary-green" : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <ShoppingBag className="w-5 h-5" />
+          <span className="text-[10px] font-medium tracking-wide">Shop</span>
+        </Link>
+
+        {/* Cart (Center Floating Button) */}
+        <div className="flex-1 flex justify-center relative">
+          <button
+            onClick={() => dispatch(toggleCart())}
+            className="absolute -top-7 w-14 h-14 bg-primary-green text-white rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:bg-primary-green/90 transition-all border-4 border-slate-900 dark:border-slate-950 cursor-pointer"
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-red text-white text-[10px] font-black rounded-full flex items-center justify-center border border-white">
+                {cartCount}
+              </span>
+            )}
+          </button>
+          <span className="text-[10px] font-medium tracking-wide text-slate-400 mt-7">Cart</span>
+        </div>
+
+        {/* Wishlist */}
+        <button
+          onClick={() => dispatch(toggleWishlist())}
+          className={`flex flex-col items-center gap-1 flex-1 transition-colors cursor-pointer ${
+            location.pathname === "/wishlist" ? "text-primary-green" : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <Heart className="w-5 h-5" />
+          <span className="text-[10px] font-medium tracking-wide">Wishlist</span>
+        </button>
+
+        {/* Hamburger Menu */}
+        <button
+          onClick={() => {
+            setIsMobileMenuOpen(!isMobileMenuOpen);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className={`flex flex-col items-center gap-1 flex-1 transition-colors cursor-pointer ${
+            isMobileMenuOpen ? "text-primary-green" : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          <Menu className="w-5 h-5" />
+          <span className="text-[10px] font-medium tracking-wide">Menu</span>
+        </button>
+      </div>
+
       {/* Cart Sidebar */}
       <CartSidebar isOpen={isCartOpen} onClose={() => dispatch(closeCart())} />
       {/* Wishlist Sidebar */}

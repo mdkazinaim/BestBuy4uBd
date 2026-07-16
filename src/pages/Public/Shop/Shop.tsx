@@ -79,9 +79,9 @@ const Shop = () => {
   };
 
   return (
-    <div className="bg-bg-base py-12 font-nunito">
+    <div className="bg-bg-base py-6 md:py-12 font-nunito">
       <CommonWrapper>
-        <div className="flex flex-col lg:flex-row gap-6 px-4">
+        <div className="flex flex-col lg:flex-row gap-6 px-2 md:px-4">
           {/* Mobile Sidebar Toggle */}
           <div className="lg:hidden flex items-center justify-between mb-6">
             <Button
@@ -124,10 +124,10 @@ const Shop = () => {
                   animate={{ x: 0 }}
                   exit={{ x: "-100%" }}
                   transition={{ type: "spring", damping: 30, stiffness: 250 }}
-                  className="fixed top-0 left-0 h-full w-full max-w-md bg-bg-surface z-[101] p-8 overflow-y-auto lg:hidden rounded-r-xl"
+                  className="fixed top-0 left-0 h-full w-full max-w-[280px] sm:max-w-md bg-bg-surface dark:bg-slate-900 z-[101] p-6 overflow-y-auto lg:hidden rounded-r-xl border-r border-slate-200 dark:border-slate-800"
                 >
-                  <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-2xl font-semibold text-text-primary uppercase tracking-tighter">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-semibold text-text-primary uppercase tracking-tighter">
                       FILTERS
                     </h2>
                     <Button
@@ -202,7 +202,7 @@ const Shop = () => {
             </div> */}
 
             {/* Top Pagination Row */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2 h-18">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 px-2 py-4 sm:h-18">
               <div className="text-[10px] font-semibold text-text-muted uppercase tracking-[0.2em]">
                 PAGES{" "}
                 <span className="text-secondary mx-2 font-semibold">
@@ -224,7 +224,7 @@ const Shop = () => {
               } transition-all duration-500`}
             >
               {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                   {Array.from({ length: 8 }).map((_, i) => (
                     <div
                       key={i}
@@ -257,7 +257,7 @@ const Shop = () => {
                   ))}
                 </div>
               ) : productsData?.data && productsData.data.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6">
                   {productsData.data.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}

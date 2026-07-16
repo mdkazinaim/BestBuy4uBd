@@ -77,8 +77,8 @@ const CategorySection = ({
     <section className=" relative overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-brand-700 dark:text-brand-200 mb-2">{label}</h2>
+        <div className="text-center mb-5 sm:mb-10">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-700 dark:text-brand-200 mb-2">{label}</h2>
         </div>
 
         {/* Carousel Content */}
@@ -110,7 +110,7 @@ const CategorySection = ({
           <div className="flex-1 overflow-hidden min-h-[360px]">
             <AnimatePresence mode="wait">
               {isLoading || isFetching ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 h-full gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 h-full gap-3 sm:gap-4">
                   {Array.from({ length: ITEMS_PER_VIEW }).map((_, i) => (
                     <div
                       key={i}
@@ -133,7 +133,7 @@ const CategorySection = ({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 h-full gap-4"
+                  className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-6 h-full gap-3 sm:gap-4"
                 >
                   {currentProducts.map((product) => (
                     <ProductCard
@@ -171,23 +171,48 @@ const CategorySection = ({
         </div>
 
         {/* Mobile controls */}
-        <div className="md:hidden flex justify-center gap-4 mt-8">
-          <button
-            onClick={prevPage}
-            className="p-2 bg-bg-surface dark:bg-slate-900 rounded-full border border-border-main dark:border-slate-800 cursor-pointer"
-          >
-            <ChevronLeft className="text-text-primary dark:text-slate-200" />
-          </button>
-          <span className="font-semibold text-text-muted dark:text-slate-400">
-            {currentPage + 1} / {totalPages || 1}
-          </span>
-          <button
-            onClick={nextPage}
-            className="p-2 bg-bg-surface dark:bg-slate-900 rounded-full border border-border-main dark:border-slate-800 cursor-pointer"
-          >
-            <ChevronRight className="text-text-primary dark:text-slate-200" />
-          </button>
-        </div>
+        {totalPages > 1 && (
+          <div className="md:hidden flex justify-center mt-8 pb-4">
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-[28px] py-2.5 px-4 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-3 w-fit select-none ">
+              {/* Previous Slide (Left Chevron) */}
+              <button
+                onClick={prevPage}
+                className="text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors cursor-pointer flex items-center justify-center p-0.5"
+                title="Previous Slide"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+
+              {/* Dots List */}
+              <div className="flex gap-2.5 py-1 items-center">
+                {Array.from({ length: totalPages }).map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentPage(idx)}
+                    className="relative flex items-center justify-center cursor-pointer w-7 h-7 transition-all duration-300"
+                  >
+                    {idx === currentPage ? (
+                      <div className="w-7 h-7 rounded-full border border-emerald-500 flex items-center justify-center bg-emerald-500/10">
+                        <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white animate-pulse" />
+                      </div>
+                    ) : (
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-350 dark:bg-slate-700 hover:bg-slate-500 transition-colors" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Next Slide (Right Chevron) */}
+              <button
+                onClick={nextPage}
+                className="text-slate-500 dark:text-slate-400 hover:text-emerald-500 dark:hover:text-emerald-400 transition-colors cursor-pointer flex items-center justify-center p-0.5"
+                title="Next Slide"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

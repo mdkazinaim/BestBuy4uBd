@@ -21,7 +21,7 @@ const RecommendedSection = () => {
   }
 
   return (
-    <div className="flex flex-col gap-20">
+    <div className="flex flex-col gap-10 sm:gap-20">
       {categories.map((category: any) => (
         <CategorySection
           key={category.id}

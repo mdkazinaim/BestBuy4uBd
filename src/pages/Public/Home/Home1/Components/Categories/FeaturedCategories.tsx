@@ -102,22 +102,18 @@ const FeaturedCategories = () => {
 
   return (
     <section className="">
-      <div className="container mx-auto px-4 mt-10">
+      <div className="container mx-auto px-4 mt-4 sm:mt-10">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          className="text-center mb-6 sm:mb-12"
         >
-          <h2 className="text-2xl font-semibold text-brand-700 dark:text-brand-200 mb-4 text-center">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-700 dark:text-brand-200 mb-4 text-center">
             Shop by Category
           </h2>
-          <p className="text-text-muted dark:text-slate-400 max-w-2xl mx-auto uppercase tracking-widest text-xs font-medium">
-            Explore our curated collections of premium products across multiple
-            categories
-          </p>
         </motion.div>
 
         {/* Categories Carousel Container */}
@@ -148,12 +144,12 @@ const FeaturedCategories = () => {
                 "linear-gradient(to right, transparent, black 1%, black 99%, transparent)",
             }}
           >
-            <div className="flex w-max animate-marquee gap-6">
+            <div className="flex w-max animate-marquee gap-3 sm:gap-6">
               {isLoading
                 ? Array.from({ length: 12 }).map((_, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-lg border border-gray-100 shadow-sm animate-pulse w-[180px] aspect-[1/1.1] p-4 flex flex-col items-center justify-center"
+                      className="bg-white rounded-lg border border-gray-100 shadow-sm animate-pulse w-[130px] sm:w-[180px] aspect-[1/1.1] p-2 sm:p-4 flex flex-col items-center justify-center"
                     >
                       <div className="w-24 h-24 rounded bg-gray-50 mb-6" />
                       <div className="w-full h-8 bg-gray-100 rounded" />
@@ -177,7 +173,7 @@ const FeaturedCategories = () => {
                               `/shop?category=${encodeURIComponent(category.name)}`,
                             )
                           }
-                          className="group cursor-pointer w-[180px] flex-shrink-0 rounded-lg overflow-hidden"
+                          className="group cursor-pointer w-[130px] sm:w-[180px] flex-shrink-0 rounded-lg overflow-hidden"
                         >
                           {/* Simple Brand Card */}
                           <div className="relative bg-white dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-slate-800 shadow-sm transition-all duration-300 flex flex-col items-center justify-center">
@@ -202,7 +198,7 @@ const FeaturedCategories = () => {
                             {/* Pill Label at Bottom */}
                             <div className="absolute bottom-3 left-3 right-3">
                               <div className="bg-brand-500 group-hover:bg-brand-600/80 transition-colors py-1.5 px-2 rounded flex items-center justify-center">
-                                <h3 className="text-[11px] font-medium text-white uppercase tracking-wider text-center truncate">
+                                <h3 className="text-[11px] font-normal sm:font-medium text-white uppercase tracking-wider text-center truncate">
                                   {category.name}
                                 </h3>
                               </div>

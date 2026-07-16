@@ -56,7 +56,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="card-container bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 p-4 flex flex-col group h-full relative"
+      className="card-container bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800/80 p-3 sm:p-4 flex flex-col group h-full relative rounded-xl"
     >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
@@ -85,7 +85,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       {/* Image Container */}
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative h-48 mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
+        <div className="relative h-32 sm:h-48 mb-3 sm:mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
             {product.discount && (
                 <span className="absolute top-4 left-4 text-[10px] font-bold text-white bg-brand-600 rounded-full px-1.5 py-0.5 z-10">
                   {product.discount}% OFF
@@ -103,7 +103,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="flex-1 flex flex-col">
         <Link to={`/product/${product.id}`} className="block">
           <h3
-            className="text-sm text-[#0F172A] dark:text-slate-100 mb-1 line-clamp-2 min-h-[40px] group-hover:text-[#0F172A] dark:group-hover:text-white transition-colors font-medium hover:text-brand-600"
+            className="text-xs sm:text-sm text-[#0F172A] dark:text-slate-100 mb-1 line-clamp-2 min-h-[32px] sm:min-h-[40px] group-hover:text-[#0F172A] dark:group-hover:text-white transition-colors font-normal sm:font-medium hover:text-brand-600"
             title={product.title}
           >
             {product.title}
@@ -118,7 +118,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
               </span>
             )}
           
-            <div className="text-sm font-bold text-text-primary dark:text-slate-100">
+            <div className="text-xs sm:text-sm font-bold text-text-primary dark:text-slate-100">
               ৳
               {product.price.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -134,19 +134,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-3 flex gap-2 w-full relative z-20">
+        <div className="mt-2.5 sm:mt-3 flex gap-1.5 sm:gap-2 w-full relative z-20">
           <button 
-            className="w-10 h-10 bg-dark-blue dark:bg-slate-800 text-white rounded-md flex items-center justify-center hover:opacity-90 transition-colors shrink-0 cursor-pointer shadow-sm"
+            className="w-8 h-8 sm:w-10 sm:h-10 bg-dark-blue dark:bg-slate-800 text-white rounded-md flex items-center justify-center hover:opacity-90 transition-colors shrink-0 cursor-pointer shadow-sm"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               navigate(`/product/${product.id}`);
             }}
           >
-            <Eye className="w-5 h-5" />
+            <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <button
-            className="flex-1 bg-secondary text-white rounded-md font-bold text-sm hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
+            className="flex-1 bg-secondary text-white rounded-md font-bold text-xs sm:text-sm hover:opacity-90 transition-opacity cursor-pointer shadow-sm py-1.5 sm:py-0"
             onClick={handleOrderNow}
           >
             অর্ডার করুন

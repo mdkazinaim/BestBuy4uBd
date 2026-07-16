@@ -14,7 +14,7 @@ const ProductCard2 = ({ data, index }: ProductCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
       whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
-      className="relative rounded-component overflow-hidden h-[250px] shadow-lg cursor-pointer transition-all duration-300 border border-border-main"
+      className="relative rounded-component overflow-hidden h-[150px] sm:h-[250px] shadow-lg cursor-pointer transition-all duration-300 border border-border-main"
     >
       {/* Background Image */}
       {data.image ? (
@@ -32,17 +32,17 @@ const ProductCard2 = ({ data, index }: ProductCardProps) => {
       )}
 
       {/* Content with overlay background */}
-      <div className="relative z-10 h-full grid p-6">
+      <div className="relative z-10 h-full grid p-3 sm:p-6">
         {/* Top Content */}
 
-        <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4 mt-4 w-fit place-self-end">
+        <div className="bg-black/30 backdrop-blur-sm rounded-xl p-2 sm:p-4 mt-2 sm:mt-4 w-fit place-self-end">
           <motion.a
             href={data.ctaLink}
             whileHover={{ x: 5 }}
-            className="inline-flex items-center gap-2 font-semibold text-sm text-white hover:gap-3 transition-all duration-300 no-underline"
+            className="inline-flex items-center gap-1.5 sm:gap-2 font-semibold text-xs sm:text-sm text-white hover:gap-3 transition-all duration-300 no-underline"
           >
             {data.ctaText}
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </motion.a>
         </div>
       </div>

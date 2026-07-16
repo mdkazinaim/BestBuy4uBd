@@ -96,19 +96,19 @@ const BannerGrid = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4 sm:py-8">
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left Column - Large Hero Banner Carousel */}
         {hasHero && (
-          <div className={`${hasRightCard ? "lg:col-span-2" : "lg:col-span-3"} h-[500px] rounded-xl overflow-hidden`}>
+          <div className={`${hasRightCard ? "lg:col-span-2" : "lg:col-span-3"} h-[160px] sm:h-[350px] md:h-[450px] lg:h-[500px] rounded-xl overflow-hidden`}>
             <HeroBanner banners={heroBanners} />
           </div>
         )}
 
         {/* Right Column - Top Right Product Card */}
         {hasRightCard && (
-          <div className={`${hasHero ? "lg:col-span-1" : "lg:col-span-3"} h-[500px] w-full`}>
+          <div className={`${hasHero ? "lg:col-span-1" : "lg:col-span-3"} h-[160px] sm:h-[350px] md:h-[450px] lg:h-[500px] w-full`}>
             <ProductCard1
               key={productCards[0].id}
               data={productCards[0]}
@@ -119,7 +119,7 @@ const BannerGrid = () => {
 
         {/* Bottom Row - Remaining Product Cards */}
         {bottomCards.length > 0 && (
-          <div className={`lg:col-span-3 grid grid-cols-1 sm:grid-cols-${Math.min(bottomCards.length, 2)} gap-6`}>
+          <div className={`lg:col-span-3 grid grid-cols-1 sm:grid-cols-${Math.min(bottomCards.length, 2)} gap-4 sm:gap-6`}>
             {bottomCards.map((card, index) => (
               <ProductCard2 key={card.id} data={card} index={index + 1} />
             ))}

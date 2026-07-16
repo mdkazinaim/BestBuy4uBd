@@ -51,7 +51,7 @@ const PromotionalSection = () => {
 
   return (
     <section className="container mx-auto px-4 rounded-container">
-      <div className="relative w-full aspect-[16/6] rounded-container overflow-hidden group rounded-xl">
+      <div className="relative w-full aspect-[3/2] sm:aspect-[16/6] min-h-[220px] sm:min-h-0 rounded-container overflow-hidden group rounded-xl">
         {/* Background Image */}
         <img
           src={promoBanner.image}
@@ -60,7 +60,7 @@ const PromotionalSection = () => {
         />
 
         {/* Overlay Content Container */}
-        <div className={`absolute inset-0 p-8 md:p-16 flex ${positionClasses}`}>
+        <div className={`absolute inset-0 p-4 sm:p-8 md:p-16 flex ${positionClasses}`}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -70,7 +70,7 @@ const PromotionalSection = () => {
           >
             {promoBanner.subtitle && (
               <span
-                className="block font-bold uppercase tracking-[0.3em] mb-4 opacity-80"
+                className="block font-bold uppercase tracking-[0.3em] mb-2 sm:mb-4 opacity-80"
                 style={{ fontSize: promoBanner.subtitleSize || "0.875rem" }}
               >
                 {promoBanner.subtitle}
@@ -79,7 +79,7 @@ const PromotionalSection = () => {
 
             {promoBanner.title && promoBanner.showTitle !== false && (
               <h2
-                className="font-black mb-6 leading-[1.1] uppercase tracking-tighter"
+                className="font-black mb-3 sm:mb-6 leading-[1.1] uppercase tracking-tighter text-xl sm:text-3xl lg:text-4xl"
                 style={{ fontSize: promoBanner.titleSize || "inherit" }}
               >
                 {promoBanner.title}
@@ -87,7 +87,7 @@ const PromotionalSection = () => {
             )}
 
             {promoBanner.description && (
-              <p className="text-lg font-medium opacity-70 mb-10 leading-relaxed uppercase tracking-widest line-clamp-2">
+              <p className="text-xs sm:text-base lg:text-lg font-medium opacity-70 mb-4 sm:mb-10 leading-relaxed uppercase tracking-widest line-clamp-2">
                 {promoBanner.description}
               </p>
             )}
@@ -101,7 +101,7 @@ const PromotionalSection = () => {
                   backgroundColor: promoBanner.buttonColor,
                   color: promoBanner.buttonTextColor,
                 }}
-                className="inline-block px-10 py-4 rounded-component font-bold shadow-xl hover:shadow-2xl transition-all duration-300 no-underline uppercase tracking-widest text-xs"
+                className="inline-block px-6 py-2.5 sm:px-10 sm:py-4 rounded-component font-bold shadow-xl hover:shadow-2xl transition-all duration-300 no-underline uppercase tracking-widest text-[10px] sm:text-xs"
               >
                 {promoBanner.ctaText}
               </motion.a>

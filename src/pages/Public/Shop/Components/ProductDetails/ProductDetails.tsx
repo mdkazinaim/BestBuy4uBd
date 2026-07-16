@@ -539,10 +539,10 @@ const ProductDetails = () => {
                  size="lg"
                  onPress={handleOrderNow}
                  isDisabled={totalQuantity === 0}
-                 className="w-full h-12 bg-[#ff5a00] hover:bg-[#e04f00] text-white font-bold text-lg shadow-lg shadow-orange-500/20 rounded-xl hover:shadow-orange-500/40 transition-all cursor-pointer"
+                 className="w-full h-12 bg-[#ff5a00] hover:bg-[#e04f00] text-white font-semibold text-2xl shadow-lg shadow-orange-500/20 rounded-xl hover:shadow-orange-500/40 transition-all cursor-pointer"
                  startContent={<Zap className="w-5 h-5 fill-current animate-pulse" />}
                >
-                 Order Korun (অর্ডার করুন)
+                 অর্ডার করুন
                </Button>
             </div>
 
