@@ -81,7 +81,7 @@ const Shop = () => {
   return (
     <div className="bg-bg-base py-12 font-nunito">
       <CommonWrapper>
-        <div className="flex flex-col lg:flex-row gap-10 px-4">
+        <div className="flex flex-col lg:flex-row gap-6 px-4">
           {/* Mobile Sidebar Toggle */}
           <div className="lg:hidden flex items-center justify-between mb-6">
             <Button
@@ -98,8 +98,8 @@ const Shop = () => {
           </div>
 
           {/* Sidebar - Desktop */}
-          <aside className="hidden lg:block w-80 flex-shrink-0 h-full">
-            <div className="sticky top-28 bg-bg-surface p-8 rounded-xl border border-border-main h-fit">
+          <aside className="hidden lg:block w-80 flex-shrink-0 sticky top-48 h-fit">
+            <div className="bg-bg-surface p-8 rounded-xl border border-border-main">
               <FilterSidebar
                 categories={categoriesData?.data || []}
                 filters={activeFilters}
@@ -224,16 +224,40 @@ const Shop = () => {
               } transition-all duration-500`}
             >
               {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-                  {Array.from({ length: 9 }).map((_, i) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {Array.from({ length: 8 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-[500px] bg-bg-surface rounded-xl animate-pulse border border-border-main"
-                    />
+                      className="group relative card-container p-2 h-full min-h-[460px] flex flex-col rounded-xl border border-gray-200 dark:border-slate-800/60 bg-bg-surface animate-pulse"
+                    >
+                      {/* Image container skeleton */}
+                      <div className="w-full h-56 bg-gray-100 dark:bg-slate-800/50 rounded-t-xl mb-4" />
+                      
+                      {/* Content skeleton */}
+                      <div className="flex-1 flex flex-col p-3">
+                        {/* Category */}
+                        <div className="h-3 w-1/4 bg-gray-200 dark:bg-slate-800 rounded mb-2" />
+                        {/* Title */}
+                        <div className="h-4 w-11/12 bg-gray-200 dark:bg-slate-800 rounded mb-2" />
+                        <div className="h-4 w-2/3 bg-gray-200 dark:bg-slate-800 rounded mb-4" />
+                        
+                        {/* Price & Stock */}
+                        <div className="mt-auto flex items-center justify-between">
+                          <div className="h-5 w-20 bg-gray-200 dark:bg-slate-800 rounded" />
+                          <div className="h-5 w-16 bg-gray-200 dark:bg-slate-800 rounded" />
+                        </div>
+                        
+                        {/* Buttons */}
+                        <div className="mt-4 flex gap-2 w-full">
+                          <div className="w-10 h-10 bg-gray-200 dark:bg-slate-800 rounded" />
+                          <div className="flex-1 h-10 bg-gray-200 dark:bg-slate-800 rounded" />
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : productsData?.data && productsData.data.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
                   {productsData.data.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
@@ -275,7 +299,7 @@ const Shop = () => {
             </div>
 
             {/* Bottom Pagination */}
-            <div className="mt-20 flex flex-col items-center gap-6">
+            <div className="mt-10 flex flex-col items-center gap-6">
               <div className="h-px w-full bg-gradient-to-r from-transparent via-border-main to-transparent" />
               <Pagination
                 currentPage={activeFilters.page}

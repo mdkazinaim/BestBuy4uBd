@@ -222,7 +222,8 @@
 
   html,
   body {
-    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden transition-colors duration-250;
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-250;
+    overflow-x: clip;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
   }

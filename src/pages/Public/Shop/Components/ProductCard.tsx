@@ -90,7 +90,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group relative card-container p-2 h-full flex flex-col hover:border-primary/20 rounded-xl border border-gray-200 dark:border-slate-800/60"
+      className="group relative card-container p-2 h-full flex flex-col bg-bg-surface shadow-xs hover:shadow-md hover:border-secondary/30 transition-all duration-300 rounded-xl border border-gray-200 dark:border-slate-800/60"
     >
       {/* Badges */}
       <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
@@ -138,7 +138,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           })
         }
       >
-        <div className="relative h-56 flex items-center justify-center overflow-hidden card-inner group-hover:bg-bg-surface transition-colors duration-500 border border-slate-100 dark:border-slate-800/60 rounded-b-none -mb-1 hover:mb-0 rounded-t-xl ">
+        <div className="relative h-56 flex items-center justify-center overflow-hidden card-inner group-hover:bg-bg-surface transition-colors duration-500 border border-slate-100 dark:border-slate-800/60 rounded-b-none rounded-t-xl">
           <motion.img
             src={images[0]?.url || "https://via.placeholder.com/300"}
             alt={basicInfo.title}
