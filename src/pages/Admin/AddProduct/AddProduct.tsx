@@ -43,8 +43,39 @@ export default function ProductAdminPage() {
       setDefaultValues(existing.data as unknown as ProductFormValues);
   }, [existing]);
 
+  // Load draft from localStorage on mount (for new products)
+  useEffect(() => {
+    if (isAdd) {
+      const savedDraft = localStorage.getItem("product_draft_new");
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          if (parsed && typeof parsed === "object") {
+            setDefaultValues(parsed);
+            toast("Restored draft product from your last session", {
+              action: {
+                label: "Clear Draft",
+                onClick: () => {
+                  localStorage.removeItem("product_draft_new");
+                  setDefaultValues(undefined);
+                  window.location.reload();
+                }
+              }
+            });
+          }
+        } catch (e) {
+          console.error("Error parsing saved draft:", e);
+        }
+      }
+    }
+  }, [isAdd]);
+
   const handleSubmit = (values: ProductFormValues) => {
     setDraft(values);
+    setDefaultValues(values);
+    if (isAdd) {
+      localStorage.setItem("product_draft_new", JSON.stringify(values));
+    }
     setPreview(true);
   };
 
@@ -166,6 +197,7 @@ export default function ProductAdminPage() {
 
       if (isAdd) {
         await addProduct(productData).unwrap();
+        localStorage.removeItem("product_draft_new");
       } else {
         await updateProduct({ id: id!, ...productData }).unwrap();
       }
