@@ -500,9 +500,10 @@ const LandingPage = ({ product }: { product: Product }) => {
                 </div>
                 <Card className="shadow-none border border-gray-100 bg-gray-50/30">
                   <CardBody className="p-8">
-                    <div className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-line">
-                      {basicInfo?.description}
-                    </div>
+                    <div
+                      className="prose max-w-none text-gray-600 leading-relaxed whitespace-pre-wrap [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+                      dangerouslySetInnerHTML={{ __html: basicInfo?.description || "" }}
+                    />
                   </CardBody>
                 </Card>
               </section>

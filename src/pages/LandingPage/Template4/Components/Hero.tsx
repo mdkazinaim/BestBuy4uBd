@@ -31,6 +31,69 @@ export default function Hero({ product, scrollToCheckout }: HeroProps) {
   const rating = product?.rating?.average || 4.8;
   const reviewCount = product?.rating?.count || 127;
 
+  const renderFormattedDescription = (desc: string) => {
+    if (!desc) return null;
+    const lines = desc.split(/\r?\n/);
+    const grouped: { type: "text" | "list"; items: string[] }[] = [];
+
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+
+      const cleanText = trimmed.replace(/<[^>]*>/g, "").trim();
+      const isListItem = /^[✅☑️✔✔️•\-\*]/.test(cleanText);
+
+      const lastGroup = grouped[grouped.length - 1];
+      if (isListItem) {
+        if (lastGroup && lastGroup.type === "list") {
+          lastGroup.items.push(line);
+        } else {
+          grouped.push({ type: "list", items: [line] });
+        }
+      } else {
+        if (lastGroup && lastGroup.type === "text") {
+          lastGroup.items.push(line);
+        } else {
+          grouped.push({ type: "text", items: [line] });
+        }
+      }
+    });
+
+    return (
+      <div className="reveal text-lg sm:text-xl text-white/80 max-w-4xl mb-10 leading-relaxed mx-auto">
+        {grouped.map((group, idx) => {
+          if (group.type === "list") {
+            return (
+              <div
+                key={idx}
+                className="text-left mx-auto w-fit my-4 space-y-2  py-3"
+              >
+                {group.items.map((item, itemIdx) => (
+                  <div
+                    key={itemIdx}
+                    className="flex items-center gap-2 text-white/90"
+                    dangerouslySetInnerHTML={{ __html: item }}
+                  />
+                ))}
+              </div>
+            );
+          } else {
+            return (
+              <div key={idx} className="text-center mb-4 leading-relaxed whitespace-pre-wrap">
+                {group.items.map((item, itemIdx) => (
+                  <div
+                    key={itemIdx}
+                    dangerouslySetInnerHTML={{ __html: item }}
+                  />
+                ))}
+              </div>
+            );
+          }
+        })}
+      </div>
+    );
+  };
+
   return (
     <section
       ref={heroRef}
@@ -89,9 +152,7 @@ export default function Hero({ product, scrollToCheckout }: HeroProps) {
           </div>
 
           {/* Subtitle */}
-          <p className="reveal text-lg sm:text-xl text-white/80 max-w-4xl mb-10 leading-relaxed">
-            {product?.basicInfo?.description?.substring(0, 300)}...
-          </p>
+          {renderFormattedDescription(product?.basicInfo?.description)}
 
           {/* Product Image */}
           <div className="reveal relative w-full max-w-4xl mb-10">

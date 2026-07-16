@@ -54,13 +54,10 @@ export const basicInfoFields: FieldConfig[] = [
   },
   {
     name: "basicInfo.description",
-    type: "textarea",
+    type: "rich-text",
     label: "Description",
     placeholder: "Enter detailed product description",
     required: true,
-    rows: 5,
-    showCharCount: true,
-    maxLength: 2000,
   },
   {
     name: "basicInfo.addDeliveryCharge",
@@ -282,7 +279,7 @@ export const tagsField: FieldConfig[] = [
     type: "tags",
     label: "Product Tags",
     placeholder: "Add tags...",
-    required: true,
+    required: false,
     helpText: "Press Enter to add tags",
     suggestions: [
       "New Arrival",

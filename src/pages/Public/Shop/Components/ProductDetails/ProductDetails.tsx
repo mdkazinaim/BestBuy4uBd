@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Star,
@@ -12,7 +12,12 @@ import {
   Share2,
   ShieldCheck,
   Zap,
+  Plus,
+  CheckCircle,
+  PhoneCall,
+  X,
 } from "lucide-react";
+import { useGetHost } from "@/utils/useGetHost";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button, Chip, Divider, Skeleton } from "@heroui/react";
 import {
@@ -65,6 +70,8 @@ const ProductDetailsSkeleton = () => (
 
 const ProductDetails = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const host = useGetHost();
   const { 
     trackViewItem, 
     trackAddToCart, 
@@ -169,6 +176,53 @@ const ProductDetails = () => {
     });
   };
 
+  const handleOrderNow = () => {
+    if (!product) return;
+    if (totalQuantity === 0) {
+      toast.error('Please select at least one item');
+      return;
+    }
+
+    const groupedVariants: Record<string, any[]> = {};
+    selectedVariants.forEach(sv => {
+      if (!groupedVariants[sv.group]) groupedVariants[sv.group] = [];
+      groupedVariants[sv.group].push({
+        value: sv.item.value,
+        price: sv.item.price,
+        quantity: sv.quantity
+      });
+    });
+
+    const variantsPayload = Object.entries(groupedVariants).map(([group, items]) => ({
+      group,
+      items
+    }));
+
+    dispatch(addToCart({
+      id: product._id,
+      name: product.basicInfo.title,
+      price: product.price.discounted || product.price.regular,
+      image: product.images[0]?.url,
+      quantity: totalQuantity,
+      selectedVariants: variantsPayload,
+      deliveryChargeInsideDhaka: product.basicInfo.deliveryChargeInsideDhaka,
+      deliveryChargeOutsideDhaka: product.basicInfo.deliveryChargeOutsideDhaka,
+      freeShipping: product.additionalInfo?.freeShipping,
+      comboPricing: product.comboPricing
+    }));
+
+    trackAddToCart({
+      id: product._id,
+      name: product.basicInfo.title,
+      price: product.price.discounted || product.price.regular,
+      category: product.basicInfo.category,
+      quantity: totalQuantity,
+      variant: selectedVariants.map(v => `${v.group}: ${v.item.value}`).join(", ")
+    });
+
+    navigate("/checkout");
+  };
+
   const handleWishlist = () => {
     if (!product) return;
     if (isWishlisted) {
@@ -191,6 +245,29 @@ const ProductDetails = () => {
     }
   };
 
+  const handleShare = () => {
+    if (!product) return;
+    const shareData = {
+      title: product.basicInfo.title,
+      text: `Check out this product: ${product.basicInfo.title}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      navigator.share(shareData)
+        .then(() => toast.success("Shared successfully!"))
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            toast.error("Could not share");
+          }
+        });
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => toast.success("Product link copied to clipboard!"))
+        .catch(() => toast.error("Failed to copy link"));
+    }
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
@@ -200,8 +277,11 @@ const ProductDetails = () => {
 
   const { data: relatedProductsResponse } = useGetAllProductsQuery({ limit: 4 });
 
+
   if (isLoading) return <ProductDetailsSkeleton />;
   if (!product) return <div className="min-h-screen flex items-center justify-center">Product Not Found</div>;
+
+  const stockStatus = product.stockStatus || "In Stock";
 
   const discountPercentage = product.price.discounted
     ? Math.round(((product.price.regular - product.price.discounted) / product.price.regular) * 100)
@@ -221,7 +301,13 @@ const ProductDetails = () => {
               <span className="text-gray-900 dark:text-slate-100 truncate max-w-[150px] md:max-w-md">{product.basicInfo.title}</span>
             </div>
             <div className="flex gap-2">
-              <Button isIconOnly variant="light" size="sm" className="bg-gray-50 dark:bg-slate-800 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700">
+              <Button
+                isIconOnly
+                variant="light"
+                size="sm"
+                onPress={handleShare}
+                className="bg-gray-50 dark:bg-slate-800 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+              >
                 <Share2 className="w-4 h-4 text-gray-600 dark:text-slate-300" />
               </Button>
             </div>
@@ -233,7 +319,7 @@ const ProductDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Image Gallery (Sticky) */}
-          <div className="lg:col-span-7 xl:col-span-7 lg:sticky lg:top-20">
+          <div className="lg:col-span-6 lg:sticky lg:top-24">
             <div className="flex flex-col gap-4">
               <div 
                 className="relative aspect-square bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex items-center justify-center group overflow-hidden cursor-zoom-in"
@@ -291,7 +377,7 @@ const ProductDetails = () => {
           </div>
 
           {/* Right Column: Product Information */}
-          <div className="lg:col-span-5 xl:col-span-5 space-y-8">
+          <div className="lg:col-span-6 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Chip size="sm" variant="flat" className="font-bold uppercase tracking-wider text-[10px] bg-secondary/10 text-secondary">
@@ -302,6 +388,14 @@ const ProductDetails = () => {
                   <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">{product.rating?.average || 0}</span>
                   <span className="text-[10px] text-yellow-600/80 dark:text-yellow-400/80 font-medium">({product.rating?.count || 0})</span>
                 </div>
+                <Chip
+                  size="sm"
+                  variant="flat"
+                  color={stockStatus === "In Stock" ? "success" : stockStatus === "Pre-order" ? "warning" : "danger"}
+                  className="font-bold text-[10px]"
+                >
+                  {stockStatus.toUpperCase()}
+                </Chip>
               </div>
               
               <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-slate-100 leading-tight">
@@ -318,55 +412,105 @@ const ProductDetails = () => {
                     </span>
                  )}
               </div>
+
+              {product.basicInfo.description && (
+                <div
+                  className="text-sm text-gray-600 dark:text-slate-350 leading-relaxed font-inter pt-2 prose prose-sm max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+                  dangerouslySetInnerHTML={{ __html: product.basicInfo.description }}
+                />
+              )}
             </div>
 
             <Divider className="opacity-60" />
 
-            {/* Price Summary Card */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-5">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-                Price Summary
-              </h3>
-              
-              <PriceBreakdown
-                quantity={totalQuantity}
-                unitPrice={basePrice}
-                subtotal={subtotal}
-                comboPricing={product.comboPricing || []}
-              />
-              
-              {product.comboPricing && product.comboPricing.length > 0 && (
-                <div className="mt-4">
-                   <ComboPricingDisplay
-                    comboPricing={product.comboPricing}
-                    currentQuantity={totalQuantity}
-                    appliedTier={appliedComboTier || undefined}
-                    variant="success"
-                  />
-                </div>
-              )}
+            {/* Variant Selector Section */}
+            {product.variants && product.variants.length > 0 && (
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-4">
+                <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
+                  Select Options
+                </h3>
+                <VariantSelector
+                  selectedVariants={selectedVariants}
+                  productVariants={product.variants}
+                  onVariantAdd={(group, item) => {
+                    addVariant(group, item);
+                    trackVariantSelect(product._id, group, item.value);
+                  }}
+                  onVariantUpdate={updateVariantQuantity}
+                  showBaseVariant={false}
+                />
+              </div>
+            )}
+
+            {/* Quantity Selector Section */}
+            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest">
+                  Quantity
+                </h3>
+                <p className="text-xs text-gray-450 dark:text-slate-500 uppercase tracking-wider ">
+                  Choose number of items
+                </p>
+              </div>
+              <div className="flex items-center border border-gray-200 dark:border-slate-800 rounded-xl bg-gray-50 dark:bg-slate-950 p-1">
+                <button
+                  onClick={() => {
+                    const baseVariant = selectedVariants.find(v => v.isBaseVariant);
+                    if (baseVariant && baseVariant.quantity > 1) {
+                      updateVariantQuantity(baseVariant.group, baseVariant.item.value, baseVariant.quantity - 1);
+                    }
+                  }}
+                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <span className="w-12 text-center text-sm font-bold text-gray-950 dark:text-slate-100">
+                  {selectedVariants.find(v => v.isBaseVariant)?.quantity || 1}
+                </span>
+                <button
+                  onClick={() => {
+                    const baseVariant = selectedVariants.find(v => v.isBaseVariant);
+                    if (baseVariant) {
+                      updateVariantQuantity(baseVariant.group, baseVariant.item.value, baseVariant.quantity + 1);
+                    }
+                  }}
+                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Variant Selector Section */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-4">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
-                Select Options
-              </h3>
-              <VariantSelector
-                selectedVariants={selectedVariants}
-                productVariants={product.variants}
-                onVariantAdd={(group, item) => {
-                  addVariant(group, item);
-                  trackVariantSelect(product._id, group, item.value);
-                }}
-                onVariantUpdate={updateVariantQuantity}
-                showBaseVariant={true}
-              />
-            </div>
+            {/* Price Summary Card - Conditional: Only shown if discount/combo is active OR quantity > 1 */}
+            {((product.comboPricing && product.comboPricing.length > 0) || totalQuantity > 1) && (
+              <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-5">
+                <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  Price Summary
+                </h3>
+                
+                <PriceBreakdown
+                  quantity={totalQuantity}
+                  unitPrice={basePrice}
+                  subtotal={subtotal}
+                  comboPricing={product.comboPricing || []}
+                />
+                
+                {product.comboPricing && product.comboPricing.length > 0 && (
+                  <div className="mt-4">
+                     <ComboPricingDisplay
+                      comboPricing={product.comboPricing}
+                      currentQuantity={totalQuantity}
+                      appliedTier={appliedComboTier || undefined}
+                      variant="success"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Actions */}
-            <div className="sticky bottom-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 -mx-4 md:static md:bg-transparent md:p-0 md:mx-0 border-t md:border-t-0 border-gray-200 dark:border-slate-800">
+            <div className="sticky bottom-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 -mx-4 md:static md:bg-transparent md:p-0 md:mx-0 border-t md:border-t-0 border-gray-200 dark:border-slate-800 space-y-3">
                <div className="flex gap-3">
                   <Button
                     size="lg"
@@ -390,28 +534,64 @@ const ProductDetails = () => {
                     <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
                   </Button>
                </div>
+               
+               <Button
+                 size="lg"
+                 onPress={handleOrderNow}
+                 isDisabled={totalQuantity === 0}
+                 className="w-full h-12 bg-[#ff5a00] hover:bg-[#e04f00] text-white font-bold text-lg shadow-lg shadow-orange-500/20 rounded-xl hover:shadow-orange-500/40 transition-all cursor-pointer"
+                 startContent={<Zap className="w-5 h-5 fill-current animate-pulse" />}
+               >
+                 Order Korun (অর্ডার করুন)
+               </Button>
             </div>
 
-            {/* Trust Signals */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center">
-                  <Truck className="w-5 h-5 text-gray-700 dark:text-slate-350" />
+            {/* Trust Signals & Need Help */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start gap-2 shadow-sm text-center sm:text-left">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center flex-shrink-0">
+                  <Truck className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-700 dark:text-slate-350" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100">Fast Delivery</h4>
-                  <p className="text-[10px] text-gray-500 dark:text-slate-400">2-3 Days</p>
+                  <h4 className="text-[9px] sm:text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100 tracking-tight">Fast Delivery</h4>
+                  <p className="text-[9px] sm:text-[10px] text-gray-500 dark:text-slate-400">2-3 Days</p>
                 </div>
               </div>
-              <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex items-center gap-3 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5 text-gray-700 dark:text-slate-350" />
+              
+              <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start gap-2 shadow-sm text-center sm:text-left">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-700 dark:text-slate-350" />
                 </div>
                 <div>
-                  <h4 className="text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100">Warranty</h4>
-                  <p className="text-[10px] text-gray-500 dark:text-slate-400">Verified</p>
+                  <h4 className="text-[9px] sm:text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100 tracking-tight">Warranty</h4>
+                  <p className="text-[9px] sm:text-[10px] text-gray-500 dark:text-slate-400">Verified</p>
                 </div>
               </div>
+
+              {host.phone ? (
+                <a
+                  href={`tel:${host.phone}`}
+                  className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start gap-2 shadow-sm text-center sm:text-left hover:border-secondary transition-all cursor-pointer group"
+                >
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/15 transition-colors">
+                    <PhoneCall className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-700 dark:text-slate-350 group-hover:text-secondary transition-colors" />
+                  </div>
+                  <div className="overflow-hidden w-full">
+                    <h4 className="text-[9px] sm:text-[10px] font-bold uppercase text-gray-900 dark:text-slate-100 tracking-tight group-hover:text-secondary transition-colors">Need Help?</h4>
+                    <p className="text-[9px] sm:text-[10px] text-gray-550 dark:text-slate-400 font-semibold truncate group-hover:text-secondary transition-colors">{host.phone}</p>
+                  </div>
+                </a>
+              ) : (
+                <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 rounded-xl border border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row items-center sm:items-start gap-2 shadow-sm text-center sm:text-left">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gray-50 dark:bg-slate-950 flex items-center justify-center flex-shrink-0">
+                    <PhoneCall className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-400 dark:text-slate-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-[9px] sm:text-[10px] font-bold uppercase text-gray-400 dark:text-slate-500 tracking-tight">Need Help?</h4>
+                    <p className="text-[9px] sm:text-[10px] text-gray-400 dark:text-slate-550">Online</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -419,7 +599,7 @@ const ProductDetails = () => {
         {/* Detailed Info Sections */}
         <div className="mt-20 space-y-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            <div className="lg:col-span-8 space-y-12">
+            <div className="lg:col-span-12 space-y-12">
               {/* Description */}
               <section className="space-y-6">
                 <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-slate-800">
@@ -428,11 +608,31 @@ const ProductDetails = () => {
                 </div>
                 <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm">
                   <div
-                    className="prose prose-sm max-w-none text-gray-600 dark:text-slate-300 leading-relaxed font-inter"
+                    className="prose prose-sm max-w-none text-gray-600 dark:text-slate-300 leading-relaxed font-inter whitespace-pre-wrap [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
                     dangerouslySetInnerHTML={{ __html: product.basicInfo.description }}
                   />
                 </div>
               </section>
+
+              {/* Key Features */}
+              {product.basicInfo.keyFeatures && product.basicInfo.keyFeatures.length > 0 && (
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-slate-800">
+                    <div className="h-6 w-1 bg-secondary rounded-full" />
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-slate-100 uppercase tracking-tight">Key Features</h2>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-8 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm">
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {product.basicInfo.keyFeatures.map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3 p-4 rounded-lg bg-gray-50/50 dark:bg-slate-950/20 border border-gray-100 dark:border-slate-800/40">
+                          <CheckCircle className="w-5 h-5 text-secondary flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed font-inter">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </section>
+              )}
 
               {/* Specifications */}
               {product.specifications && product.specifications.length > 0 && (
@@ -460,22 +660,6 @@ const ProductDetails = () => {
                   </div>
                 </section>
               )}
-            </div>
-
-            {/* Sidebar widgets for desktop */}
-            <div className="lg:col-span-4 space-y-6">
-               <div className="bg-slate-900 dark:bg-slate-900 p-8 rounded-xl text-white relative overflow-hidden group shadow-xl">
-                  <div className="relative z-10 space-y-4">
-                    <h3 className="text-xl font-bold uppercase tracking-tight">Need Help?</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      Have questions about this product? Contact our support team for assistance.
-                    </p>
-                    <Divider className="bg-white/10" />
-                    <Button className="w-full bg-white text-slate-900 font-bold text-xs uppercase tracking-widest h-10 rounded-xl cursor-pointer">
-                      Contact Us
-                    </Button>
-                  </div>
-               </div>
             </div>
           </div>
 
@@ -517,7 +701,7 @@ const ProductDetails = () => {
               className="absolute top-4 right-4 bg-white/20 text-white rounded-full z-10 hover:bg-white/30"
               onClick={() => setIsLightboxOpen(false)}
             >
-              <Minus className="w-6 h-6 rotate-45" />
+              <X className="w-6 h-6" />
             </Button>
             
             <motion.img

@@ -12,11 +12,10 @@ const ProductDescription: React.FC<ProductDescriptionProps> = ({ description }) 
       </div>
       <h3 className="text-3xl font-extrabold text-green-800 tracking-tight">পণ্যের বর্ণনা</h3>
     </div>
-    <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed">
-      {description.split("\n").map((paragraph: string, idx: number) => (
-        <p key={idx} className="mb-5 text-gray-700 leading-loose">{paragraph}</p>
-      ))}
-    </div>
+    <div
+      className="prose prose-lg max-w-none text-gray-800 leading-relaxed whitespace-pre-wrap [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+      dangerouslySetInnerHTML={{ __html: description }}
+    />
   </div>
 );
 

@@ -125,8 +125,9 @@ const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
                     </div>
 
                     <p className="text-gray-600 dark:text-slate-300 mb-8 leading-relaxed line-clamp-2">
-                      {product.description ||
-                        "Experience premium quality and exceptional performance with this top-rated product. Designed for durability and comfort."}
+                      {product.description
+                        ? product.description.replace(/<[^>]*>/g, "")
+                        : "Experience premium quality and exceptional performance with this top-rated product. Designed for durability and comfort."}
                     </p>
 
                     {/* Quantity & Actions */}

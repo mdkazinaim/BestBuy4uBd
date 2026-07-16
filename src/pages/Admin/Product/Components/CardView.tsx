@@ -201,7 +201,7 @@ const CardView = ({ products }: CardViewProps) => {
                 {product.basicInfo.category} • {product.basicInfo.brand}
               </p>
               <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2">
-                {product.basicInfo.description}
+                {product.basicInfo.description ? product.basicInfo.description.replace(/<[^>]*>/g, "") : ""}
               </p>
             </div>
 

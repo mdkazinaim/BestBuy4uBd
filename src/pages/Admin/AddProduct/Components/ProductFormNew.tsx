@@ -31,6 +31,7 @@ import {
 import { useState, useCallback, useMemo, memo, useEffect } from "react";
 import { Button } from "@/common/Components/Button";
 import { PopoverSelect } from "./FormHelpers";
+import RichTextEditor from "./RichTextEditor";
 import { motion } from "framer-motion";
 
 type Props = {
@@ -171,6 +172,26 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
           {errorMessage && (
             <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
           )}
+        </div>
+      );
+
+    case "richtext":
+      return (
+        <div key={field.name} className={`${field.className || ""} md:col-span-2`}>
+          <Controller
+            name={field.name}
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <RichTextEditor
+                value={value || ""}
+                onChange={onChange}
+                placeholder={field.placeholder}
+                label={field.label}
+                required={field.required}
+                error={errorMessage}
+              />
+            )}
+          />
         </div>
       );
 

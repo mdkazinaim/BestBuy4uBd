@@ -206,9 +206,10 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
             {/* Description */}
             <div className="mb-6 space-y-2">
               <h3 className="font-semibold text-slate-800 dark:text-slate-205 text-sm uppercase tracking-wider">Description</h3>
-              <p className="text-slate-650 dark:text-slate-350 leading-relaxed text-sm whitespace-pre-line">
-                {basicInfo.description}
-              </p>
+              <div
+                className="text-slate-650 dark:text-slate-350 leading-relaxed text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+                dangerouslySetInnerHTML={{ __html: basicInfo.description || "" }}
+              />
             </div>
 
             {/* Key Features */}
