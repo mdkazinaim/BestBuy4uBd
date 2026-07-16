@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Heart,
@@ -57,6 +57,20 @@ const Navbar = () => {
   );
   const wishlistCount = wishlistItems.length;
 
+  const promotionalMessages = [
+    { icon: <Truck className="w-3 h-3 text-primary-green" />, text: "FREE SHIPPING OVER ৳999" },
+    { icon: <RefreshCw className="w-3 h-3 text-primary-green" />, text: "30 DAYS MONEY BACK" },
+    { icon: <Shield className="w-3 h-3 text-primary-green" />, text: "100% SECURE PAYMENT" }
+  ];
+  const [currentPromoIndex, setCurrentPromoIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentPromoIndex((prev) => (prev + 1) % promotionalMessages.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <nav className="w-full bg-white dark:bg-slate-900 shadow-md sticky top-0 z-50 transition-colors">
       {/* Top Bar */}
@@ -64,7 +78,7 @@ const Navbar = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Left - Contact */}
-            <div className="flex items-center gap-2 text-dark-blue dark:text-slate-200">
+            <div className="flex items-center gap-2 text-dark-blue dark:text-slate-200 shrink-0">
               <Phone className="w-4 h-4" />
               <span className="hidden sm:inline font-medium">Hotline 24/7</span>
               {host.phone ? (
@@ -74,7 +88,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Center - Trust Badges */}
+            {/* Center - Trust Badges (Desktop) */}
             <div className="hidden md:flex items-center gap-6 text-light-gray/80 dark:text-slate-400/80">
               <div className="flex items-center gap-1.5 opacity-70">
                 <Truck className="w-3.5 h-3.5" />
@@ -88,6 +102,23 @@ const Navbar = () => {
                 <Shield className="w-3.5 h-3.5" />
                 <span className="text-[10px] font-bold uppercase tracking-wider">100% SECURE PAYMENT</span>
               </div>
+            </div>
+
+            {/* Mobile/Tablet Promotional Ticker */}
+            <div className="md:hidden flex-1 flex justify-end items-center h-5 overflow-hidden text-[9px] font-bold uppercase tracking-wider text-light-gray/80 dark:text-slate-400/80 pl-2">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentPromoIndex}
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 0.7 }}
+                  exit={{ y: -10, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-1.5 whitespace-nowrap"
+                >
+                  {promotionalMessages[currentPromoIndex].icon}
+                  <span>{promotionalMessages[currentPromoIndex].text}</span>
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             {/* Right - Order Track */}

@@ -62,8 +62,7 @@ const BannerGrid = () => {
     return { heroBanners: heroes, productCards: others };
   }, [bannerResponse]);
 
-  const showSkeleton =
-    isLoading || (heroBanners.length === 0 && productCards.length === 0);
+  const showSkeleton = isLoading;
 
   if (showSkeleton) {
     return (
