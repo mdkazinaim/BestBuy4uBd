@@ -37,7 +37,7 @@ const UserMenuDropdown = ({ user, onClose, isOpen }: UserMenuDropdownProps) => {
   return (
     <div className={`absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-border-main dark:border-slate-800 py-2 ${visibilityClasses} transition-all duration-200 transform origin-top-right z-50 overflow-hidden`}>
       {/* User Header */}
-      <div className="px-4 py-3 border-b border-border-main dark:border-slate-800 bg-bg-base/30 dark:bg-slate-850/50">
+      <div className="px-4 py-3 border-b border-border-main dark:border-slate-800 bg-bg-base/30 dark:bg-slate-800/50">
         <p className="text-xs font-semibold text-text-muted uppercase tracking-wider">
           Signed in as
         </p>

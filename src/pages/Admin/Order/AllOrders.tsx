@@ -640,7 +640,7 @@ const AllOrders = () => {
       </div>
 
       {/* Filters and Controls */}
-      <div className="p-3 md:p-4 mb-4 md:mb-6 border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-850/10 rounded-xl flex flex-col lg:flex-row gap-3 md:gap-4">
+      <div className="p-3 md:p-4 mb-4 md:mb-6 border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/10 rounded-xl flex flex-col lg:flex-row gap-3 md:gap-4">
         <div className="flex-1">
           <Input
             placeholder="Search ID/Name..."
@@ -790,7 +790,7 @@ const AllOrders = () => {
                     <tr
                       key={order._id}
                       className={`border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors ${
-                        isEven ? "bg-white dark:bg-slate-900/10" : "bg-slate-50/20 dark:bg-slate-850/10"
+                        isEven ? "bg-white dark:bg-slate-900/10" : "bg-slate-50/20 dark:bg-slate-800/10"
                       }`}
                     >
                       <td className="px-4 py-4">

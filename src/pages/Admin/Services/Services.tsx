@@ -119,7 +119,7 @@ export default function Services() {
 
           return (
             <div key={item.key} className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 overflow-hidden flex flex-col">
-              <div className="p-4 flex items-start gap-3 border-b border-slate-100 dark:border-slate-850">
+              <div className="p-4 flex items-start gap-3 border-b border-slate-100 dark:border-slate-800">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center border shrink-0 ${item.iconBg}`}>{item.icon}</div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">{item.title}</p>
@@ -128,7 +128,7 @@ export default function Services() {
                     Official Site <ExternalLink className="w-2.5 h-2.5" />
                   </a>
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold ${isConfigured ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60" : "bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-750"}`}>
+                <span className={`shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold ${isConfigured ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60" : "bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-emerald-500" : "bg-slate-400"}`} />
                   {isConfigured ? "Active" : "Idle"}
                 </span>

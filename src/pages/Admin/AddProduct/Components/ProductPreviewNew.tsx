@@ -57,7 +57,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
         {/* Left Column - Media */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-850">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
               <Package className="w-5 h-5 text-blue-600 dark:text-blue-450" />
               Product Images
             </h2>
@@ -79,13 +79,13 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                         }
                       }}
                     />
-                    <div className="p-3 border-t border-slate-100 dark:border-slate-850 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <div className="p-3 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 font-medium">
                       {img.alt}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-10 text-slate-400 dark:text-slate-650 text-sm">
+                <div className="text-center py-10 text-slate-400 dark:text-slate-500 text-sm">
                   No images added
                 </div>
               )}
@@ -94,7 +94,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
           {/* Videos Preview */}
           <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-850">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
               <Video className="w-5 h-5 text-blue-600 dark:text-blue-450" />
               Product Videos
             </h2>
@@ -121,7 +121,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-10 text-slate-400 dark:text-slate-650 text-sm">
+                <div className="text-center py-10 text-slate-400 dark:text-slate-500 text-sm">
                   No videos added
                 </div>
               )}
@@ -133,7 +133,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Info */}
           <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-            <div className="flex items-start justify-between flex-wrap gap-4 mb-5 pb-5 border-b border-slate-100 dark:border-slate-850">
+            <div className="flex items-start justify-between flex-wrap gap-4 mb-5 pb-5 border-b border-slate-100 dark:border-slate-800">
               <div className="flex-1 min-w-[240px]">
                 <h2 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">
                   {basicInfo.title}
@@ -152,7 +152,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                   )}
                 </div>
                 {basicInfo.productCode && (
-                  <p className="text-xs text-slate-450 dark:text-slate-500 font-mono">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-mono">
                     SKU: {basicInfo.productCode}
                   </p>
                 )}
@@ -207,7 +207,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
             <div className="mb-6 space-y-2">
               <h3 className="font-semibold text-slate-800 dark:text-slate-205 text-sm uppercase tracking-wider">Description</h3>
               <div
-                className="text-slate-650 dark:text-slate-350 leading-relaxed text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+                className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
                 dangerouslySetInnerHTML={{ __html: basicInfo.description || "" }}
               />
             </div>
@@ -234,7 +234,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
             {/* Tags */}
             {tags && tags.length > 0 && (
-              <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-850">
+              <div className="space-y-2 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag, idx) => (
                     <span
@@ -253,7 +253,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           {/* Variants */}
           {variants && variants.length > 0 && (
             <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">Variants</h3>
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">Variants</h3>
               <div className="space-y-5">
                 {variants.map((variant, idx) => (
                   <div key={idx} className="space-y-2">
@@ -275,7 +275,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                             </div>
                           )}
                           {item.stock !== undefined && (
-                            <div className="text-xs text-slate-455 dark:text-slate-500 mt-0.5">
+                            <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                               Stock: {item.stock}
                             </div>
                           )}
@@ -291,7 +291,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           {/* Specifications */}
           {specifications && specifications.length > 0 && (
             <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                 Specifications
               </h3>
               <div className="space-y-6">
@@ -300,7 +300,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                     <h4 className="text-xs font-semibold text-blue-600 dark:text-blue-450 uppercase tracking-wider mb-2">
                       {spec.group}
                     </h4>
-                    <div className="divide-y divide-slate-100 dark:divide-slate-850 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
                       {spec.items.map((item, itemIdx) => (
                         <div
                           key={itemIdx}
@@ -323,21 +323,21 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Shipping */}
             <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-850">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
                 <Truck className="w-4 h-4 text-blue-600 dark:text-blue-450" />
                 Shipping
               </h3>
               <div className="space-y-3 text-sm">
                 {shippingDetails ? (
                   <>
-                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                       <span className="text-slate-500 dark:text-slate-400 font-medium">Dimensions</span>
                       <span className="font-semibold text-slate-700 dark:text-slate-350">
                         {shippingDetails.length || 0} × {shippingDetails.width || 0} ×{" "}
                         {shippingDetails.height || 0} {shippingDetails.dimensionUnit || 'cm'}
                       </span>
                     </div>
-                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-850/60">
+                    <div className="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800/60">
                       <span className="text-slate-500 dark:text-slate-400 font-medium">Weight</span>
                       <span className="font-semibold text-slate-700 dark:text-slate-350">
                         {shippingDetails.weight || 0} {shippingDetails.weightUnit || 'kg'}
@@ -365,7 +365,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
             {/* Additional Info */}
             <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-850">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
                 <Shield className="w-4 h-4 text-blue-600 dark:text-blue-450" />
                 Additional Info
               </h3>
@@ -392,7 +392,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
                     </div>
                   </div>
                 )}
-                <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-105 dark:border-slate-850">
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                   {additionalInfo?.isFeatured && (
                     <span className="px-2.5 py-0.5 bg-yellow-50 dark:bg-yellow-950/20 text-yellow-800 dark:text-yellow-400 border border-yellow-200/50 dark:border-yellow-900/30 text-xs rounded-full flex items-center gap-1 font-medium">
                       <Star className="w-3 h-3 fill-current" />
@@ -413,7 +413,7 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
           {/* SEO Info */}
           {seo && (seo.metaTitle || seo.metaDescription || seo.slug) && (
             <div className="bg-white dark:bg-slate-900/60 rounded-xl shadow-none border border-slate-200 dark:border-slate-800 p-6">
-              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-850">
+              <h3 className="font-semibold text-slate-800 dark:text-slate-200 text-sm uppercase tracking-wider mb-4 pb-2 border-b border-slate-100 dark:border-slate-800">
                 SEO Configuration
               </h3>
               <div className="space-y-4">

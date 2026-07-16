@@ -85,7 +85,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
       {/* Image Container */}
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative h-32 sm:h-48 mb-3 sm:mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-850/80 transition-colors rounded-xl shadow-sm">
+        <div className="relative h-32 sm:h-48 mb-3 sm:mb-4 flex items-center justify-center overflow-hidden card-inner bg-bg-base dark:bg-slate-950 group-hover:bg-bg-surface dark:group-hover:bg-slate-800/80 transition-colors rounded-xl shadow-sm">
             {product.discount && (
                 <span className="absolute top-4 left-4 text-[10px] font-bold text-white bg-brand-600 rounded-full px-1.5 py-0.5 z-10">
                   {product.discount}% OFF

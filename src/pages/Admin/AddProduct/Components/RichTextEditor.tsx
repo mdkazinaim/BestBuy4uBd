@@ -92,7 +92,7 @@ export default function RichTextEditor({
   return (
     <div className="space-y-1.5 w-full">
       {label && (
-        <label className="block text-xs font-bold uppercase tracking-wider text-slate-650 dark:text-slate-350">
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </label>
@@ -103,7 +103,7 @@ export default function RichTextEditor({
         error ? "border-red-500 focus-within:ring-red-500/20" : "border-slate-200 dark:border-slate-800"
       )}>
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-55/80 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 select-none">
+        <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50/80 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 select-none">
           {/* Text Style */}
           <button
             type="button"
@@ -145,7 +145,7 @@ export default function RichTextEditor({
             type="button"
             title="Paragraph"
             onClick={() => executeCommand("formatBlock", "p")}
-            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 transition-colors cursor-pointer"
+            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
           >
             <Type className="w-4 h-4" />
           </button>
@@ -153,7 +153,7 @@ export default function RichTextEditor({
             type="button"
             title="Heading 1"
             onClick={() => executeCommand("formatBlock", "h1")}
-            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 transition-colors cursor-pointer"
+            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
           >
             <Heading1 className="w-4 h-4" />
           </button>
@@ -161,7 +161,7 @@ export default function RichTextEditor({
             type="button"
             title="Heading 2"
             onClick={() => executeCommand("formatBlock", "h2")}
-            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 transition-colors cursor-pointer"
+            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
           >
             <Heading2 className="w-4 h-4" />
           </button>
@@ -169,7 +169,7 @@ export default function RichTextEditor({
             type="button"
             title="Heading 3"
             onClick={() => executeCommand("formatBlock", "h3")}
-            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 transition-colors cursor-pointer"
+            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
           >
             <Heading3 className="w-4 h-4" />
           </button>
@@ -273,7 +273,7 @@ export default function RichTextEditor({
             <button
               type="button"
               title="Text Color"
-              className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-650 dark:text-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
+              className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1 cursor-pointer"
             >
               <span className="w-3 h-3 rounded-full border border-slate-300 bg-slate-900 group-hover:bg-blue-600" />
             </button>
@@ -283,7 +283,7 @@ export default function RichTextEditor({
                   key={c.color}
                   type="button"
                   onClick={() => executeCommand("foreColor", c.color)}
-                  className="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-750 dark:text-slate-300 w-28 text-left cursor-pointer"
+                  className="flex items-center gap-2 px-2.5 py-1 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-700 dark:text-slate-300 w-28 text-left cursor-pointer"
                 >
                   <span className="size-3 rounded-full border" style={{ backgroundColor: c.color }} />
                   <span>{c.name}</span>
@@ -326,7 +326,7 @@ export default function RichTextEditor({
             onInput={handleInput}
             onBlur={handleInput}
             {...({ placeholder } as any)}
-            className="w-full min-h-[220px] p-4 text-sm text-slate-850 dark:text-slate-150 focus:outline-none overflow-y-auto prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
+            className="w-full min-h-[220px] p-4 text-sm text-slate-800 dark:text-slate-200 focus:outline-none overflow-y-auto prose prose-sm max-w-none dark:prose-invert [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-medium"
             style={{ minHeight: "220px" }}
           />
         )}

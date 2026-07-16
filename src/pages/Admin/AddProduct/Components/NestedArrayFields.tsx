@@ -66,7 +66,7 @@ export const ImagesField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
             <ImageIcon className="w-10 h-10 text-slate-400 dark:text-slate-600 mx-auto mb-3" />
             <p className="text-sm text-slate-500 dark:text-slate-400">No images added yet</p>
           </div>
@@ -106,7 +106,7 @@ const ImageUploadItem = memo(
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <ImageIcon className="w-7 h-7 text-slate-400 dark:text-slate-650" />
+                <ImageIcon className="w-7 h-7 text-slate-400 dark:text-slate-500" />
               )}
             </div>
           </div>
@@ -235,8 +235,8 @@ export const VideosField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
-            <VideoIcon className="w-10 h-10 text-slate-400 dark:text-slate-650 mx-auto mb-3" />
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+            <VideoIcon className="w-10 h-10 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
             <p className="text-sm text-slate-500 dark:text-slate-400">No videos added yet</p>
           </div>
         )}
@@ -434,7 +434,7 @@ export const KeyFeaturesField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+          <div className="text-center py-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
             <p className="text-sm text-slate-400 dark:text-slate-500">No key features added yet.</p>
           </div>
         )}
@@ -495,7 +495,7 @@ export const VariantsField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
             <p className="text-sm text-slate-400 dark:text-slate-500">No variant groups defined (e.g. Size, Color, etc.)</p>
           </div>
         )}
@@ -554,7 +554,7 @@ function VariantGroup({
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-850 rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg"
           >
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
@@ -615,7 +615,7 @@ function VariantGroup({
         variant="outline"
         size="sm"
         onClick={() => append({ value: "", price: 0, stock: 0 })}
-        className="mt-3 w-full border border-dashed border-slate-350 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
+        className="mt-3 w-full border border-dashed border-slate-300 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
       >
         <Plus className="w-3.5 h-3.5 mr-1" />
         Add Item
@@ -674,7 +674,7 @@ export const SpecificationsField = memo(
         </div>
 
         {fields.length === 0 && (
-          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-850 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
+          <div className="text-center py-10 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/30 dark:bg-slate-900/10">
             <p className="text-sm text-slate-400 dark:text-slate-500">No specifications defined (e.g. Dimensions, Processor, etc.)</p>
           </div>
         )}
@@ -733,7 +733,7 @@ function SpecificationGroup({
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-850 rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg"
           >
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
@@ -779,7 +779,7 @@ function SpecificationGroup({
         variant="outline"
         size="sm"
         onClick={() => append({ name: "", value: "" })}
-        className="mt-3 w-full border border-dashed border-slate-350 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
+        className="mt-3 w-full border border-dashed border-slate-300 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
       >
         <Plus className="w-3.5 h-3.5 mr-1" />
         Add Item
@@ -899,7 +899,7 @@ export const ComboPricingField = memo(
                 </div>
               </div>
               
-              <p className="text-xs text-slate-450 dark:text-slate-500 mt-2 italic">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">
                 {watch(`comboPricing.${index}.discountType`) === "per_product"
                   ? `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF on EACH unit purchased when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more (Total: ৳${(watch(`comboPricing.${index}.discount`) || 0) * (watch(`comboPricing.${index}.minQuantity`) || 0)} discount).`
                   : `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF the aggregate total when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`}

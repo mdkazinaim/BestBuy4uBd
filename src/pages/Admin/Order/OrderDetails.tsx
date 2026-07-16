@@ -85,7 +85,7 @@ const OrderStatusPopover = ({
           className="flex items-center justify-between w-full p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 font-semibold text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer text-sm"
         >
           <span>{currentOption?.label || currentStatus}</span>
-          <ChevronDown className="w-4 h-4 text-slate-450 shrink-0 ml-2" />
+          <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg">
@@ -401,7 +401,7 @@ const OrderDetails = () => {
         {/* Left Column: Order Items */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
-            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
               <Package className="w-4 h-5 text-slate-400" /> Order Items
             </h3>
             <div className="overflow-x-auto -mx-6 md:mx-0">
@@ -421,11 +421,11 @@ const OrderDetails = () => {
                       <tr
                         key={idx}
                         className={`hover:bg-slate-50/50 transition-colors ${
-                          isEven ? "bg-white dark:bg-slate-900/10" : "bg-slate-50/20 dark:bg-slate-850/10"
+                          isEven ? "bg-white dark:bg-slate-900/10" : "bg-slate-50/20 dark:bg-slate-800/10"
                         }`}
                       >
                         <td className="px-4 py-4 flex items-center gap-3 lg:min-w-[300px]">
-                          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg shrink-0 overflow-hidden border border-slate-100 dark:border-slate-850">
+                          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg shrink-0 overflow-hidden border border-slate-100 dark:border-slate-800">
                             {item.product?.images?.[0] && (
                               <img
                                 src={typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url}
@@ -549,7 +549,7 @@ const OrderDetails = () => {
 
           {/* Customer Info Card */}
           <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
-            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
               <User className="w-4 h-5 text-slate-400" /> Customer Details
             </h3>
             <div className="space-y-4">
@@ -597,7 +597,7 @@ const OrderDetails = () => {
 
           {/* Shipping Address */}
           <Card className="p-6 border border-slate-200 dark:border-slate-800 rounded-xl shadow-none bg-white dark:bg-slate-900/60">
-            <h3 className="text-base md:text-lg font-semibold text-slate-850 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
               <MapPin className="w-4 h-5 text-slate-400" /> Shipping Info
             </h3>
             <div className="space-y-4">

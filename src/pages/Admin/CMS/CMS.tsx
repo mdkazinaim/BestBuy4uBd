@@ -197,7 +197,7 @@ export default function CMS() {
                 <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wider text-right">ACTIONS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {banners.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-12 text-center text-sm font-medium text-slate-400 dark:text-slate-500">
@@ -206,9 +206,9 @@ export default function CMS() {
                 </tr>
               ) : (
                 banners.map((banner: IBanner) => (
-                  <tr key={banner._id} className="hover:bg-slate-50/40 dark:hover:bg-slate-850/10 transition-colors">
+                  <tr key={banner._id} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/10 transition-colors">
                     <td className="p-4">
-                      <div className="w-16 h-10 rounded-lg overflow-hidden bg-slate-150 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
+                      <div className="w-16 h-10 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0">
                         {banner.image ? (
                           <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" />
                         ) : (
@@ -219,14 +219,14 @@ export default function CMS() {
                     <td className="p-4">
                       <div className="max-w-[280px]">
                         <p className="font-semibold text-sm text-slate-800 dark:text-slate-200 truncate">{banner.title}</p>
-                        <p className="text-xs text-slate-450 dark:text-slate-500 truncate mt-0.5">{banner.description}</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">{banner.description}</p>
                       </div>
                     </td>
                     <td className="p-4">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide ${
                         banner.type === "hero"
                           ? "bg-blue-50 dark:bg-blue-950/20 text-blue-650 dark:text-blue-450 border border-blue-200 dark:border-blue-900/50"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-650 dark:text-slate-350 border border-slate-200 dark:border-slate-750"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                       }`}>
                         {banner.type.toUpperCase()}
                       </span>
@@ -295,12 +295,12 @@ export default function CMS() {
                     {banner.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
-                <p className="text-xs text-slate-450 dark:text-slate-500 line-clamp-1 mt-0.5">{banner.description}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-555 line-clamp-1 mt-0.5">{banner.description}</p>
                 <div className="mt-1.5">
                   <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold ${
                     banner.type === "hero"
                       ? "bg-blue-50 dark:bg-blue-950/20 text-blue-650 dark:text-blue-450 border border-blue-200/50"
-                      : "bg-slate-50 dark:bg-slate-800 text-slate-650 dark:text-slate-350 border border-slate-200"
+                      : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200"
                   }`}>
                     {banner.type.toUpperCase()}
                   </span>
@@ -308,7 +308,7 @@ export default function CMS() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 dark:border-slate-850">
+            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
               <Button
                 size="sm"
                 variant="outline"
@@ -363,28 +363,28 @@ export default function CMS() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Title</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Title</label>
                   <input
                     type="text"
                     placeholder="Enter banner title"
                     {...register("title")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Description</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Description</label>
                   <textarea
                     placeholder="Enter banner description"
                     {...register("description")}
                     rows={2}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100 resize-none"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100 resize-none"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-655 dark:text-slate-400">Type</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Type</label>
                   <select
                     {...register("type", { required: true })}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   >
                     <option value="hero">Hero Slider</option>
                     <option value="product">Product Card</option>
@@ -392,30 +392,30 @@ export default function CMS() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Link URL</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Link URL</label>
                   <input
                     type="text"
                     placeholder="/products/..."
                     {...register("link")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Subtitle</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Subtitle</label>
                   <input
                     type="text"
                     placeholder="Enter banner subtitle"
                     {...register("subtitle")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="md:col-span-2 space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-655 dark:text-slate-400">Image URL</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Image URL</label>
                   <input
                     type="text"
                     placeholder="https://..."
                     {...register("image", { required: true })}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Or Upload Image</label>
@@ -427,27 +427,27 @@ export default function CMS() {
                       className="w-full text-sm text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/50 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 dark:file:bg-slate-800 file:text-slate-700 dark:file:text-slate-300 hover:file:bg-slate-200/85 dark:hover:file:bg-slate-700/80 transition-all cursor-pointer h-10"
                     />
                     {isUploading && (
-                      <p className="text-xs text-blue-650 dark:text-blue-400 animate-pulse mt-1">Uploading to Cloudinary...</p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 animate-pulse mt-1">Uploading to Cloudinary...</p>
                     )}
                   </div>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-505 font-medium">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
                     Recommended: Hero (1200x500px), Product (400x500px), Promotional (1400x400px)
                   </p>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Button Text</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Button Text</label>
                   <input
                     type="text"
                     placeholder="e.g. SHOP NOW"
                     {...register("buttonText")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-655 dark:text-slate-400">Text Position</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Text Position</label>
                   <select
                     {...register("textPosition")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   >
                     <option value="center">Center</option>
                     <option value="top-left">Top Left</option>
@@ -457,56 +457,56 @@ export default function CMS() {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400 font-medium">Text Color</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 font-medium">Text Color</label>
                   <div className="flex gap-2.5 items-center">
                     <input
                       type="color"
                       {...register("textColor")}
                       className="w-10 h-9 p-0.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 cursor-pointer"
                     />
-                    <span className="text-xs font-medium text-slate-450">Pick color</span>
+                    <span className="text-xs font-medium text-slate-400">Pick color</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <div className="space-y-1.5 flex-1">
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Btn Bg</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Btn Bg</label>
                     <div className="flex gap-2 items-center">
                       <input
                         type="color"
                         {...register("buttonBgColor")}
                         className="w-10 h-9 p-0.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 cursor-pointer"
                       />
-                      <span className="text-[10px] font-semibold text-slate-450 dark:text-slate-500">Bg</span>
+                      <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">Bg</span>
                     </div>
                   </div>
                   <div className="space-y-1.5 flex-1">
-                    <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Btn Text</label>
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Btn Text</label>
                     <div className="flex gap-2 items-center">
                       <input
                         type="color"
                         {...register("buttonTextColor")}
                         className="w-10 h-9 p-0.5 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900 cursor-pointer"
                       />
-                      <span className="text-[10px] font-semibold text-slate-455 dark:text-slate-500">Text</span>
+                      <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">Text</span>
                     </div>
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Title Size</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Title Size</label>
                   <input
                     type="text"
                     placeholder="e.g. 3rem"
                     {...register("titleSize")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-650 dark:text-slate-400">Subtitle Size</label>
+                  <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Subtitle Size</label>
                   <input
                     type="text"
                     placeholder="e.g. 1.2rem"
                     {...register("subtitleSize")}
-                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                    className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                   />
                 </div>
                 <div className="md:col-span-2 flex flex-wrap items-center gap-6 pt-2">
@@ -515,7 +515,7 @@ export default function CMS() {
                       type="checkbox"
                       {...register("showTitle")}
                       defaultChecked
-                      className="w-4 h-4 text-blue-600 border-slate-350 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
+                      className="w-4 h-4 text-blue-600 border-slate-300 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
                     />
                     <span>Show Title</span>
                   </label>
@@ -524,7 +524,7 @@ export default function CMS() {
                       type="checkbox"
                       {...register("showButton")}
                       defaultChecked
-                      className="w-4 h-4 text-blue-600 border-slate-350 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
+                      className="w-4 h-4 text-blue-600 border-slate-300 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
                     />
                     <span>Show Button</span>
                   </label>
@@ -533,7 +533,7 @@ export default function CMS() {
                       type="checkbox"
                       {...register("isActive")}
                       defaultChecked
-                      className="w-4 h-4 text-blue-600 border-slate-350 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
+                      className="w-4 h-4 text-blue-600 border-slate-300 dark:border-slate-700 rounded focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900"
                     />
                     <span>Is Active</span>
                   </label>

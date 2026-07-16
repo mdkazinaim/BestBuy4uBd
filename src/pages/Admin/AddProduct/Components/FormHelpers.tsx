@@ -105,7 +105,7 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
               <button
                 type="button"
                 disabled={disabled}
-                className={`flex items-center justify-between w-full px-3 py-2 border rounded-lg text-sm text-left transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-905 border-slate-200 dark:border-slate-800 text-slate-850 dark:text-slate-205 focus:border-blue-500 cursor-pointer disabled:opacity-50 disabled:pointer-events-none h-10 ${
+                className={`flex items-center justify-between w-full px-3 py-2 border rounded-lg text-sm text-left transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 focus:border-blue-500 cursor-pointer disabled:opacity-50 disabled:pointer-events-none h-10 ${
                   error ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" : ""
                 }`}
               >
@@ -139,7 +139,7 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
                         className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors flex items-center justify-between cursor-pointer ${
                           isSelected
                             ? "bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
-                            : "text-slate-650 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-805/50"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                         }`}
                       >
                         <span className="truncate">{optLabel}</span>

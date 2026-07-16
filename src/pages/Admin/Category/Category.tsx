@@ -245,7 +245,7 @@ export default function Category() {
               className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 overflow-hidden"
             >
               {/* Category Header Row */}
-              <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/40 dark:hover:bg-slate-850/10 transition-colors">
+              <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/40 dark:hover:bg-slate-800/10 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
                     {category.image ? (
@@ -258,14 +258,14 @@ export default function Category() {
                         }}
                       />
                     ) : (
-                      <ImageIcon className="w-5 h-5 text-slate-450 dark:text-slate-500" />
+                      <ImageIcon className="w-5 h-5 text-slate-400 dark:text-slate-500" />
                     )}
                   </div>
                   <div>
                     <h3 className="font-semibold text-base text-slate-800 dark:text-slate-100">
                       {category.name}
                     </h3>
-                    <p className="text-xs text-slate-450 dark:text-slate-500 font-medium mt-0.5">
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium mt-0.5">
                       {category.subCategories?.length || 0} sub-categories
                     </p>
                   </div>
@@ -303,7 +303,7 @@ export default function Category() {
 
               {/* Sub-categories Grid Area */}
               {category.subCategories && category.subCategories.length > 0 && (
-                <div className="bg-slate-50/40 dark:bg-slate-950/20 p-4 border-t border-slate-100 dark:border-slate-850">
+                <div className="bg-slate-50/40 dark:bg-slate-950/20 p-4 border-t border-slate-100 dark:border-slate-800">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {category.subCategories.map((sub: any, idx: number) => (
                       <div
@@ -311,7 +311,7 @@ export default function Category() {
                         className="bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-between group hover:border-slate-300 dark:hover:border-slate-700 transition-all"
                       >
                         <div className="flex items-center gap-2 overflow-hidden">
-                          <div className="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 border border-slate-150 dark:border-slate-750 flex items-center justify-center overflow-hidden shrink-0">
+                          <div className="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
                             {sub.image ? (
                               <img
                                 src={sub.image}
@@ -388,7 +388,7 @@ export default function Category() {
                   placeholder="Enter name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                 />
               </div>
               <div className="space-y-1.5">
@@ -400,7 +400,7 @@ export default function Category() {
                   placeholder="Enter image URL"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100"
+                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100"
                 />
               </div>
               <div className="space-y-1.5">
@@ -427,7 +427,7 @@ export default function Category() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-955/20 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-850 dark:text-slate-100 resize-none"
+                  className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-900/50 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100 resize-none"
                 />
               </div>
             </div>

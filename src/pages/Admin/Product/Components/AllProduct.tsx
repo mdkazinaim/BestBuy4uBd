@@ -259,7 +259,7 @@ const AllProduct = () => {
                 className={`relative z-10 p-1.5 rounded-md transition-colors cursor-pointer flex items-center justify-center h-7 w-7 ${
                   viewMode === "table"
                     ? "text-slate-800 dark:text-white"
-                    : "text-slate-450 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                    : "text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                 }`}
               >
                 {viewMode === "table" && (
@@ -277,7 +277,7 @@ const AllProduct = () => {
                 className={`relative z-10 p-1.5 rounded-md transition-colors cursor-pointer flex items-center justify-center h-7 w-7 ${
                   viewMode === "card"
                     ? "text-slate-800 dark:text-white"
-                    : "text-slate-450 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                    : "text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                 }`}
               >
                 {viewMode === "card" && (
@@ -339,7 +339,7 @@ const AllProduct = () => {
 
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-450 dark:text-slate-500 font-semibold uppercase">Rows:</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase">Rows:</span>
               <LimitPopover limit={limit} onSelect={(val) => { setLimit(val); setPage(1); }} />
             </div>
 

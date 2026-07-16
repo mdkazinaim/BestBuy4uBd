@@ -86,7 +86,7 @@ export default function SteadfastManager() {
                 <span className="font-semibold">Status:</span>{" "}
                 <span className="font-mono">{statusData?.data?.delivery_status || "Unknown"}</span>
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-450">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 <span className="font-semibold">Last Updated:</span>{" "}
                 {statusData?.data?.updated_at || "N/A"}
               </p>
@@ -110,7 +110,7 @@ export default function SteadfastManager() {
                 <th className="p-4 text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wider">STATUS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-850">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {returnsLoading ? (
                 <tr>
                   <td colSpan={3} className="p-10 text-center text-sm text-slate-400 font-medium">Loading return requests...</td>
@@ -121,14 +121,14 @@ export default function SteadfastManager() {
                 </tr>
               ) : (
                 returnRequests.map((item: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-slate-50/40 dark:hover:bg-slate-850/10 transition-colors">
+                  <tr key={idx} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/10 transition-colors">
                     <td className="p-4 font-mono text-sm text-slate-700 dark:text-slate-300">{item.consignment_id || "N/A"}</td>
                     <td className="p-4 text-sm text-slate-600 dark:text-slate-400">{item.reason || "N/A"}</td>
                     <td className="p-4">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                         item.status === "pending"
                           ? "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200/60"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-750"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${item.status === "pending" ? "bg-amber-500" : "bg-slate-400"}`} />
                         {item.status || "Unknown"}

@@ -62,7 +62,7 @@ const TagsInput = memo(({ value = [], onChange, placeholder, suggestions }: any)
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap gap-1.5 p-2 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-955/20 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 min-h-10">
+      <div className="flex flex-wrap gap-1.5 p-2 border border-slate-200 dark:border-slate-800 rounded-lg bg-white dark:bg-slate-900/50 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 min-h-10">
         {value.map((tag: string) => (
           <span
             key={tag}
@@ -84,7 +84,7 @@ const TagsInput = memo(({ value = [], onChange, placeholder, suggestions }: any)
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={value.length === 0 ? placeholder : "Add tag..."}
-          className="flex-1 min-w-[120px] bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none text-slate-800 dark:text-slate-150"
+          className="flex-1 min-w-[120px] bg-transparent border-0 p-0 text-sm focus:ring-0 focus:outline-none text-slate-800 dark:text-slate-200"
         />
       </div>
       {suggestions && (
@@ -100,7 +100,7 @@ const TagsInput = memo(({ value = [], onChange, placeholder, suggestions }: any)
                 onClick={() => onChange([...value, suggestion])}
                 className={`text-xs px-2 py-0.5 rounded-full border transition-all ${
                   isAdded
-                    ? "bg-slate-50 dark:bg-slate-900 border-slate-150 dark:border-slate-800 text-slate-300 dark:text-slate-600"
+                    ? "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600"
                     : "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 cursor-pointer"
                 }`}
               >
@@ -135,7 +135,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
 
   const inputClasses = `w-full px-3.5 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900 ${
     error ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" : "border-slate-200 dark:border-slate-800"
-  } ${field.disabled ? "bg-slate-50 dark:bg-slate-805 text-slate-400 dark:text-slate-500 cursor-not-allowed" : "bg-white dark:bg-slate-955/20"}`;
+  } ${field.disabled ? "bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed" : "bg-white dark:bg-slate-900/50"}`;
 
   switch (field.type) {
     case "text":
@@ -144,7 +144,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
     case "number":
       return (
         <div key={field.name} className={field.className}>
-          <label className="block text-xs font-semibold text-slate-650 dark:text-slate-350 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -176,6 +176,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
       );
 
     case "richtext":
+    case "rich-text":
       return (
         <div key={field.name} className={`${field.className || ""} md:col-span-2`}>
           <Controller
@@ -198,7 +199,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
     case "textarea":
       return (
         <div key={field.name} className={field.className}>
-          <label className="block text-xs font-semibold text-slate-650 dark:text-slate-350 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -227,7 +228,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
     case "select":
       return (
         <div key={field.name} className={field.className}>
-          <label className="block text-xs font-semibold text-slate-650 dark:text-slate-350 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -251,7 +252,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
     case "radio":
       return (
         <div key={field.name} className={field.className}>
-          <label className="block text-xs font-semibold text-slate-650 dark:text-slate-350 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -312,7 +313,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
       return (
         <div key={field.name} className={field.className}>
           <label className="flex items-center justify-between cursor-pointer">
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-355">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               {field.label}
               {field.required && <span className="text-red-500 ml-1">*</span>}
             </span>
@@ -338,7 +339,7 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
     case "tags":
       return (
         <div key={field.name} className={field.className}>
-          <label className="block text-xs font-semibold text-slate-650 dark:text-slate-355 mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -512,7 +513,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
       {/* Horizontal Tabs / Step Indicator */}
       <div className="relative mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
         {/* Horizontal Connecting Line (Background) */}
-        <div className="absolute top-6 left-[8%] right-[8%] h-0.5 bg-slate-100 dark:bg-slate-850 -z-0 hidden md:block" />
+        <div className="absolute top-6 left-[8%] right-[8%] h-0.5 bg-slate-100 dark:bg-slate-800 -z-0 hidden md:block" />
 
         {/* Horizontal Connecting Line (Active Blue Progress animation) */}
         <div className="absolute top-6 left-[8%] right-[8%] h-0.5 -z-0 hidden md:block">
@@ -591,7 +592,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           className="space-y-6"
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-3 border-b border-slate-100 dark:border-slate-850">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
               Basic Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -666,7 +667,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           className="space-y-6"
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-3 border-b border-slate-100 dark:border-slate-850">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
               Price & Inventory
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -726,7 +727,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           className="space-y-6"
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-3 border-b border-slate-100 dark:border-slate-850">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
               Shipping & Delivery Details
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -754,7 +755,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
               ))}
             </div>
             <div className="border-t border-slate-200 dark:border-slate-800 pt-8 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-2 border-b border-slate-100 dark:border-slate-850">
+              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-2 border-b border-slate-100 dark:border-slate-800">
                 Warranty & Return Policies
               </h2>
               <div className="space-y-4">
@@ -785,7 +786,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-3 border-b border-slate-100 dark:border-slate-850">
+              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
                 Search Engine Optimization (SEO)
               </h2>
               <div className="space-y-4">
@@ -803,7 +804,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
             </div>
 
             <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-205 pb-3 border-b border-slate-100 dark:border-slate-850">
+              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
                 Tags & Categorization
               </h2>
               <div className="space-y-4">
@@ -824,7 +825,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
       </div>
 
       {/* Linear Navigation Controls & Footer Actions */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-850">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
         <div className="flex gap-2">
           <Button
             type="button"

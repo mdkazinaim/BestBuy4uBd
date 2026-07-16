@@ -42,7 +42,7 @@ const TemplatePopover = ({
           className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500/50 outline-none transition-all cursor-pointer text-xs disabled:opacity-50 disabled:pointer-events-none h-8"
         >
           <div className="flex items-center gap-1.5">
-            <Layout className="w-3.5 h-3.5 text-slate-450" />
+            <Layout className="w-3.5 h-3.5 text-slate-400" />
             <span>{currentOption?.label || currentTemplate}</span>
           </div>
           <ChevronDown className="w-3 h-3 text-slate-400 shrink-0 ml-1" />
@@ -143,7 +143,7 @@ const CardView = ({ products }: CardViewProps) => {
           className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 shadow-none flex flex-col h-full"
         >
           {/* Product Image */}
-          <div className="relative aspect-square w-full mb-4 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-850">
+          <div className="relative aspect-square w-full mb-4 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-100 dark:border-slate-800">
             <img
               src={product.images[0]?.url || "https://placehold.co/400x400?text=No+Image"}
               alt={product.images[0]?.alt || product.basicInfo.title}
@@ -197,7 +197,7 @@ const CardView = ({ products }: CardViewProps) => {
               <h3 className="font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 text-sm">
                 {product.basicInfo.title}
               </h3>
-              <p className="text-xs text-slate-450 dark:text-slate-500 font-medium">
+              <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                 {product.basicInfo.category} • {product.basicInfo.brand}
               </p>
               <p className="text-xs text-slate-400 dark:text-slate-500 line-clamp-2">
@@ -209,11 +209,11 @@ const CardView = ({ products }: CardViewProps) => {
               {/* Price */}
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-base font-semibold text-slate-800 dark:text-slate-150">
+                  <span className="text-base font-semibold text-slate-800 dark:text-slate-200">
                     {formatPrice(product.price.discounted)}
                   </span>
                   {product.price.discounted < product.price.regular && (
-                    <span className="text-xs line-through text-slate-450 dark:text-slate-500 ml-2 font-medium">
+                    <span className="text-xs line-through text-slate-400 dark:text-slate-500 ml-2 font-medium">
                       {formatPrice(product.price.regular)}
                     </span>
                   )}
