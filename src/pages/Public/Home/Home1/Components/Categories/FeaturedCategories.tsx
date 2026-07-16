@@ -101,8 +101,8 @@ const FeaturedCategories = () => {
   }
 
   return (
-    <section className="py-10">
-      <div className="container mx-auto px-4">
+    <section className="">
+      <div className="container mx-auto px-4 mt-10">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

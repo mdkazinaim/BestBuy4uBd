@@ -12,7 +12,7 @@ const Home = () => {
       {/* Banner Section */}
       <BannerGrid />
       <>
-        <div className="pb-12">
+        <div className="pb-12 flex flex-col gap-20">
           {/* Shop by Category */}
           <FeaturedCategories />
 

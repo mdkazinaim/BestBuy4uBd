@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import AnimatedContainer from "@/common/Components/AnimatedContainer";
 import { useGetNewArrivalsQuery } from "@/store/Api/ProductApi";
 import ProductCard from "./ProductCard";
+import { FaArrowRightLong } from "react-icons/fa6";
+import NewArrivalSkeleton from "@/common/Skeleton/NewArrivalSkeleton";
+
 
 interface ProgressProduct {
   id: string;
@@ -82,15 +85,19 @@ const NewArrival: React.FC = () => {
     });
   }, [productResponse, isLoading]);
 
+  if (isLoading) {
+    return <NewArrivalSkeleton />;
+  }
+
   const handleViewAll = () => {
     navigate(`/shop`);
   };
 
   return (
-    <section className="pb-20 bg-white dark:bg-slate-950 transition-colors">
+    <section className="bg-white dark:bg-slate-950 transition-colors">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
           <div className="flex items-baseline gap-2">
             <h2 className="text-2xl font-semibold text-brand-700 dark:text-brand-200 mb-0">
               New Arrival
@@ -99,10 +106,12 @@ const NewArrival: React.FC = () => {
 
           <button
             onClick={handleViewAll}
-            className="hidden md:block text-[10px] font-bold text-gray-400 hover:text-primary-green transition-colors uppercase tracking-[0.2em] cursor-pointer"
+            className="hidden text-xs font-bold text-gray-400 hover:text-primary-green transition-colors uppercase tracking-[0.2em] cursor-pointer md:flex items-center justify-center gap-2 group"
           >
             View All
+            <FaArrowRightLong size={16} className="group-hover:translate-x-1 transform duration-100 ease-in-out"/>
           </button>
+
         </div>
 
         {/* Pattern Grid: Repeating rows of 1 Large + 3 Small */}
