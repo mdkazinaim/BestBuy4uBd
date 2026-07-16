@@ -1,5 +1,6 @@
 import Settings from "@/pages/Admin/Settings/Settings";
 import Dashboard from "@/pages/Admin/Dashboard/Dashboard";
+import Visitors from "@/pages/Admin/Visitors/Visitors";
 import Category from "@/pages/Admin/Category/Category";
 import AddProduct from "@/pages/Admin/AddProduct/AddProduct";
 import Product from "@/pages/Admin/Product/Product";
@@ -11,6 +12,7 @@ import OrderDetails from "@/pages/Admin/Order/OrderDetails";
 import InvoiceContainer from "@/pages/Admin/Order/Invoice/InvoiceContainer";
 import {
   LayoutDashboard,
+  Users,
   SettingsIcon,
   PackageSearch,
   Package2,
@@ -30,6 +32,12 @@ export const adminRoutes = [
         icon: <LayoutDashboard />,
         path: "dashboard",
         element: <Dashboard />,
+      },
+      {
+        label: "Visitors",
+        icon: <Users />,
+        path: "visitors",
+        element: <Visitors />,
       },
     ]
   },
