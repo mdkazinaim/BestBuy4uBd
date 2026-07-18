@@ -3,7 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BestBuy4uBd</title>
+    
+    <!-- Dynamic Title for Browsers & Crawlers -->
+    <title>{{SITE_TITLE}}</title>
+    
+    <!-- Open Graph / Facebook / Messenger / WhatsApp Link Preview Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{SITE_TITLE}}" />
+    <meta property="og:description" content="{{SITE_DESCRIPTION}}" />
+    <meta property="og:image" content="{{SITE_IMAGE}}" />
+    
+    <!-- Twitter Card Link Preview Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{SITE_TITLE}}" />
+    <meta name="twitter:description" content="{{SITE_DESCRIPTION}}" />
+    <meta name="twitter:image" content="{{SITE_IMAGE}}" />
   </head>
   <body>
     <div id="root"></div>
