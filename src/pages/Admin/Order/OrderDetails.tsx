@@ -426,17 +426,21 @@ const OrderDetails = () => {
                       >
                         <td className="px-4 py-4 flex items-center gap-3 lg:min-w-[300px]">
                           <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-lg shrink-0 overflow-hidden border border-slate-100 dark:border-slate-800">
-                            {item.product?.images?.[0] && (
+                            {(item.product?.images?.[0] || item.image) && (
                               <img
-                                src={typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url}
-                                alt={item.product.title}
+                                src={
+                                  item.product?.images?.[0]
+                                    ? (typeof item.product.images[0] === 'string' ? item.product.images[0] : item.product.images[0].url)
+                                    : item.image
+                                }
+                                alt={item.product?.basicInfo?.title || item.product?.title || "Product"}
                                 className="w-full h-full object-cover"
                               />
                             )}
                           </div>
                           <div>
                             <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
-                              {item.product?.basicInfo?.title || item.product?.title || "Product Deleted"}
+                              {item.product?.basicInfo?.title || item.product?.title || item.title || item.name || "Product Deleted"}
                             </p>
                             {item.selectedVariants && Object.entries(item.selectedVariants).length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
