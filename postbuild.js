@@ -9,7 +9,6 @@ const __dirname = path.dirname(__filename);
 const distDir = path.join(__dirname, "dist");
 const htmlFilePath = path.join(distDir, "index.html");
 const phpFilePath = path.join(distDir, "index.php");
-
 // PHP Code block to inject at the top of index.php
 const phpHeader = `<?php
 // Prevent PHP notices/warnings from corrupting HTML response
