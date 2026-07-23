@@ -11,6 +11,7 @@ const htmlFilePath = path.join(distDir, "index.html");
 const phpFilePath = path.join(distDir, "index.php");
 // PHP Code block to inject at the top of index.php
 
+
 const phpHeader = `<?php
 // Prevent PHP notices/warnings from corrupting HTML response
 error_reporting(0);
