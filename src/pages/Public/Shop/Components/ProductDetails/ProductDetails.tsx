@@ -38,8 +38,7 @@ import ProductCard from "../ProductCard";
 import { useVariantQuantity } from "@/hooks/useVariantQuantity";
 import { usePriceCalculation } from "@/hooks/usePriceCalculation";
 import PriceBreakdown from "../../../../../components/PriceBreakdown";
-import ComboPricingDisplay from "../../../../../components/ComboPricingDisplay";
-import VariantSelector from "@/pages/LandingPage/Components/VariantSelector";
+import SavingsGauge from "@/components/SavingsGauge";
 
 const ProductDetailsSkeleton = () => (
   <div className="min-h-screen bg-slate-50/50 pb-20 font-primary">
@@ -119,11 +118,38 @@ const ProductDetails = () => {
 
   // Pass totalQuantity (which is sum of variant quantities) as effectiveQuantity
   const {
-    basePrice,
     subtotal,
-    appliedComboTier,
     finalTotal
   } = usePriceCalculation(product, selectedVariants, totalQuantity);
+
+  const activeSelectedVariant = selectedVariants.find((v) => v.quantity > 0 && !v.isBaseVariant);
+  const variantExtraPrice = activeSelectedVariant?.item?.price || 0;
+  const currentDiscountedPrice = product?.price?.discounted || product?.price?.regular || 0;
+  const activeUnitPrice = currentDiscountedPrice + variantExtraPrice;
+  const activeRegularPrice = (product?.price?.regular || currentDiscountedPrice) + variantExtraPrice;
+  const activeUnitSavings = Math.max(0, activeRegularPrice - activeUnitPrice);
+
+  const selectSingleVariant = (group: string, item: any) => {
+    const currentQty = Math.max(1, totalQuantity);
+    selectedVariants.forEach((sv) => {
+      if (sv.quantity > 0) {
+        updateVariantQuantity(sv.group, sv.item.value, 0);
+      }
+    });
+    addVariant(group, item);
+    updateVariantQuantity(group, item.value, currentQty);
+    if (product) {
+      trackVariantSelect(product._id, group, item.value);
+    }
+  };
+
+  const handleQuantityStep = (delta: number) => {
+    const activeVar = selectedVariants.find((v) => v.quantity > 0) || selectedVariants[0];
+    if (activeVar) {
+      const newQty = Math.max(1, activeVar.quantity + delta);
+      updateVariantQuantity(activeVar.group, activeVar.item.value, newQty);
+    }
+  };
 
   const isWishlisted = product
     ? wishlistItems.some((item) => item._id === product._id)
@@ -137,8 +163,9 @@ const ProductDetails = () => {
       return;
     }
 
+    const activeSelectedVariants = selectedVariants.filter(sv => sv.quantity > 0 && !sv.isBaseVariant);
     const groupedVariants: Record<string, any[]> = {};
-    selectedVariants.forEach(sv => {
+    activeSelectedVariants.forEach(sv => {
       if (!groupedVariants[sv.group]) groupedVariants[sv.group] = [];
       groupedVariants[sv.group].push({
         value: sv.item.value,
@@ -172,7 +199,7 @@ const ProductDetails = () => {
       price: product.price.discounted || product.price.regular,
       category: product.basicInfo.category,
       quantity: totalQuantity,
-      variant: selectedVariants.map(v => `${v.group}: ${v.item.value}`).join(", ")
+      variant: activeSelectedVariants.map(v => `${v.group}: ${v.item.value}`).join(", ")
     });
   };
 
@@ -183,8 +210,9 @@ const ProductDetails = () => {
       return;
     }
 
+    const activeSelectedVariants = selectedVariants.filter(sv => sv.quantity > 0 && !sv.isBaseVariant);
     const groupedVariants: Record<string, any[]> = {};
-    selectedVariants.forEach(sv => {
+    activeSelectedVariants.forEach(sv => {
       if (!groupedVariants[sv.group]) groupedVariants[sv.group] = [];
       groupedVariants[sv.group].push({
         value: sv.item.value,
@@ -402,13 +430,18 @@ const ProductDetails = () => {
                 {product.basicInfo.title}
               </h1>
 
-              <div className="flex items-center gap-3 pt-2">
-                 <span className="text-3xl font-extrabold text-secondary">
-                   ৳{(product.price.discounted || product.price.regular).toLocaleString()}
+              <div className="flex items-center gap-3 pt-2 flex-wrap">
+                 <span className="text-3xl font-extrabold text-secondary font-mono">
+                   ৳{activeUnitPrice.toLocaleString()}
                  </span>
-                 {product.price.discounted && product.price.discounted < product.price.regular && (
-                    <span className="text-lg font-semibold line-through text-gray-400 dark:text-slate-500">
-                      ৳{product.price.regular.toLocaleString()}
+                 {activeRegularPrice > activeUnitPrice && (
+                    <span className="text-lg font-semibold line-through text-gray-400 dark:text-slate-500 font-mono">
+                      ৳{activeRegularPrice.toLocaleString()}
+                    </span>
+                 )}
+                 {activeUnitSavings > 0 && (
+                    <span className="text-xs font-bold text-[#D6483C] bg-[#F6D9D5] dark:bg-red-950/40 dark:text-red-400 px-2.5 py-1 rounded-md">
+                      Save ৳{activeUnitSavings.toLocaleString()}
                     </span>
                  )}
               </div>
@@ -423,22 +456,73 @@ const ProductDetails = () => {
 
             <Divider className="opacity-60" />
 
-            {/* Variant Selector Section */}
+            {/* Variant Selector Section (Matching shared single-choice card design) */}
             {product.variants && product.variants.length > 0 && (
               <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-4">
-                <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
-                  Select Options
-                </h3>
-                <VariantSelector
-                  selectedVariants={selectedVariants}
-                  productVariants={product.variants}
-                  onVariantAdd={(group, item) => {
-                    addVariant(group, item);
-                    trackVariantSelect(product._id, group, item.value);
-                  }}
-                  onVariantUpdate={updateVariantQuantity}
-                  showBaseVariant={false}
-                />
+                {product.variants.map((variantGroup: any, gIdx: number) => {
+                  const baseVariantItem = {
+                    value: product.price?.baseVariantName || "Standard",
+                    price: 0,
+                    stock: product.stockQuantity,
+                    isBaseVariant: true
+                  };
+                  const itemsToRender = gIdx === 0
+                    ? [baseVariantItem, ...variantGroup.items.filter((i: any) => i.value !== (product.price?.baseVariantName || "Standard"))]
+                    : variantGroup.items;
+
+                  return (
+                    <div key={variantGroup.group} className="space-y-3">
+                      <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
+                        SELECT {variantGroup.group}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {itemsToRender.map((item: any) => {
+                          const isSelected = selectedVariants.some(
+                            (sv) => sv.group === variantGroup.group && sv.item.value === item.value && sv.quantity > 0
+                          );
+                          const defaultUnitPrice = product.price.discounted || product.price.regular;
+                          const defaultRegularPrice = product.price.regular || defaultUnitPrice;
+                          const itemExtraPrice = item.price || 0;
+                          const itemBasePrice = defaultUnitPrice + itemExtraPrice;
+                          const itemWasPrice = defaultRegularPrice + itemExtraPrice;
+
+                          return (
+                            <button
+                              key={item.value}
+                              type="button"
+                              onClick={() => selectSingleVariant(variantGroup.group, item)}
+                              className={`p-4 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                isSelected
+                                  ? "border-2 border-emerald-600 dark:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 shadow-sm"
+                                  : "border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-gray-300 dark:hover:border-slate-700"
+                              }`}
+                            >
+                              <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                                {item.value}
+                              </div>
+                              <div className="flex items-baseline gap-2 flex-wrap mt-0.5">
+                                <span
+                                  className={`font-mono font-extrabold text-lg sm:text-xl ${
+                                    isSelected
+                                      ? "text-emerald-700 dark:text-emerald-300 font-black"
+                                      : "text-gray-900 dark:text-slate-100"
+                                  }`}
+                                >
+                                  ৳{itemBasePrice.toLocaleString()}
+                                </span>
+                                {itemWasPrice > itemBasePrice && (
+                                  <span className="line-through text-gray-400 dark:text-slate-500 font-normal text-xs">
+                                    ৳{itemWasPrice.toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
@@ -454,26 +538,18 @@ const ProductDetails = () => {
               </div>
               <div className="flex items-center border border-gray-200 dark:border-slate-800 rounded-xl bg-gray-50 dark:bg-slate-950 p-1">
                 <button
-                  onClick={() => {
-                    const baseVariant = selectedVariants.find(v => v.isBaseVariant);
-                    if (baseVariant && baseVariant.quantity > 1) {
-                      updateVariantQuantity(baseVariant.group, baseVariant.item.value, baseVariant.quantity - 1);
-                    }
-                  }}
+                  type="button"
+                  onClick={() => handleQuantityStep(-1)}
                   className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
                 <span className="w-12 text-center text-sm font-bold text-gray-950 dark:text-slate-100">
-                  {selectedVariants.find(v => v.isBaseVariant)?.quantity || 1}
+                  {Math.max(1, totalQuantity)}
                 </span>
                 <button
-                  onClick={() => {
-                    const baseVariant = selectedVariants.find(v => v.isBaseVariant);
-                    if (baseVariant) {
-                      updateVariantQuantity(baseVariant.group, baseVariant.item.value, baseVariant.quantity + 1);
-                    }
-                  }}
+                  type="button"
+                  onClick={() => handleQuantityStep(1)}
                   className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
@@ -481,32 +557,23 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Price Summary Card - Conditional: Only shown if discount/combo is active OR quantity > 1 */}
+            {/* Savings Gauge Pressure Gauge */}
+            {product.comboPricing && product.comboPricing.length > 0 && (
+              <SavingsGauge
+                comboPricing={product.comboPricing}
+                currentQuantity={totalQuantity}
+              />
+            )}
+
+            {/* Price Summary Card */}
             {((product.comboPricing && product.comboPricing.length > 0) || totalQuantity > 1) && (
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-5">
-                <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  Price Summary
-                </h3>
-                
-                <PriceBreakdown
-                  quantity={totalQuantity}
-                  unitPrice={basePrice}
-                  subtotal={subtotal}
-                  comboPricing={product.comboPricing || []}
-                />
-                
-                {product.comboPricing && product.comboPricing.length > 0 && (
-                  <div className="mt-4">
-                     <ComboPricingDisplay
-                      comboPricing={product.comboPricing}
-                      currentQuantity={totalQuantity}
-                      appliedTier={appliedComboTier || undefined}
-                      variant="success"
-                    />
-                  </div>
-                )}
-              </div>
+              <PriceBreakdown
+                quantity={totalQuantity}
+                unitPrice={activeUnitPrice}
+                regularUnitPrice={activeRegularPrice}
+                subtotal={subtotal}
+                comboPricing={product.comboPricing || []}
+              />
             )}
 
             {/* Actions */}

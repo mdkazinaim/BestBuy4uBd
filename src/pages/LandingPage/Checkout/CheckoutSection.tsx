@@ -50,21 +50,20 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
     discount,
     payablePrice,
   } = orderDetails;
+  const [deliveryChargeType, setDeliveryChargeType] = useState("");
+  const [deliveryError, setDeliveryError] = useState("");
   const [formValid, setFormValid] = useState(false);
-  const [deliveryChargeType, setDeliveryChargeType] = useState("insideDhaka");
 
   // Quantity controls handled by VariantSelector
 
-  const handleDeliveryChargeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    setDeliveryChargeType(e.target.value);
-  };
+
   const deliveryCharge = product?.additionalInfo?.freeShipping
     ? 0
     : deliveryChargeType === "insideDhaka"
       ? (product?.basicInfo?.deliveryChargeInsideDhaka ?? 80)
-      : (product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150);
+      : deliveryChargeType === "outsideDhaka"
+      ? (product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150)
+      : 0;
 
   const calculateTotalPrice = () => {
     const subtotal = payablePrice; // Price passed is already the total (finalTotal)
@@ -118,6 +117,13 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!deliveryChargeType) {
+      setDeliveryError("অনুগ্রহ করে ডেলিভারি এলাকা নির্বাচন করুন");
+      toast.warning("অনুগ্রহ করে ডেলিভারি এলাকা নির্বাচন করুন");
+      return;
+    }
+    setDeliveryError("");
+
     if (!formValid) {
       handleButtonClick();
       return;
@@ -130,9 +136,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
         .value,
       notes: (target.elements.namedItem("notes") as HTMLTextAreaElement).value,
       paymentMethod: "cash on delivery",
-      courierCharge: (
-        target.elements.namedItem("courierCharge") as HTMLSelectElement
-      ).value,
+      courierCharge: deliveryChargeType,
       cuponCode: couponCode,
     };
 
@@ -271,27 +275,59 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                 )}>
                   ডেলিভারি এলাকা <span className="text-red-500">*</span>
                 </label>
-                <select
-                  name="courierCharge"
-                  className={cn(
-                    "w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 transition-all",
-                    isDark 
-                      ? "bg-slate-800 border-white/10 text-white focus:border-emerald-500" 
-                      : "bg-white border-brand-200 text-gray-800 focus:border-brand-500"
-                  )}
-                  required
-                  onChange={handleDeliveryChargeChange}
-                  value={deliveryChargeType}
-                >
-                  <option value="insideDhaka">
-                    ঢাকার ভিতরে (৳
-                    {product?.basicInfo?.deliveryChargeInsideDhaka ?? 80})
-                  </option>
-                  <option value="outsideDhaka">
-                    ঢাকার বাইরে (৳
-                    {product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150})
-                  </option>
-                </select>
+                <input type="hidden" name="courierCharge" value={deliveryChargeType} />
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeliveryChargeType("insideDhaka");
+                      setDeliveryError("");
+                    }}
+                    className={cn(
+                      "p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1",
+                      deliveryChargeType === "insideDhaka"
+                        ? isDark
+                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-xs ring-2 ring-emerald-500/30"
+                          : "border-brand-500 bg-brand-50 text-brand-700 font-bold shadow-xs ring-2 ring-brand-500/30"
+                        : deliveryError
+                        ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+                        : isDark
+                        ? "bg-slate-800 border-white/10 text-white hover:border-white/30"
+                        : "bg-white border-brand-200 text-gray-800 hover:border-brand-400"
+                    )}
+                  >
+                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার ভেতরে</span>
+                    <span className="text-sm md:text-base font-extrabold font-mono">৳{product?.basicInfo?.deliveryChargeInsideDhaka ?? 80}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDeliveryChargeType("outsideDhaka");
+                      setDeliveryError("");
+                    }}
+                    className={cn(
+                      "p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1",
+                      deliveryChargeType === "outsideDhaka"
+                        ? isDark
+                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-xs ring-2 ring-emerald-500/30"
+                          : "border-brand-500 bg-brand-50 text-brand-700 font-bold shadow-xs ring-2 ring-brand-500/30"
+                        : deliveryError
+                        ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+                        : isDark
+                        ? "bg-slate-800 border-white/10 text-white hover:border-white/30"
+                        : "bg-white border-brand-200 text-gray-800 hover:border-brand-400"
+                    )}
+                  >
+                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার বাইরে</span>
+                    <span className="text-sm md:text-base font-extrabold font-mono">৳{product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150}</span>
+                  </button>
+                </div>
+                {deliveryError && (
+                  <p className="text-xs text-red-500 font-semibold pt-2 flex items-center gap-1">
+                    ⚠️ {deliveryError}
+                  </p>
+                )}
                 {product?.additionalInfo?.freeShipping && (
                   <p className={cn(
                     "text-xs mt-1 font-bold italic",

@@ -40,18 +40,26 @@ export const usePriceCalculation = (
     // Legacy Bulk Pricing Logic REMOVED per user request
     // We now strictly use comboPricing tiers
 
-    // Check if base variant exists in selectedVariants
-    const baseVariant = selectedVariants.find(v => v.isBaseVariant);
-    const baseVariantQuantity = baseVariant?.quantity || 0;
-    
-    // Calculate variant total (additive pricing)
-    const variantTotal = selectedVariants.reduce((sum, v) => {
-      if (v.isBaseVariant) return sum;
-      return sum + ((v.item.price || 0) * v.quantity);
-    }, 0);
+    // Calculate subtotal for all active selected variants
+    const activeVariants = selectedVariants.filter((v) => (v.quantity || 0) > 0);
 
-    // Calculate subtotal
-    const subtotal = (basePrice * baseVariantQuantity) + variantTotal;
+    let subtotal = 0;
+    let variantTotal = 0;
+
+    if (activeVariants.length > 0) {
+      subtotal = activeVariants.reduce((sum, v) => {
+        const itemExtraPrice = v.isBaseVariant ? 0 : (v.item?.price || 0);
+        const unitPriceForVariant = basePrice + itemExtraPrice;
+        return sum + (unitPriceForVariant * v.quantity);
+      }, 0);
+
+      variantTotal = activeVariants.reduce((sum, v) => {
+        if (v.isBaseVariant) return sum;
+        return sum + ((v.item?.price || 0) * v.quantity);
+      }, 0);
+    } else {
+      subtotal = basePrice * totalQuantity;
+    }
 
     // Apply combo discount using centralized logic with merged tiers
     const { 

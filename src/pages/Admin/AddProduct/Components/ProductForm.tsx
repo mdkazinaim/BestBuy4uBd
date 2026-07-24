@@ -332,7 +332,7 @@ export default function ProductForm({ defaultValues, onSubmit }: Props) {
       {/* Price & Inventory */}
       <section className="border p-4 rounded">
         <h2 className="text-xl font-bold mb-2">Price & Inventory</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <Input
             register={register}
             name="price.regular"
@@ -346,6 +346,13 @@ export default function ProductForm({ defaultValues, onSubmit }: Props) {
             label="Discounted Price"
             type="number"
             error={errors.price?.discounted?.message}
+          />
+          <Input
+            register={register}
+            name="price.baseVariantName"
+            label="Base Variant Name (e.g. 250 ML)"
+            placeholder="e.g. 250 ML"
+            error={errors.price?.baseVariantName?.message}
           />
         </div>
 

@@ -9,7 +9,7 @@ export interface VariantSelection {
     image?: { url: string; alt: string };
   };
   quantity: number;
-  isBaseVariant?: boolean; // Flag to identify the base variant
+  isBaseVariant?: boolean;
 }
 
 export interface UseVariantQuantityReturn {
@@ -24,20 +24,17 @@ export interface UseVariantQuantityReturn {
 }
 
 /**
- * Creates a base variant from product pricing
- * This represents the default product option
+ * Creates a base variant from product pricing & baseVariantName
  */
 const createBaseVariant = (product: any): VariantSelection => {
-  const hasDiscount = product?.price?.discounted && product.price.discounted < product.price.regular;
-  const displayPrice = hasDiscount ? product.price.discounted : product.price.regular;
+  const baseName = product?.price?.baseVariantName || "Standard";
+  const groupName = product?.variants?.[0]?.group || "Variant";
   
   return {
-    group: "Quantity",
+    group: groupName,
     item: {
-      value: hasDiscount 
-        ? `৳${displayPrice.toLocaleString()} (Discounted)` 
-        : `৳${displayPrice.toLocaleString()}`,
-      price: 0, // Base price, no additional cost
+      value: baseName,
+      price: 0, // Base price, no surcharge
       stock: product?.stockQuantity
     },
     quantity: 1,
@@ -51,14 +48,13 @@ export const useVariantQuantity = (
 ): UseVariantQuantityReturn => {
   const [selectedVariants, setSelectedVariants] = useState<VariantSelection[]>([]);
 
-  // Initialize with defaults if provided and not already selected
+  // Initialize with base variant by default
   useEffect(() => {
     if (selectedVariants.length === 0) {
       if (product) {
         const baseVariant = createBaseVariant(product);
         setSelectedVariants([baseVariant]);
       } else if (defaultVariants && defaultVariants.length > 0) {
-        // Fallback for when product is not provided but variants are
         const validDefaults = defaultVariants.filter(vg => vg.items && vg.items.length > 0);
         const defaults = validDefaults.map(vg => ({
           group: vg.group,
@@ -72,94 +68,86 @@ export const useVariantQuantity = (
   }, [defaultVariants, product]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initVariants = useCallback((variants: any[], productData?: any) => {
-      // If product is provided, only select the base variant
-      if (productData) {
-        const baseVariant = createBaseVariant(productData);
-        setSelectedVariants([baseVariant]);
-      } else {
-        // Fallback behavior
-        const validDefaults = variants.filter(vg => vg.items && vg.items.length > 0);
-        const defaults = validDefaults.map(vg => ({
-            group: vg.group,
-            item: vg.items[0],
-            quantity: 1,
-            isBaseVariant: false
-        }));
-        setSelectedVariants(defaults);
-      }
+    if (productData) {
+      const baseVariant = createBaseVariant(productData);
+      setSelectedVariants([baseVariant]);
+    } else if (variants && variants.length > 0) {
+      const validDefaults = variants.filter(vg => vg.items && vg.items.length > 0);
+      const defaults = validDefaults.map(vg => ({
+        group: vg.group,
+        item: vg.items[0],
+        quantity: 1,
+        isBaseVariant: false
+      }));
+      setSelectedVariants(defaults);
+    }
   }, []);
-
 
   const totalQuantity = useMemo(() => {
     const sum = selectedVariants.reduce((sum, v) => sum + v.quantity, 0);
-    return sum; // Returns the actual sum of all variant quantities
+    return sum;
   }, [selectedVariants]);
 
   const addVariant = useCallback((group: string, item: any) => {
-    setSelectedVariants(prev => {
-      // Check if this specific item is already selected
-      const existingItemIndex = prev.findIndex(v => v.group === group && v.item.value === item.value);
+    setSelectedVariants((prev) => {
+      const isBase = item.isBaseVariant === true;
+      const existingIndex = prev.findIndex(
+        (v) => v.group === group && v.item.value === item.value
+      );
 
-      if (existingItemIndex > -1) {
-          // Increment quantity
-          const newVariants = [...prev];
-          newVariants[existingItemIndex] = {
-              ...newVariants[existingItemIndex],
-              quantity: newVariants[existingItemIndex].quantity + 1
-          };
-          return newVariants;
+      if (existingIndex >= 0) {
+        return prev.map((v, i) =>
+          i === existingIndex ? { ...v, quantity: v.quantity + 1 } : v
+        );
       }
-      
-      // Add new variant selection
-      return [...prev, { group, item, quantity: 1, isBaseVariant: false }];
+
+      return [...prev, { group, item, quantity: 1, isBaseVariant: isBase }];
     });
   }, []);
 
   const removeVariant = useCallback((group: string, value: string) => {
-    setSelectedVariants(prev => {
-      // Don't allow removing the base variant if it's the only one
-      const variant = prev.find(v => v.group === group && v.item.value === value);
-      if (variant?.isBaseVariant && prev.length === 1) {
-        return prev; // Keep at least the base variant
-      }
-      return prev.filter(v => !(v.group === group && v.item.value === value));
-    });
+    setSelectedVariants((prev) =>
+      prev.filter((v) => !(v.group === group && v.item.value === value))
+    );
   }, []);
 
-  const updateVariantQuantity = useCallback((group: string, value: string, quantity: number) => {
-    setSelectedVariants(prev => {
-      const variant = prev.find(v => v.group === group && v.item.value === value);
-      
-      // Base variant should stay visible even at quantity 0
-      if (variant?.isBaseVariant) {
-        return prev.map(v =>
-          v.group === group && v.item.value === value
-            ? { ...v, quantity: Math.max(0, quantity) }
-            : v
-        );
-      }
-      
-      // Other variants can be removed if quantity is 0
+  const updateVariantQuantity = useCallback(
+    (group: string, value: string, quantity: number) => {
       if (quantity <= 0) {
-        return prev.filter(v => !(v.group === group && v.item.value === value));
+        removeVariant(group, value);
+        return;
       }
-      
-      return prev.map(v =>
-        v.group === group && v.item.value === value
-          ? { ...v, quantity }
-          : v
-      );
-    });
-  }, []);
+
+      setSelectedVariants((prev) => {
+        const existingIndex = prev.findIndex(
+          (v) => v.group === group && v.item.value === value
+        );
+
+        if (existingIndex >= 0) {
+          return prev.map((v, i) =>
+            i === existingIndex ? { ...v, quantity } : v
+          );
+        }
+
+        return prev;
+      });
+    },
+    [removeVariant]
+  );
 
   const clearVariants = useCallback(() => {
     setSelectedVariants([]);
   }, []);
 
-  const getVariantQuantity = useCallback((group: string, value: string) => {
-    const variant = selectedVariants.find(v => v.group === group && v.item.value === value);
-    return variant?.quantity || 0;
-  }, [selectedVariants]);
+  const getVariantQuantity = useCallback(
+    (group: string, value: string) => {
+      const found = selectedVariants.find(
+        (v) => v.group === group && v.item.value === value
+      );
+      return found ? found.quantity : 0;
+    },
+    [selectedVariants]
+  );
 
   return {
     selectedVariants,
@@ -169,6 +157,8 @@ export const useVariantQuantity = (
     updateVariantQuantity,
     clearVariants,
     getVariantQuantity,
-    initVariants
+    initVariants,
   };
 };
+
+export default useVariantQuantity;

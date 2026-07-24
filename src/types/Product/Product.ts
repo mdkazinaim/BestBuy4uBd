@@ -73,6 +73,7 @@ export interface ProductPrice {
   savings?: number;
   savingsPercentage?: number;
   selectedVariants?: Record<string, string>;
+  baseVariantName?: string;
 }
 
 // Product Shipping Details

@@ -16,7 +16,7 @@ export interface CartItem {
   image: string;
   quantity: number;
   selectedVariants?: any[]; // Keep as any[] to support legacy structure or specific payload
-  comboPricing?: { minQuantity: number; discount: number }[];
+  comboPricing?: { minQuantity: number; discount: number; discountType?: "total" | "per_product" }[];
   deliveryChargeInsideDhaka?: number;
   deliveryChargeOutsideDhaka?: number;
   freeShipping?: boolean;
@@ -43,22 +43,26 @@ const calculateEffectiveUnitPrice = (item: CartItem): number => {
      variantsToIterate.forEach((group: any) => {
         if (group.items && Array.isArray(group.items)) {
             group.items.forEach((v: any) => {
-                const variantQty = v.quantity ?? totalQuantity; 
-                totalCost += (v.price || 0) * variantQty;
+                const variantQty = typeof v.quantity === 'number' ? v.quantity : totalQuantity;
+                if (variantQty > 0) {
+                    totalCost += (v.price || 0) * variantQty;
+                }
             });
         } else if (typeof group.price === 'number') {
-            // Flattened single variant structure fallback
              totalCost += group.price * totalQuantity;
         }
      });
   }
 
-  // 3. Apply Combo Discount (Flat discount on total)
+  // 3. Apply Combo Discount
   if (item.comboPricing && item.comboPricing.length > 0) {
       const sortedCombo = [...item.comboPricing].sort((a, b) => b.minQuantity - a.minQuantity);
       const tier = sortedCombo.find(t => totalQuantity >= t.minQuantity);
       if (tier) {
-          totalCost -= tier.discount;
+          const discountAmt = tier.discountType === "per_product" 
+            ? tier.discount * totalQuantity 
+            : tier.discount;
+          totalCost -= discountAmt;
       }
   }
 

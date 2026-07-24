@@ -25,7 +25,8 @@ const Checkout = () => {
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
 
   const [deliveryChargeType, setDeliveryChargeType] =
-    useState<string>("insideDhaka");
+    useState<string>("");
+  const [deliveryError, setDeliveryError] = useState<string>("");
   const [couponCode, setCouponCode] = useState<string>("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
     code: string;
@@ -93,21 +94,6 @@ const Checkout = () => {
     }
   }, [cartItems.length, total, deliveryChargeType, couponCode, trackBeginCheckout, trackAddPaymentInfo, trackAddShippingInfo]); // Dependencies to ensure data is ready, but ref prevents re-firing
 
-  const handleDeliveryChargeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newChargeType = e.target.value;
-    setDeliveryChargeType(newChargeType);
-
-    // Recalculate total for tracking using new charge type logic locally or just rely on react update?
-    // The state update is async, so 'total' variable here is old. 
-    // Ideally we should track in useEffect dependent on deliveryChargeType, but let's do it here with approximate or wait for effect?
-    // Simpler: Just track with new type.
-
-    // We can re-calculate total here roughly for tracking
-    // But actually, let's use a useEffect on deliveryChargeType to be accurate with total.
-  };
-
   // Effect to track shipping info update when charge type changes
   useEffect(() => {
     if (cartItems.length > 0) {
@@ -153,6 +139,14 @@ const Checkout = () => {
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!deliveryChargeType) {
+      setDeliveryError("অনুগ্রহ করে ডেলিভারি এলাকা নির্বাচন করুন");
+      toast.error("অনুগ্রহ করে ডেলিভারি এলাকা নির্বাচন করুন");
+      return;
+    }
+    setDeliveryError("");
+
     const target = e.currentTarget;
 
     const formData: CheckoutFormData = {
@@ -161,9 +155,7 @@ const Checkout = () => {
       address: (target.elements.namedItem("address") as HTMLTextAreaElement)
         .value,
       notes: (target.elements.namedItem("notes") as HTMLTextAreaElement).value,
-      courierCharge: (
-        target.elements.namedItem("courierCharge") as HTMLSelectElement
-      ).value,
+      courierCharge: deliveryChargeType,
     };
 
     try {
@@ -368,16 +360,49 @@ const Checkout = () => {
                       <label className="block text-text-primary font-medium mb-2">
                         ডেলিভারি এলাকা <span className="text-danger">*</span>
                       </label>
-                      <select
-                        name="courierCharge"
-                        className="w-full px-4 md:px-5 py-2 md:py-3 rounded-xl border-2 border-secondary/20 focus:border-secondary focus:ring-0 transition-colors bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
-                        required
-                        onChange={handleDeliveryChargeChange}
-                        value={deliveryChargeType}
-                      >
-                        <option value="insideDhaka" className="dark:bg-slate-900">ঢাকার ভিতরে (৳80)</option>
-                        <option value="outsideDhaka" className="dark:bg-slate-900">ঢাকার বাইরে (৳150)</option>
-                      </select>
+                      <input type="hidden" name="courierCharge" value={deliveryChargeType} />
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeliveryChargeType("insideDhaka");
+                            setDeliveryError("");
+                          }}
+                          className={`p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                            deliveryChargeType === "insideDhaka"
+                              ? "border-secondary bg-secondary/10 text-secondary dark:bg-secondary/20 font-bold shadow-xs ring-2 ring-secondary/30"
+                              : deliveryError
+                              ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+                              : "border-secondary/20 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:border-secondary/50"
+                          }`}
+                        >
+                          <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার ভেতরে</span>
+                          <span className="text-sm md:text-base font-extrabold font-mono">৳{maxDeliveryChargeInside || 80}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeliveryChargeType("outsideDhaka");
+                            setDeliveryError("");
+                          }}
+                          className={`p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                            deliveryChargeType === "outsideDhaka"
+                              ? "border-secondary bg-secondary/10 text-secondary dark:bg-secondary/20 font-bold shadow-xs ring-2 ring-secondary/30"
+                              : deliveryError
+                              ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
+                              : "border-secondary/20 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:border-secondary/50"
+                          }`}
+                        >
+                          <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার বাইরে</span>
+                          <span className="text-sm md:text-base font-extrabold font-mono">৳{maxDeliveryChargeOutside || 150}</span>
+                        </button>
+                      </div>
+                      {deliveryError && (
+                        <p className="text-xs text-red-500 font-semibold pt-2 flex items-center gap-1">
+                          ⚠️ {deliveryError}
+                        </p>
+                      )}
                     </div>
 
                     <div className="bg-secondary/5 p-3 md:p-4 rounded-xl">

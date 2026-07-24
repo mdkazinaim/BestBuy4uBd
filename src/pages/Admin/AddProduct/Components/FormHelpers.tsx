@@ -9,6 +9,7 @@ interface InputProps {
   label: string;
   error?: string;
   type?: string;
+  placeholder?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -17,6 +18,7 @@ export const Input: React.FC<InputProps> = ({
   label,
   error,
   type = "text",
+  placeholder,
 }) => {
   return (
     <label className="block mb-2">
@@ -24,6 +26,7 @@ export const Input: React.FC<InputProps> = ({
       <input
         {...register(name)}
         type={type}
+        placeholder={placeholder}
         className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
       />
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
