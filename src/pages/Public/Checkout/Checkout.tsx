@@ -116,7 +116,6 @@ const Checkout = () => {
       setFormValid(isValid);
     }
   };
-
   const applyCoupon = () => {
     const availableCoupons: Record<string, number> = {
       FreeShippingDhaka: 80,
