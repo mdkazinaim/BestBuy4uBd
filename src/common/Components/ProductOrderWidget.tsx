@@ -54,7 +54,6 @@ export default function ProductOrderWidget({
   deliveryCharge = 0,
   discount = 0,
   isDark = false,
-  locale = "bn",
 }: ProductOrderWidgetProps) {
   // Calculate pricing breakdown reactively
   const {
@@ -107,7 +106,7 @@ export default function ProductOrderWidget({
                   "text-base font-medium uppercase pl-1",
                   isDark ? "text-white" : "text-gray-900 dark:text-slate-100"
                 )}>
-                  {locale === "bn" ? `${variantGroup.group} সিলেক্ট করুন` : `SELECT ${variantGroup.group}`}
+                  {variantGroup.group} সিলেক্ট করুন
                 </h3>
                 <div className="grid grid-cols-2 gap-2.5">
                   {itemsToRender.map((item: VariantItem) => {
@@ -173,13 +172,13 @@ export default function ProductOrderWidget({
             "text-base font-medium uppercase pl-1",
             isDark ? "text-white" : "text-gray-900 dark:text-slate-100"
           )}>
-            {locale === "bn" ? "পরিমাণ" : "QUANTITY"}
+            পরিমাণ
           </h3>
           <p className={cn(
             "text-xs md:text-sm uppercase pl-1",
             isDark ? "text-white/40" : "text-gray-450 dark:text-slate-500"
           )}>
-            {locale === "bn" ? "আইটেমের সংখ্যা সিলেক্ট করুন" : "CHOOSE NUMBER OF ITEMS"}
+            আইটেমের সংখ্যা সিলেক্ট করুন
           </p>
         </div>
         <div className={cn(
@@ -223,7 +222,7 @@ export default function ProductOrderWidget({
           "flex justify-between items-center text-base font-medium",
           isDark ? "text-white/70" : "text-gray-700 dark:text-slate-350"
         )}>
-          <span>{locale === "bn" ? `ইউনিট মূল্য × {quantity}`.replace("{quantity}", quantity.toString()) : `Unit price × ${quantity}`}</span>
+          <span>ইউনিট মূল্য × {quantity}</span>
           <span className={cn("font-semibold", isDark ? "text-white" : "text-gray-900 dark:text-slate-100")}>
             ৳{subtotal.toLocaleString()}
           </span>
@@ -235,7 +234,7 @@ export default function ProductOrderWidget({
             "flex justify-between items-center text-base font-semibold",
             isDark ? "text-emerald-400" : "text-emerald-600"
           )}>
-            <span>{locale === "bn" ? "কম্বো ডিসকাউন্ট (-)" : "Combo discount (-)"}</span>
+            <span>কম্বো ডিসকাউন্ট (-)</span>
             <span>-৳{comboDiscount.toLocaleString()}</span>
           </div>
         )}
@@ -245,14 +244,12 @@ export default function ProductOrderWidget({
           "flex justify-between items-center text-base font-medium",
           isDark ? "text-white/70" : "text-gray-700 dark:text-slate-350"
         )}>
-          <span>{locale === "bn" ? "ডেলিভারি চার্জ" : "Delivery charge"}</span>
+          <span>ডেলিভারি চার্জ</span>
           <span className={cn(
             "font-semibold",
             product.additionalInfo?.freeShipping ? "text-emerald-500" : isDark ? "text-white" : "text-gray-900 dark:text-slate-100"
           )}>
-            {product.additionalInfo?.freeShipping
-              ? (locale === "bn" ? "ফ্রি" : "Free")
-              : `৳${deliveryCharge.toLocaleString()}`}
+            {product.additionalInfo?.freeShipping ? "ফ্রি" : `৳${deliveryCharge.toLocaleString()}`}
           </span>
         </div>
 
@@ -262,7 +259,7 @@ export default function ProductOrderWidget({
             "flex justify-between items-center text-base font-semibold",
             isDark ? "text-emerald-400" : "text-emerald-600"
           )}>
-            <span>{locale === "bn" ? "কুপন ডিসকাউন্ট (-)" : "Coupon discount (-)"}</span>
+            <span>কুপন ডিসকাউন্ট (-)</span>
             <span>-৳{discount.toLocaleString()}</span>
           </div>
         )}
@@ -277,13 +274,13 @@ export default function ProductOrderWidget({
               "text-base font-semibold uppercase",
               isDark ? "text-white/55" : "text-gray-500 dark:text-slate-400"
             )}>
-              {locale === "bn" ? "সর্বমোট" : "TOTAL"}
+              সর্বমোট
             </span>
             <span className={cn(
               "text-[10px] md:text-sm font-medium uppercase ",
               isDark ? "text-white/40" : "text-gray-500 dark:text-slate-500"
             )}>
-              {locale === "bn" ? "ক্যাশ অন ডেলিভারি" : "Cash on delivery"}
+              ক্যাশ অন ডেলিভারি
             </span>
           </div>
           <span className={cn(
