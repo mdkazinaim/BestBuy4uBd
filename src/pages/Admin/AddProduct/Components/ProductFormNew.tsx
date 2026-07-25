@@ -1,4 +1,4 @@
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProductFormSchema, ProductFormValues } from "./Product";
 import { uploadToCloudinary } from "@/utils/cloudinary";
@@ -420,8 +420,8 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
   const TABS = useMemo(() => [
     { id: "basic", label: "Basic Info", icon: FileText, fields: ["basicInfo"] },
     { id: "media", label: "Images & Videos", icon: ImageIcon, fields: ["images", "videos"] },
-    { id: "pricing", label: "Price & Stock", icon: Coins, fields: ["price", "stockStatus", "stockQuantity", "comboPricing"] },
-    { id: "variants", label: "Variants & Specs", icon: Sliders, fields: ["variants", "specifications"] },
+    { id: "pricing", label: "Price & Stock", icon: Coins, fields: ["price", "stockStatus", "stockQuantity", "comboPricing", "variants"] },
+    { id: "specs", label: "Specifications", icon: Sliders, fields: ["specifications"] },
     { id: "shipping", label: "Shipping & Extra", icon: Truck, fields: ["shippingDetails", "additionalInfo"] },
     { id: "seo", label: "SEO & Tags", icon: Search, fields: ["seo", "tags"] },
   ], []);
@@ -506,10 +506,11 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
   const activeIdx = TABS.findIndex((t) => t.id === activeTab);
 
   return (
-    <form
-      onSubmit={handleSubmit(handleFormSubmit, onValidationError)}
-      className="w-full space-y-6"
-    >
+    <FormProvider {...form}>
+      <form
+        onSubmit={handleSubmit(handleFormSubmit, onValidationError)}
+        className="w-full space-y-6"
+      >
       {/* Horizontal Tabs / Step Indicator */}
       <div className="relative mb-6 pb-2 border-b border-slate-200 dark:border-slate-800">
         {/* Horizontal Connecting Line (Background) */}
@@ -684,6 +685,10 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
             </div>
 
             <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+              <VariantsField control={control} register={register} errors={errors} />
+            </div>
+
+            <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
               <ComboPricingField
                 control={control}
                 register={register}
@@ -695,24 +700,21 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
         </motion.div>
       </div>
 
-      {/* Tab 4: Variants & Specs */}
-      <div className={activeTab === "variants" ? "block" : "hidden"}>
+      {/* Tab 4: Specifications */}
+      <div className={activeTab === "specs" ? "block" : "hidden"}>
         <motion.div
-          key="variants"
+          key="specs"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
           className="space-y-6"
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <VariantsField control={control} register={register} errors={errors} />
-            <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
-              <SpecificationsField
-                control={control}
-                register={register}
-                errors={errors}
-              />
-            </div>
+            <SpecificationsField
+              control={control}
+              register={register}
+              errors={errors}
+            />
           </div>
         </motion.div>
       </div>
@@ -873,6 +875,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           </Button>
         </div>
       </div>
-    </form>
+      </form>
+    </FormProvider>
   );
 }

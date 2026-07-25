@@ -144,5 +144,5 @@ export interface Product {
   updatedAt: string | Date;
   
   // Combo Pricing
-  comboPricing?: { minQuantity: number; discount: number }[];
+  comboPricing?: { minQuantity: number; discount: number; discountType?: "total" | "per_product"; variantValue?: string }[];
 }

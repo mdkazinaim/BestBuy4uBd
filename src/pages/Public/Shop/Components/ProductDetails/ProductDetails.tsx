@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Star,
-  Minus,
   Heart,
   Truck,
   ShoppingCart,
@@ -12,7 +11,6 @@ import {
   Share2,
   ShieldCheck,
   Zap,
-  Plus,
   CheckCircle,
   PhoneCall,
   X,
@@ -37,8 +35,8 @@ import CommonWrapper from "@/common/CommonWrapper";
 import ProductCard from "../ProductCard";
 import { useVariantQuantity } from "@/hooks/useVariantQuantity";
 import { usePriceCalculation } from "@/hooks/usePriceCalculation";
-import PriceBreakdown from "../../../../../components/PriceBreakdown";
 import SavingsGauge from "@/components/SavingsGauge";
+import ProductOrderWidget from "@/common/Components/ProductOrderWidget";
 
 const ProductDetailsSkeleton = () => (
   <div className="min-h-screen bg-slate-50/50 pb-20 font-primary">
@@ -118,7 +116,6 @@ const ProductDetails = () => {
 
   // Pass totalQuantity (which is sum of variant quantities) as effectiveQuantity
   const {
-    subtotal,
     finalTotal
   } = usePriceCalculation(product, selectedVariants, totalQuantity);
 
@@ -140,14 +137,6 @@ const ProductDetails = () => {
     updateVariantQuantity(group, item.value, currentQty);
     if (product) {
       trackVariantSelect(product._id, group, item.value);
-    }
-  };
-
-  const handleQuantityStep = (delta: number) => {
-    const activeVar = selectedVariants.find((v) => v.quantity > 0) || selectedVariants[0];
-    if (activeVar) {
-      const newQty = Math.max(1, activeVar.quantity + delta);
-      updateVariantQuantity(activeVar.group, activeVar.item.value, newQty);
     }
   };
 
@@ -456,106 +445,19 @@ const ProductDetails = () => {
 
             <Divider className="opacity-60" />
 
-            {/* Variant Selector Section (Matching shared single-choice card design) */}
-            {product.variants && product.variants.length > 0 && (
-              <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm space-y-4">
-                {product.variants.map((variantGroup: any, gIdx: number) => {
-                  const baseVariantItem = {
-                    value: product.price?.baseVariantName || "Standard",
-                    price: 0,
-                    stock: product.stockQuantity,
-                    isBaseVariant: true
-                  };
-                  const itemsToRender = gIdx === 0
-                    ? [baseVariantItem, ...variantGroup.items.filter((i: any) => i.value !== (product.price?.baseVariantName || "Standard"))]
-                    : variantGroup.items;
-
-                  return (
-                    <div key={variantGroup.group} className="space-y-3">
-                      <h3 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest pl-1">
-                        SELECT {variantGroup.group}
-                      </h3>
-                      <div className="grid grid-cols-2 gap-3">
-                        {itemsToRender.map((item: any) => {
-                          const isSelected = selectedVariants.some(
-                            (sv) => sv.group === variantGroup.group && sv.item.value === item.value && sv.quantity > 0
-                          );
-                          const defaultUnitPrice = product.price.discounted || product.price.regular;
-                          const defaultRegularPrice = product.price.regular || defaultUnitPrice;
-                          const itemExtraPrice = item.price || 0;
-                          const itemBasePrice = defaultUnitPrice + itemExtraPrice;
-                          const itemWasPrice = defaultRegularPrice + itemExtraPrice;
-
-                          return (
-                            <button
-                              key={item.value}
-                              type="button"
-                              onClick={() => selectSingleVariant(variantGroup.group, item)}
-                              className={`p-4 rounded-xl text-left transition-all cursor-pointer flex flex-col justify-between ${
-                                isSelected
-                                  ? "border-2 border-emerald-600 dark:border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 shadow-sm"
-                                  : "border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-gray-300 dark:hover:border-slate-700"
-                              }`}
-                            >
-                              <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                                {item.value}
-                              </div>
-                              <div className="flex items-baseline gap-2 flex-wrap mt-0.5">
-                                <span
-                                  className={`font-mono font-extrabold text-lg sm:text-xl ${
-                                    isSelected
-                                      ? "text-emerald-700 dark:text-emerald-300 font-black"
-                                      : "text-gray-900 dark:text-slate-100"
-                                  }`}
-                                >
-                                  ৳{itemBasePrice.toLocaleString()}
-                                </span>
-                                {itemWasPrice > itemBasePrice && (
-                                  <span className="line-through text-gray-400 dark:text-slate-500 font-normal text-xs">
-                                    ৳{itemWasPrice.toLocaleString()}
-                                  </span>
-                                )}
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Quantity Selector Section */}
-            <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-gray-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-slate-100 uppercase tracking-widest">
-                  Quantity
-                </h3>
-                <p className="text-xs text-gray-450 dark:text-slate-500 uppercase tracking-wider ">
-                  Choose number of items
-                </p>
-              </div>
-              <div className="flex items-center border border-gray-200 dark:border-slate-800 rounded-xl bg-gray-50 dark:bg-slate-950 p-1">
-                <button
-                  type="button"
-                  onClick={() => handleQuantityStep(-1)}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-12 text-center text-sm font-bold text-gray-950 dark:text-slate-100">
-                  {Math.max(1, totalQuantity)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleQuantityStep(1)}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-slate-900 rounded-lg transition-colors cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            <ProductOrderWidget
+              product={product}
+              selectedVariants={selectedVariants}
+              quantity={totalQuantity}
+              onVariantSelect={selectSingleVariant}
+              onQuantityChange={(newQty) => {
+                const activeVar = selectedVariants.find((v) => v.quantity > 0) || selectedVariants[0];
+                if (activeVar) {
+                  updateVariantQuantity(activeVar.group, activeVar.item.value, newQty);
+                }
+              }}
+              locale="en"
+            />
 
             {/* Savings Gauge Pressure Gauge */}
             {product.comboPricing && product.comboPricing.length > 0 && (
@@ -565,16 +467,7 @@ const ProductDetails = () => {
               />
             )}
 
-            {/* Price Summary Card */}
-            {((product.comboPricing && product.comboPricing.length > 0) || totalQuantity > 1) && (
-              <PriceBreakdown
-                quantity={totalQuantity}
-                unitPrice={activeUnitPrice}
-                regularUnitPrice={activeRegularPrice}
-                subtotal={subtotal}
-                comboPricing={product.comboPricing || []}
-              />
-            )}
+
 
             {/* Actions */}
             <div className="sticky bottom-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-4 -mx-4 md:static md:bg-transparent md:p-0 md:mx-0 border-t md:border-t-0 border-gray-200 dark:border-slate-800 space-y-3">

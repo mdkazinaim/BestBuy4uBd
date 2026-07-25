@@ -270,7 +270,7 @@ const LandingPage = ({ product }: { product: Product }) => {
         id="order"
         className="py-20 bg-gradient-to-b from-slate-900 to-purple-900"
       >
-        <div className="container mx-auto px-4">
+        <div className="max-w-[1400px] mx-auto px-4">
           <AnimatedContainer>
             <CheckoutSection
               orderDetails={orderDetails}

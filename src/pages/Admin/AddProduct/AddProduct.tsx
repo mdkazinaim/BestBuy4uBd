@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-
 import ProductFormNew from "./Components/ProductFormNew"; // New form using field configs
 import ProductPreviewNew from "./Components/ProductPreviewNew";
 import { ProductFormValues } from "./Components/Product";
@@ -79,119 +77,149 @@ export default function ProductAdminPage() {
     setPreview(true);
   };
 
+// Helper to transform form draft to API payload structure
+const transformProductData = (draft: any) => {
+  // Find base variant
+  let baseGroup: any = null;
+  let baseVar: any = null;
+  draft.variants?.forEach((group: any) => {
+    group.items?.forEach((item: any) => {
+      if (item.isBase === true) {
+        baseGroup = group;
+        baseVar = item;
+      }
+    });
+  });
+
+  const regPrice = baseVar ? (Number(baseVar.price) || 0) : (draft.price?.regular ? Number(draft.price.regular) : 0);
+  const baseVarName = baseVar ? baseVar.value : (draft.price?.baseVariantName || "Standard");
+
+  // Determine relative surcharges for variants
+  const formattedVariants = draft.variants
+    ?.filter((variant: any) => variant.group.trim() !== "")
+    .map((variant: any) => {
+      const isTargetGroup = baseGroup && variant.group === baseGroup.group;
+      return {
+        group: variant.group,
+        items: variant.items
+          .filter((item: any) => item.value.trim() !== "")
+          .map((item: any) => {
+            let surchargePrice = item.price ? Number(item.price) : 0;
+            if (isTargetGroup && baseVar) {
+              if (item.value === baseVar.value) {
+                surchargePrice = 0;
+              } else {
+                surchargePrice = Math.max(0, surchargePrice - regPrice);
+              }
+            }
+            return {
+              value: item.value,
+              price: surchargePrice,
+              stock: item.stock ? Number(item.stock) : 0,
+              image: item.image
+                ? {
+                    url: item.image.url || "",
+                    alt: item.image.alt || "",
+                  }
+                : undefined,
+            };
+          }),
+      };
+    }) || [];
+
+  return {
+    basicInfo: {
+      productCode: draft.basicInfo.productCode,
+      title: draft.basicInfo.title,
+      brand: draft.basicInfo.brand,
+      category: draft.basicInfo.category,
+      subcategory: draft.basicInfo.subcategory,
+      description: draft.basicInfo.description,
+      keyFeatures:
+        draft.basicInfo.keyFeatures?.filter(
+          (feature: any) => feature.trim() !== "",
+        ) || [],
+      addDeliveryCharge: draft.basicInfo.addDeliveryCharge || false,
+      deliveryChargeInsideDhaka: draft.basicInfo.deliveryChargeInsideDhaka
+        ? Number(draft.basicInfo.deliveryChargeInsideDhaka)
+        : 0,
+      deliveryChargeOutsideDhaka: draft.basicInfo.deliveryChargeOutsideDhaka
+        ? Number(draft.basicInfo.deliveryChargeOutsideDhaka)
+        : 0,
+    },
+    price: {
+      regular: regPrice,
+      discounted: draft.price?.discounted ? Number(draft.price.discounted) : undefined,
+      savings: draft.price?.savings ? Number(draft.price.savings) : undefined,
+      savingsPercentage: draft.price?.savingsPercentage ? Number(draft.price.savingsPercentage) : undefined,
+      baseVariantName: baseVarName,
+      selectedVariants: draft.price?.selectedVariants,
+    },
+    stockStatus: draft.stockStatus,
+    stockQuantity: draft.stockQuantity ? Number(draft.stockQuantity) : 0,
+    sold: draft.sold ? Number(draft.sold) : 0,
+    images: draft.images
+      ?.filter((image: any) => image.url && image.url.trim() !== "")
+      .map((image: any) => ({ url: image.url!, alt: image.alt })) || [],
+    videos:
+      draft.videos
+        ?.filter((video: any) => video.url && video.url.trim() !== "")
+        .map((video: any) => ({ ...video, url: video.url! })) || [],
+    variants: formattedVariants,
+    comboPricing:
+      draft.comboPricing
+        ?.filter((tier: any) => tier.minQuantity > 0 && tier.discount > 0)
+        .map((tier: any) => ({
+          minQuantity: Number(tier.minQuantity),
+          discount: Number(tier.discount),
+          discountType: tier.discountType || "total",
+          variantValue: tier.variantValue || "",
+        })) || [],
+    specifications:
+      draft.specifications
+        ?.filter((spec: any) => spec.group.trim() !== "")
+        .map((spec: any) => ({
+          group: spec.group,
+          items: spec.items
+            .filter(
+              (item: any) => item.name.trim() !== "" && item.value.trim() !== "",
+            )
+            .map((item: any) => ({
+              name: item.name,
+              value: item.value,
+            })),
+        })) || [],
+    shippingDetails: draft.shippingDetails ? {
+      length: draft.shippingDetails.length ? Number(draft.shippingDetails.length) : undefined,
+      width: draft.shippingDetails.width ? Number(draft.shippingDetails.width) : undefined,
+      height: draft.shippingDetails.height ? Number(draft.shippingDetails.height) : undefined,
+      weight: draft.shippingDetails.weight ? Number(draft.shippingDetails.weight) : undefined,
+      dimensionUnit: draft.shippingDetails.dimensionUnit,
+      weightUnit: draft.shippingDetails.weightUnit,
+    } : undefined,
+    additionalInfo: {
+      freeShipping: Boolean(draft.additionalInfo?.freeShipping),
+      isFeatured: Boolean(draft.additionalInfo?.isFeatured),
+      isOnSale: Boolean(draft.additionalInfo?.isOnSale),
+      estimatedDelivery: draft.additionalInfo?.estimatedDelivery,
+      returnPolicy: draft.additionalInfo?.returnPolicy,
+      warranty: draft.additionalInfo?.warranty,
+      landingPageTemplate: draft.additionalInfo?.landingPageTemplate,
+    },
+    seo: {
+      metaTitle: draft.seo?.metaTitle || undefined,
+      metaDescription: draft.seo?.metaDescription || undefined,
+      slug: draft.seo?.slug || undefined,
+    },
+    tags: draft.tags?.filter((tag: any) => tag.trim() !== "") || [],
+  };
+};
+
   const handleConfirm = async () => {
     if (!draft) return;
     try {
       // Transform the form data to match the API payload structure
-      const productData = {
-        basicInfo: {
-          productCode: draft.basicInfo.productCode,
-          title: draft.basicInfo.title,
-          brand: draft.basicInfo.brand,
-          category: draft.basicInfo.category,
-          subcategory: draft.basicInfo.subcategory,
-          description: draft.basicInfo.description,
-          keyFeatures:
-            draft.basicInfo.keyFeatures?.filter(
-              (feature) => feature.trim() !== "",
-            ) || [],
-          addDeliveryCharge: draft.basicInfo.addDeliveryCharge || false,
-          deliveryChargeInsideDhaka: draft.basicInfo.deliveryChargeInsideDhaka
-            ? Number(draft.basicInfo.deliveryChargeInsideDhaka)
-            : 0,
-          deliveryChargeOutsideDhaka: draft.basicInfo.deliveryChargeOutsideDhaka
-            ? Number(draft.basicInfo.deliveryChargeOutsideDhaka)
-            : 0,
-        },
-
-        price: {
-          regular: Number(draft.price.regular),
-          discounted: draft.price.discounted
-            ? Number(draft.price.discounted)
-            : undefined,
-          savings: draft.price.savings
-            ? Number(draft.price.savings)
-            : undefined,
-          savingsPercentage: draft.price.savingsPercentage
-            ? Number(draft.price.savingsPercentage)
-            : undefined,
-          selectedVariants: draft.price.selectedVariants,
-        },
-        stockStatus: draft.stockStatus,
-        stockQuantity: draft.stockQuantity ? Number(draft.stockQuantity) : 0,
-        sold: draft.sold ? Number(draft.sold) : 0,
-        images: draft.images
-          .filter((image) => image.url && image.url.trim() !== "")
-          .map((image) => ({ url: image.url!, alt: image.alt })),
-        videos:
-          draft.videos
-            ?.filter((video) => video.url && video.url.trim() !== "")
-            .map((video) => ({ ...video, url: video.url! })) || [],
-        variants:
-          draft.variants
-            ?.filter((variant) => variant.group.trim() !== "")
-            .map((variant) => ({
-              group: variant.group,
-              items: variant.items
-                .filter((item) => item.value.trim() !== "")
-                .map((item) => ({
-                  value: item.value,
-                  price: item.price ? Number(item.price) : 0,
-                  stock: item.stock ? Number(item.stock) : 0,
-                  image: item.image
-                    ? {
-                        url: item.image.url || "",
-                        alt: item.image.alt || "",
-                      }
-                    : undefined,
-                })),
-            })) || [],
-        comboPricing:
-          draft.comboPricing
-            ?.filter((tier) => tier.minQuantity > 0 && tier.discount > 0)
-            .map((tier) => ({
-              minQuantity: Number(tier.minQuantity),
-              discount: Number(tier.discount),
-              discountType: tier.discountType || "total",
-            })) || [],
-        specifications:
-          draft.specifications
-            ?.filter((spec) => spec.group.trim() !== "")
-            .map((spec) => ({
-              group: spec.group,
-              items: spec.items
-                .filter(
-                  (item) => item.name.trim() !== "" && item.value.trim() !== "",
-                )
-                .map((item) => ({
-                  name: item.name,
-                  value: item.value,
-                })),
-            })) || [],
-        shippingDetails: draft.shippingDetails ? {
-          length: draft.shippingDetails.length ? Number(draft.shippingDetails.length) : undefined,
-          width: draft.shippingDetails.width ? Number(draft.shippingDetails.width) : undefined,
-          height: draft.shippingDetails.height ? Number(draft.shippingDetails.height) : undefined,
-          weight: draft.shippingDetails.weight ? Number(draft.shippingDetails.weight) : undefined,
-          dimensionUnit: draft.shippingDetails.dimensionUnit,
-          weightUnit: draft.shippingDetails.weightUnit,
-        } : undefined,
-        additionalInfo: {
-          freeShipping: Boolean(draft.additionalInfo?.freeShipping),
-          isFeatured: Boolean(draft.additionalInfo?.isFeatured),
-          isOnSale: Boolean(draft.additionalInfo?.isOnSale),
-          estimatedDelivery: draft.additionalInfo?.estimatedDelivery,
-          returnPolicy: draft.additionalInfo?.returnPolicy,
-          warranty: draft.additionalInfo?.warranty,
-          landingPageTemplate: draft.additionalInfo?.landingPageTemplate,
-        },
-        seo: {
-          metaTitle: draft.seo?.metaTitle || undefined,
-          metaDescription: draft.seo?.metaDescription || undefined,
-          slug: draft.seo?.slug || undefined,
-        },
-        tags: draft.tags?.filter((tag) => tag.trim() !== "") || [],
-      };
+      const productData = transformProductData(draft);
 
       console.log("Sending product data:", productData); // Debug log
 
@@ -222,7 +250,7 @@ export default function ProductAdminPage() {
   // Preview mode
   if (preview && draft) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
           <div>
@@ -254,7 +282,7 @@ export default function ProductAdminPage() {
         </div>
 
         {/* Content Preview */}
-        <ProductPreviewNew data={draft as ProductFormValues} />
+        <ProductPreviewNew data={transformProductData(draft) as ProductFormValues} />
 
         {/* Footer Actions */}
         <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
@@ -283,7 +311,7 @@ export default function ProductAdminPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
+      {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5 border-b border-slate-200 dark:border-slate-800">
         <div>
           <h1 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-white">
             {isAdd ? "Add Product" : "Edit Product"}
@@ -303,7 +331,7 @@ export default function ProductAdminPage() {
             <span>Back to Products</span>
           </Button>
         </div>
-      </div>
+      </div> */}
 
       {/* Content Form */}
       <ProductFormNew defaultValues={defaultValues} onSubmit={handleSubmit} />

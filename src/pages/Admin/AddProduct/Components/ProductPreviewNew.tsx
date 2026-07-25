@@ -34,24 +34,19 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
 
   // Calculate savings - memoized to prevent recalculation
   const savingsPercentage = useMemo(() => {
+    const regPrice = price.regular || 0;
+    if (!regPrice) return 0;
     const savingsAmount = price.discounted
-      ? price.regular - price.discounted
+      ? regPrice - price.discounted
       : 0;
     return savingsAmount
-      ? Math.round((savingsAmount / price.regular) * 100)
+      ? Math.round((savingsAmount / regPrice) * 100)
       : 0;
   }, [price.regular, price.discounted]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-full mx-auto space-y-6">
       {/* Header Info Panel */}
-      <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-xl shadow-none">
-        <h1 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100 mb-2">Product Preview</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Review your product configuration below before committing changes.
-        </p>
-      </div>
-
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Media */}
@@ -183,12 +178,12 @@ const ProductPreviewNew = memo(({ data }: ProductPreviewProps) => {
             <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-2xl md:text-3xl font-semibold text-blue-600 dark:text-blue-400">
-                  ৳{price.discounted || price.regular}
+                  ৳{price.discounted || price.regular || 0}
                 </span>
                 {price.discounted && (
                   <>
                     <span className="text-lg text-slate-400 dark:text-slate-500 line-through">
-                      ৳{price.regular}
+                      ৳{price.regular || 0}
                     </span>
                     <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
                       -{savingsPercentage}%

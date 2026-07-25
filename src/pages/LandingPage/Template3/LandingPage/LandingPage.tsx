@@ -453,7 +453,7 @@ const LandingPage = ({ product }: { product: Product }) => {
       </div>
 
       {/* Checkout Section Integration */}
-      <div id="checkout" className="container mx-auto px-4 max-w-5xl">
+      <div id="checkout" className="max-w-[1400px] mx-auto px-4">
         <AnimatedContainer direction="none" delay={0.1}>
           <div className="bg-white rounded-[2rem] shadow-xl border border-brand-100 overflow-hidden">
             <div className="bg-brand-50 py-8 text-center border-b border-brand-100">

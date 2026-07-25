@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import VariantSelector from "../Components/VariantSelector";
 import { cn } from "@/lib/utils";
+import ProductOrderWidget from "@/common/Components/ProductOrderWidget";
 
 interface OrderDetails {
   title: string;
@@ -48,8 +48,41 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
     image,
     product,
     discount,
-    payablePrice,
   } = orderDetails;
+
+  // Calculate active unit price based on selected variant
+  const activeUnitPrice = (() => {
+    let extra = 0;
+    if (product?.variants && product.variants.length > 0) {
+      product.variants.forEach((variantGroup: any) => {
+        const selectedInGroup = variants?.find(
+          (sv: any) => sv.group === variantGroup.group && sv.quantity > 0 && !sv.isBaseVariant
+        );
+        if (selectedInGroup) {
+          extra += selectedInGroup.item?.price || 0;
+        }
+      });
+    }
+    const basePrice = product?.price?.discounted || product?.price?.regular || price;
+    return basePrice + extra;
+  })();
+
+  const activeOriginalPrice = (() => {
+    let extra = 0;
+    if (product?.variants && product.variants.length > 0) {
+      product.variants.forEach((variantGroup: any) => {
+        const selectedInGroup = variants?.find(
+          (sv: any) => sv.group === variantGroup.group && sv.quantity > 0 && !sv.isBaseVariant
+        );
+        if (selectedInGroup) {
+          extra += selectedInGroup.item?.price || 0;
+        }
+      });
+    }
+    const regPrice = product?.price?.regular || price;
+    return regPrice + extra;
+  })();
+
   const [deliveryChargeType, setDeliveryChargeType] = useState("");
   const [deliveryError, setDeliveryError] = useState("");
   const [formValid, setFormValid] = useState(false);
@@ -64,12 +97,6 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
       : deliveryChargeType === "outsideDhaka"
       ? (product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150)
       : 0;
-
-  const calculateTotalPrice = () => {
-    const subtotal = payablePrice; // Price passed is already the total (finalTotal)
-    const total = subtotal + deliveryCharge - (discount || 0);
-    return total > 0 ? total : 0;
-  };
 
   const checkFormValidity = (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
@@ -147,10 +174,10 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
     <div
       id="checkout"
       className={cn(
-        "rounded-3xl shadow-xl overflow-hidden border transition-all duration-300",
+        "rounded-3xl shadow-xl overflow-hidden transition-all duration-300",
         isDark 
           ? "bg-slate-900/50 backdrop-blur-xl border-white/10" 
-          : "bg-white border-brand-100"
+          : "bg-white"
       )}
     >
       <div className="grid grid-cols-1 md:grid-cols-2">
@@ -164,7 +191,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
           )}
         >
           <h2 className={cn(
-            "text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center",
+            "text-xl md:text-2xl font-medium mb-6 md:mb-8 flex items-center",
             isDark ? "text-white" : "text-gray-800"
           )}>
             <span className={cn(
@@ -287,8 +314,8 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                       "p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1",
                       deliveryChargeType === "insideDhaka"
                         ? isDark
-                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-xs ring-2 ring-emerald-500/30"
-                          : "border-brand-500 bg-brand-50 text-brand-700 font-bold shadow-xs ring-2 ring-brand-500/30"
+                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300  shadow-xs ring-2 ring-emerald-500/30"
+                          : "border-brand-500 bg-brand-50 text-brand-700  shadow-xs ring-2 ring-brand-500/30"
                         : deliveryError
                         ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
                         : isDark
@@ -296,8 +323,8 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                         : "bg-white border-brand-200 text-gray-800 hover:border-brand-400"
                     )}
                   >
-                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার ভেতরে</span>
-                    <span className="text-sm md:text-base font-extrabold font-mono">৳{product?.basicInfo?.deliveryChargeInsideDhaka ?? 80}</span>
+                    <span className="text-xs md:text-sm  uppercase tracking-wider">ঢাকার ভেতরে</span>
+                    <span className="text-sm md:text-base font-medium font-mono">৳{product?.basicInfo?.deliveryChargeInsideDhaka ?? 80}</span>
                   </button>
 
                   <button
@@ -310,8 +337,8 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                       "p-3 rounded-xl border-2 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-1",
                       deliveryChargeType === "outsideDhaka"
                         ? isDark
-                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300 font-bold shadow-xs ring-2 ring-emerald-500/30"
-                          : "border-brand-500 bg-brand-50 text-brand-700 font-bold shadow-xs ring-2 ring-brand-500/30"
+                          ? "border-emerald-500 bg-emerald-500/20 text-emerald-300  shadow-xs ring-2 ring-emerald-500/30"
+                          : "border-brand-500 bg-brand-50 text-brand-700  shadow-xs ring-2 ring-brand-500/30"
                         : deliveryError
                         ? "border-red-500 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200"
                         : isDark
@@ -319,8 +346,8 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                         : "bg-white border-brand-200 text-gray-800 hover:border-brand-400"
                     )}
                   >
-                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">ঢাকার বাইরে</span>
-                    <span className="text-sm md:text-base font-extrabold font-mono">৳{product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150}</span>
+                    <span className="text-xs md:text-sm uppercase tracking-wider">ঢাকার বাইরে</span>
+                    <span className="text-sm md:text-base font-medium font-mono">৳{product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150}</span>
                   </button>
                 </div>
                 {deliveryError && (
@@ -372,7 +399,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                       onClick={applyCoupon}
                       type="button"
                       className={cn(
-                        "px-3 md:px-4 py-1.5 md:py-2 text-white rounded-lg transition-colors absolute right-1 top-1/2 transform -translate-y-1/2 text-sm font-bold",
+                        "px-3 md:px-4 py-1.5 md:py-2 text-white rounded-lg transition-colors absolute right-1 top-1/2 transform -translate-y-1/2 text-base",
                         isDark ? "bg-emerald-500 hover:bg-emerald-600" : "bg-brand-500 hover:bg-brand-600"
                       )}
                     >
@@ -413,7 +440,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
             onClick={handleButtonClick}
             disabled={isLoading}
             className={cn(
-              "w-full mt-6 md:mt-10 py-3 md:py-4 rounded-xl text-base md:text-lg font-bold transition-all duration-300 transform hover:scale-[1.02] shadow-lg relative",
+              "w-full mt-6 md:mt-10 py-3 md:py-4 rounded-xl text-base md:text-lg font-semibold text-white transition-all duration-300 transform hover:scale-[1.02] shadow-lg relative",
               !isLoading
                 ? isDark
                   ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
@@ -562,38 +589,9 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
 
         {/* Order Summary Section */}
         <div className={cn(
-          "p-4 md:p-10",
+          "px-4 md:px-10 py-5",
           isDark ? "bg-white/5 backdrop-blur-sm" : "bg-gradient-to-br from-brand-50 via-white to-brand-50"
         )}>
-          <h2 className={cn(
-            "text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center",
-            isDark ? "text-white" : "text-gray-800"
-          )}>
-            <span className={cn(
-              "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center mr-3 md:mr-4",
-              isDark ? "bg-white/10" : "bg-brand-100"
-            )}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={cn(
-                  "h-5 w-5 md:h-6 md:w-6",
-                  isDark ? "text-emerald-400" : "text-brand-600"
-                )}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-            </span>
-            অর্ডার সামারি
-          </h2>
-
           <div className="space-y-6 md:space-y-8">
             {/* Product Card */}
             <div className={cn(
@@ -623,167 +621,62 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
                   {quantity}
                 </div>
               </div>
-              <div className="flex-grow text-center">
+
+              <div className="flex-grow text-center w-full">
                 <h3 className={cn(
                   "font-bold text-base md:text-xl mb-2",
                   isDark ? "text-white" : "text-gray-800"
                 )}>
                   {title}
                 </h3>
-                <div className="flex justify-center items-center">
+                <div className="flex justify-center items-center gap-2 flex-wrap">
                   <p className={cn(
                     "text-xl md:text-2xl font-bold",
                     isDark ? "text-emerald-400" : "text-brand-600"
                   )}>
-                    ৳{price}
+                    ৳{activeUnitPrice.toLocaleString()}
                   </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Variant Selector - Always rendered to allow Base Variant quantity control */}
-            {product && (
-              <div className={cn(
-                "p-4 md:p-6 rounded-2xl shadow-sm border",
-                isDark ? "bg-white/5 border-white/10" : "bg-white border-transparent"
-              )}>
-                <h3 className={cn(
-                  "font-bold text-base md:text-lg mb-4",
-                  isDark ? "text-white" : "text-gray-800"
-                )}>
-                  ভেরিয়েন্ট নির্বাচন করুন
-                </h3>
-                <VariantSelector
-                  selectedVariants={variants}
-                  productVariants={product.variants}
-                  onVariantAdd={onVariantChange}
-                  onVariantUpdate={onVariantUpdate || (() => {})}
-                  showBaseVariant={true}
-                  className="text-sm"
-                  isDark={isDark}
-                />
-              </div>
-            )}
-
-            <div className={cn(
-              "p-5 md:p-8 rounded-3xl shadow-sm border",
-              isDark ? "bg-white/5 border-white/10" : "bg-white border-brand-50"
-            )}>
-              <div className="space-y-4">
-                <div className={cn(
-                  "flex justify-between items-center text-sm md:text-base pb-3 border-b",
-                  isDark ? "text-white/40 border-white/10" : "text-gray-500 border-gray-50 font-medium"
-                )}>
-                  <span>
-                    আইটেম মুল্য ( {quantity} টি ) :
-                  </span>
-                  <span>
-                    ৳{orderDetails.subtotal.toLocaleString()}
-                  </span>
-                </div>
-
-                <div className={cn(
-                  "flex justify-between items-center text-sm md:text-base pt-1",
-                  isDark ? "text-white/80" : "text-gray-600"
-                )}>
-                  <span>সাবটোটাল:</span>
-                  <span className="font-semibold text-xs space-x-2">
+                  {product?.price?.discounted && activeOriginalPrice > activeUnitPrice && (
                     <span className={cn(
-                      "text-xs font-bold",
-                      isDark ? "text-emerald-400" : "text-brand-600"
-                    )}>
-                      ( {quantity} টি )
-                    </span>
-                    <span className={cn(
-                      "text-xl font-bold",
-                      isDark ? "text-emerald-400" : "text-brand-600"
-                    )}>
-                      ৳{orderDetails.subtotal.toLocaleString()}
-                    </span>
-                  </span>
-                </div>
-
-                {orderDetails.subtotal > price && (
-                  <div className={cn(
-                    "text-sm md:text-base font-medium",
-                    isDark ? "text-emerald-400" : "text-emerald-600"
-                  )}>
-                    <div className="flex justify-between items-center">
-                      <span>কম্বো ডিসকাউন্ট (-) :</span>
-                      <span className="space-x-2">
-                        <span className="text-xs font-bold">
-                          (-)
-                        </span>
-                        <span className="text-xl font-bold">
-                          ৳
-                          {(
-                            orderDetails.subtotal - payablePrice!
-                          ).toLocaleString()}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <div className={cn(
-                  "flex justify-between items-center text-sm md:text-base",
-                  isDark ? "text-white/60" : "text-gray-600"
-                )}>
-                  <span>ডেলিভারি চার্জ (+):</span>
-                  <span
-                    className={cn(
-                      "font-semibold",
-                      product?.additionalInfo?.freeShipping ? "text-emerald-500 line-through" : isDark ? "text-white" : "text-gray-900"
-                    )}
-                  >
-                    ৳{deliveryCharge.toLocaleString()}
-                  </span>
-                </div>
-
-                {product?.additionalInfo?.freeShipping && (
-                  <div className="flex justify-between items-center text-sm md:text-base text-emerald-600 font-bold italic bg-emerald-50/50 px-3 py-1.5 rounded-lg">
-                    <span>শিপিং:</span>
-                    <span>ফ্রি</span>
-                  </div>
-                )}
-
-                {(discount || 0) > 0 && (
-                  <div className={cn(
-                    "flex justify-between items-center text-sm md:text-base font-bold",
-                    isDark ? "text-emerald-400" : "text-brand-600"
-                  )}>
-                    <span>কুপন ডিসকাউন্ট (-) :</span>
-                    <span>৳{(discount || 0).toLocaleString()}</span>
-                  </div>
-                )}
-
-                <div className={cn(
-                  "mt-4 pt-4 border-t-2 flex justify-between items-center",
-                  isDark ? "border-white/10" : "border-brand-100"
-                )}>
-                  <div className="flex flex-col">
-                    <span className={cn(
-                      "text-base md:text-lg font-bold",
-                      isDark ? "text-white" : "text-gray-800"
-                    )}>
-                      সর্বমোট মূল্য
-                    </span>
-                    <span className={cn(
-                      "text-[10px] font-medium uppercase tracking-wider",
+                      "text-sm line-through font-semibold",
                       isDark ? "text-white/40" : "text-gray-400"
                     )}>
-                      Cash on Delivery
+                      ৳{activeOriginalPrice.toLocaleString()}
                     </span>
-                  </div>
-                  <span className={cn(
-                    "text-2xl md:text-3xl font-black",
-                    isDark ? "text-emerald-400" : "text-brand-600"
-                  )}>
-                    ৳{calculateTotalPrice().toLocaleString()}
-                  </span>
+                  )}
                 </div>
               </div>
             </div>
+
+            {/* Reusable Product Order Widget (Variants, Quantity, Price Breakdown) */}
+            <ProductOrderWidget
+              product={product}
+              selectedVariants={variants}
+              quantity={quantity}
+              onVariantSelect={(groupName, item) => {
+                const currentQty = Math.max(1, quantity);
+                // 1. Zero out all active variants
+                variants?.forEach((sv: any) => {
+                  if (sv.quantity > 0) {
+                    onVariantUpdate?.(sv.group, sv.item.value, 0);
+                  }
+                });
+                // 2. Add the new variant
+                onVariantChange(groupName, item);
+                // 3. Set its quantity to the currentQty
+                onVariantUpdate?.(groupName, item.value, currentQty);
+              }}
+              onQuantityChange={(newQty) => {
+                const activeVar = variants?.find((v: any) => v.quantity > 0);
+                if (activeVar) {
+                  onVariantUpdate?.(activeVar.group, activeVar.item.value, newQty);
+                }
+              }}
+              deliveryCharge={deliveryCharge}
+              discount={discount}
+              isDark={isDark}
+              locale="bn"
+            />
 
             <div className="mt-6 md:mt-8">
               <h2 className={cn(

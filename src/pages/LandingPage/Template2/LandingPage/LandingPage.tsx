@@ -337,7 +337,7 @@ const LandingPage = ({ product }: { product: Product }) => {
       </div>
 
       {/* Product Information Sections */}
-      <div className="container mx-auto px-4 py-12 space-y-24">
+      <div className="container mx-auto px-4 py-12">
         <LandingPageProductDetails
           product={product}
           selectedVariants={selectedVariants}
@@ -347,8 +347,10 @@ const LandingPage = ({ product }: { product: Product }) => {
           onVariantChange={addVariant}
           onQuantityChange={() => {}}
         />
+      </div>
 
-        {/* Checkout Section Integration */}
+      {/* Checkout Section Integration - Full Width */}
+      <div className="max-w-[1400px] mx-auto px-4 pb-12">
         <AnimatedContainer direction="none" delay={0.1}>
           <div id="checkout" className="">
             <CheckoutSection

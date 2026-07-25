@@ -573,39 +573,43 @@ const LandingPage = ({ product }: { product: Product }) => {
             </AnimatedContainer>
           )}
 
-          <AnimatedContainer direction="none" delay={0.3}>
-            <div id="checkout" className="pt-10">
-              <CheckoutSection
-                orderDetails={{
-                  title: basicInfo.title,
-                  price: basePrice,
-                  payablePrice: finalTotal,
-                  subtotal: subtotal,
-                  variants: selectedVariants,
-                  quantity: effectiveQuantity,
-                  image: images?.[0],
-                  product: product,
-                  discount: discount,
-                }}
-                handleSubmit={handleSubmit}
-                onQuantityChange={() => {}}
-                onVariantChange={addVariant}
-                onVariantUpdate={updateVariantQuantity}
-                isLoading={isOrderLoading}
-                couponCode={couponCode}
-                setCouponCode={setCouponCode}
-                applyCoupon={applyCoupon}
-              />
-            </div>
-          </AnimatedContainer>
-
-          <AnimatedContainer>
-            <RelatedProducts
-              category={basicInfo?.category}
-              currentProductId={product._id}
-            />
-          </AnimatedContainer>
         </div>
+      </div>
+
+      {/* Checkout Section - Full Width */}
+      <div className="max-w-[1400px] mx-auto px-4 mt-10">
+        <AnimatedContainer direction="none" delay={0.3}>
+          <div id="checkout" className="pt-10">
+            <CheckoutSection
+              orderDetails={{
+                title: basicInfo.title,
+                price: basePrice,
+                payablePrice: finalTotal,
+                subtotal: subtotal,
+                variants: selectedVariants,
+                quantity: effectiveQuantity,
+                image: images?.[0],
+                product: product,
+                discount: discount,
+              }}
+              handleSubmit={handleSubmit}
+              onQuantityChange={() => {}}
+              onVariantChange={addVariant}
+              onVariantUpdate={updateVariantQuantity}
+              isLoading={isOrderLoading}
+              couponCode={couponCode}
+              setCouponCode={setCouponCode}
+              applyCoupon={applyCoupon}
+            />
+          </div>
+        </AnimatedContainer>
+
+        <AnimatedContainer>
+          <RelatedProducts
+            category={basicInfo?.category}
+            currentProductId={product._id}
+          />
+        </AnimatedContainer>
       </div>
     </div>
   );

@@ -495,13 +495,6 @@ const Checkout = () => {
 
               {/* Order Summary Section */}
               <div className="p-3 md:p-10 bg-gradient-to-br from-secondary/5 via-white dark:via-slate-900/40 to-secondary/5 border-t md:border-t-0 md:border-l border-border-main dark:border-slate-800">
-                <h2 className="text-lg md:text-2xl font-bold text-text-primary mb-4 md:mb-8 flex items-center">
-                  <span className="bg-secondary/10 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center mr-2 md:mr-4">
-                    <ShoppingBag className="h-4 w-4 md:h-6 md:w-6 text-secondary" />
-                  </span>
-                  অর্ডার সামারি
-                </h2>
-
                 <div className="space-y-6 md:space-y-8">
                   {/* Cart Items */}
                   <div className="space-y-3 max-h-64 overflow-y-auto">

@@ -98,8 +98,8 @@ export const priceStockFields: FieldConfig[] = [
     type: "number",
     label: "Regular Price",
     placeholder: "0.00",
-    required: true,
     prefix: "৳",
+    helpText: "Optional if a base variant price is defined below",
   },
   {
     name: "price.discounted",
@@ -109,10 +109,17 @@ export const priceStockFields: FieldConfig[] = [
     prefix: "৳",
   },
   {
+    name: "price.baseVariantName",
+    type: "text",
+    label: "Base Variant Name",
+    placeholder: "e.g., Standard, Base, Regular",
+    helpText: "Define the label/name of the standard base variant (default: Standard)",
+    defaultValue: "Standard",
+  },
+  {
     name: "stockStatus",
     type: "select",
     label: "Stock Status",
-    required: true,
     options: ["In Stock", "Out of Stock", "Pre-order"],
     defaultValue: "In Stock",
   },

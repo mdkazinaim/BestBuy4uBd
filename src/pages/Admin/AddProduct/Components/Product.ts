@@ -3,7 +3,25 @@ import { z } from "zod";
 // --------------------------------------------------
 // helpers
 // --------------------------------------------------
-// const unique = (arr: string[]) => new Set(arr).size === arr.length;
+const preprocessOptionalPositive = z.preprocess(
+  (val) => (val === "" || val === null || val === undefined || Number.isNaN(Number(val)) ? undefined : Number(val)),
+  z.number().positive("Value must be positive").optional()
+);
+
+const preprocessOptionalNumber = z.preprocess(
+  (val) => (val === "" || val === null || val === undefined || Number.isNaN(Number(val)) ? undefined : Number(val)),
+  z.number().optional()
+);
+
+const preprocessOptionalNonNegative = z.preprocess(
+  (val) => (val === "" || val === null || val === undefined || Number.isNaN(Number(val)) ? undefined : Number(val)),
+  z.number().nonnegative().optional()
+);
+
+const preprocessOptionalIntNonNegative = z.preprocess(
+  (val) => (val === "" || val === null || val === undefined || Number.isNaN(Number(val)) ? undefined : Number(val)),
+  z.number().int().nonnegative().optional()
+);
 
 // --------------------------------------------------
 // leaf schemas
@@ -34,8 +52,9 @@ const ProductVideoSchema = z
 
 const ProductVariantItemSchema = z.object({
   value: z.string().min(1, "Value is required"),
-  price: z.number().nonnegative().optional(),
-  stock: z.number().int().nonnegative().optional(),
+  price: preprocessOptionalNonNegative,
+  stock: preprocessOptionalIntNonNegative,
+  isBase: z.boolean().optional(),
   image: z
     .object({
       url: z.string().url().optional().or(z.literal("")),
@@ -72,10 +91,10 @@ const ProductReviewSchema = z.object({
 });
 
 const ProductPriceSchema = z.object({
-  regular: z.number().positive("Regular price must be > 0"),
-  discounted: z.number().positive().optional(),
-  savings: z.number().optional(),
-  savingsPercentage: z.number().optional(),
+  regular: preprocessOptionalPositive,
+  discounted: preprocessOptionalPositive,
+  savings: preprocessOptionalNumber,
+  savingsPercentage: preprocessOptionalNumber,
   baseVariantName: z.string().optional(),
   selectedVariants: z.record(z.string()).optional(),
 });
@@ -84,6 +103,7 @@ const ComboPricingSchema = z.object({
   minQuantity: z.number().int().positive("Minimum quantity must be at least 1"),
   discount: z.number().nonnegative("Discount must be non-negative"),
   discountType: z.enum(["total", "per_product"]).default("total"),
+  variantValue: z.string().optional(),
 });
 
 const ProductShippingSchema = z.object({
@@ -120,9 +140,9 @@ const ProductBasicInfoSchema = z.object({
 export const ProductFormSchema = z.object({
   basicInfo: ProductBasicInfoSchema,
   price: ProductPriceSchema,
-  stockStatus: z.enum(["In Stock", "Out of Stock", "Pre-order"]),
-  stockQuantity: z.number().int().nonnegative().optional(),
-  sold: z.number().int().nonnegative().default(0),
+  stockStatus: z.enum(["In Stock", "Out of Stock", "Pre-order"]).optional().default("In Stock"),
+  stockQuantity: preprocessOptionalIntNonNegative,
+  sold: preprocessOptionalIntNonNegative.default(0),
   images: z.array(ProductImageSchema).min(1, "At least one image is required"),
   videos: z.array(ProductVideoSchema).optional(),
   variants: z.array(ProductVariantSchema).optional(),
@@ -150,6 +170,16 @@ export const ProductFormSchema = z.object({
     })
     .optional(),
   seo: ProductSEOSchema.optional(),
+}).refine((data) => {
+  if (data.price?.regular) return true;
+  // If regular price is not specified, check if there is a variant item marked as base variant
+  const hasBaseVariant = data.variants?.some((group) =>
+    group.items?.some((item) => item.isBase === true)
+  );
+  return !!hasBaseVariant;
+}, {
+  message: "Please specify either a Regular Price or select a variant item as the Base Variant.",
+  path: ["price.regular"],
 });
 
 export type ProductFormValues = z.infer<typeof ProductFormSchema>;

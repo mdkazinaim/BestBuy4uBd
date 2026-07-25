@@ -42,6 +42,30 @@ export default function RichTextEditor({
   const editorRef = useRef<HTMLDivElement>(null);
   const [isHtmlMode, setIsHtmlMode] = useState(false);
   const [htmlValue, setHtmlValue] = useState(value);
+  const [fontSize, setFontSize] = useState(14);
+
+  const applyFontSize = (size: number) => {
+    setFontSize(size);
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
+
+    const range = selection.getRangeAt(0);
+    const span = document.createElement("span");
+    span.style.fontSize = `${size}px`;
+
+    try {
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+      selection.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      selection.addRange(newRange);
+    } catch (e) {
+      console.error("Error setting font size:", e);
+    }
+    handleInput();
+    editorRef.current?.focus();
+  };
 
   // Sync internal HTML value with external value
   useEffect(() => {
@@ -173,6 +197,56 @@ export default function RichTextEditor({
           >
             <Heading3 className="w-4 h-4" />
           </button>
+
+          <div className="w-[1px] h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
+
+          {/* Font Size Controls */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-1 py-0.5 select-none gap-0.5">
+            <button
+              type="button"
+              title="Decrease Font Size"
+              onClick={() => {
+                const newSize = Math.max(8, fontSize - 1);
+                applyFontSize(newSize);
+              }}
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold transition-colors cursor-pointer text-sm"
+            >
+              -
+            </button>
+            
+            <div className="relative group px-1 border-x border-slate-200 dark:border-slate-800">
+              <button
+                type="button"
+                className="w-8 text-center text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded py-0.5 cursor-pointer"
+              >
+                {fontSize}
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:flex flex-col p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                {[8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => applyFontSize(size)}
+                    className="px-3 py-1 text-[11px] hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-700 dark:text-slate-350 text-center cursor-pointer w-14"
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              title="Increase Font Size"
+              onClick={() => {
+                const newSize = Math.min(72, fontSize + 1);
+                applyFontSize(newSize);
+              }}
+              className="w-5 h-5 flex items-center justify-center rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold transition-colors cursor-pointer text-sm"
+            >
+              +
+            </button>
+          </div>
 
           <div className="w-[1px] h-5 bg-slate-200 dark:bg-slate-800 mx-1" />
 

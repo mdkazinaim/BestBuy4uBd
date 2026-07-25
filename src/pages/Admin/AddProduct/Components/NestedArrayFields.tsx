@@ -4,10 +4,11 @@ import {
   UseFormRegister,
   FieldErrors,
   useWatch,
+  useFormContext,
 } from "react-hook-form";
 import { ProductFormValues } from "./Product";
 import { Plus, Trash2, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
-import { memo, useState, useEffect } from "react";
+import { memo, useState, useEffect, useMemo } from "react";
 import { Button } from "@/common/Components/Button";
 import { PopoverSelect } from "./FormHelpers";
 
@@ -524,6 +525,9 @@ function VariantGroup({
     name: `variants.${variantIndex}.items`,
   });
 
+  const { watch, setValue } = useFormContext<ProductFormValues>();
+  const itemsWatch = watch(`variants.${variantIndex}.items`) || [];
+
   return (
     <div className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/40 dark:bg-slate-900/20 shadow-none">
       <div className="flex items-center justify-between gap-4 mb-4">
@@ -554,7 +558,7 @@ function VariantGroup({
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg"
+            className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg items-end"
           >
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
@@ -569,7 +573,7 @@ function VariantGroup({
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                Surcharge Price (৳)
+                Price (৳)
               </label>
               <input
                 {...register(`variants.${variantIndex}.items.${itemIndex}.price`, {
@@ -593,6 +597,26 @@ function VariantGroup({
                 className={textInputClasses(false)}
               />
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                Base Variant
+              </label>
+              <label className="flex items-center h-[38px] gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name={`variants.${variantIndex}.isBaseGroup`}
+                  checked={!!itemsWatch[itemIndex]?.isBase}
+                  onChange={() => {
+                    // Set all items in this variant group to isBase = false, and this one to true
+                    itemsWatch.forEach((_, idx) => {
+                      setValue(`variants.${variantIndex}.items.${idx}.isBase`, idx === itemIndex);
+                    });
+                  }}
+                  className="w-4 h-4 text-blue-600 border-slate-300 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800"
+                />
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Make Base</span>
+              </label>
+            </div>
             <div className="flex items-end">
               <Button
                 type="button"
@@ -614,7 +638,7 @@ function VariantGroup({
         type="button"
         variant="outline"
         size="sm"
-        onClick={() => append({ value: "", price: 0, stock: 0 })}
+        onClick={() => append({ value: "", price: 0, stock: 0, isBase: false })}
         className="mt-3 w-full border border-dashed border-slate-300 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 bg-transparent text-xs"
       >
         <Plus className="w-3.5 h-3.5 mr-1" />
@@ -805,6 +829,32 @@ export const ComboPricingField = memo(
       name: "comboPricing",
     });
 
+    const watchVariants = watch("variants") || [];
+    const baseVariantName = watch("price.baseVariantName") || "Standard";
+
+    const variantOptions = useMemo(() => {
+      const options = [{ value: "", label: "All / No Variant Specific" }];
+      
+      // Add the base variant option
+      options.push({ value: baseVariantName, label: `${baseVariantName} (Base Variant)` });
+
+      // Add all other variants from the variants field array
+      watchVariants.forEach((group: any) => {
+        if (group?.items && Array.isArray(group.items)) {
+          group.items.forEach((item: any) => {
+            if (item?.value && item.value !== baseVariantName) {
+              options.push({
+                value: item.value,
+                label: `${item.value} (${group.group || "Variant"})`
+              });
+            }
+          });
+        }
+      });
+
+      return options;
+    }, [watchVariants, baseVariantName]);
+
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -816,7 +866,7 @@ export const ComboPricingField = memo(
             variant="outline"
             size="sm"
             onClick={() =>
-              append({ minQuantity: 2, discount: 0, discountType: "total" })
+              append({ minQuantity: 2, discount: 0, discountType: "total", variantValue: "" })
             }
             className="flex items-center gap-1.5"
           >
@@ -831,7 +881,7 @@ export const ComboPricingField = memo(
               key={field.id}
               className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/40 shadow-none space-y-3"
             >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
                     Min Quantity <span className="text-red-500">*</span>
@@ -882,6 +932,18 @@ export const ComboPricingField = memo(
                       { value: "per_product", label: "Each Product" },
                     ]}
                     placeholder="Select Type"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                    For Variant <span className="text-slate-400 font-normal">(Optional)</span>
+                  </label>
+                  <PopoverSelect
+                    name={`comboPricing.${index}.variantValue`}
+                    control={control}
+                    options={variantOptions}
+                    placeholder="All Pricing"
                   />
                 </div>
 
