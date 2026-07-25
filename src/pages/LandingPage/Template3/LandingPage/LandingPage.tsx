@@ -588,9 +588,9 @@ const LandingPage = ({ product }: { product: Product }) => {
       )}
 
       {/* Contact Bar */}
-      <div className="bg-brand-600 text-white py-8 sticky top-0 z-40 mb-8 shadow-md">
+      <div className="bg-brand-600 text-white py-4 sticky top-0 z-40 mb-8 shadow-md">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-lg md:text-3xl font-black tracking-wide">
+          <p className="text-lg md:text-3xl font-semibold">
             যে কোন প্রয়োজনে যোগাযোগ করুন {host?.phone || "01610403011"}
           </p>
         </div>
@@ -601,7 +601,7 @@ const LandingPage = ({ product }: { product: Product }) => {
         <AnimatedContainer direction="none" delay={0.1}>
           <div className="bg-white rounded-[2rem] shadow-xl border border-brand-100 overflow-hidden">
             <div className="bg-brand-50 py-8 text-center border-b border-brand-100">
-              <h2 className="text-xl md:text-2xl font-black text-brand-700 px-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-brand-700 px-4">
                 অর্ডার করতে নিচের ফর্মটি পূরণ করুন
               </h2>
             </div>
