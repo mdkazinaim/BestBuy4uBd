@@ -9,6 +9,7 @@ import AnimatedContainer from "@/common/Components/AnimatedContainer";
 import CountdownTimer from "../Components/CountdownTimer";
 import { useVariantQuantity } from "@/hooks/useVariantQuantity";
 import { usePriceCalculation } from "@/hooks/usePriceCalculation";
+import { cn } from "@/lib/utils";
 import CheckoutSection from "../../Checkout/CheckoutSection";
 import OrderSuccessModal from "../../Checkout/OrderSuccessModal";
 import RelatedProducts from "@/pages/LandingPage/Components/RelatedProducts";
@@ -40,6 +41,15 @@ const LandingPage = ({ product }: { product: Product }) => {
   const { finalTotal, basePrice, subtotal } =
     usePriceCalculation(product, selectedVariants, effectiveQuantity);
   const [currentImage, setCurrentImage] = useState<any>(null);
+  const [activePromoImageIdx, setActivePromoImageIdx] = useState<number>(0);
+
+  useEffect(() => {
+    if (!product?.images || product.images.length <= 1) return;
+    const timer = setInterval(() => {
+      setActivePromoImageIdx((prev) => (prev + 1) % product.images.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [product?.images]);
 
   const [couponCode, setCouponCode] = useState<string>("");
   const [appliedCoupon, setAppliedCoupon] = useState<{
@@ -412,17 +422,151 @@ const LandingPage = ({ product }: { product: Product }) => {
           </div>
           <div className="bg-white p-6 md:p-10 rounded-b-2xl shadow-lg border-x border-b border-brand-100 space-y-4">
             <WhyBuyFromUs features={product?.basicInfo?.keyFeatures || []} />
-
-            <div className="mt-8 rounded-2xl overflow-hidden border-4 border-brand-600 shadow-xl">
-              <img
-                src={product?.images?.[0]?.url}
-                alt="Quality assurance"
-                className="w-full h-auto"
-              />
-            </div>
           </div>
         </AnimatedContainer>
       </div>
+
+      {/* Carousel Section (Outside the white card, using wider desktop container) */}
+      {product?.images && product.images.length > 0 && (
+        <div className="container mx-auto px-4 py-6">
+          <AnimatedContainer direction="up">
+            <div className="relative select-none">
+              {/* 3-Column Slides Stage */}
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr_1fr] gap-20 items-center justify-center">
+                
+                {/* Left Column (Previous Slide preview - scaled down) */}
+                {product.images.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActivePromoImageIdx((prev) =>
+                        prev === 0 ? product.images.length - 1 : prev - 1
+                      )
+                    }
+                    className="hidden md:block w-full scale-120  transition-all duration-500 rounded-2xl overflow-hidden border border-gray-200 aspect-square bg-white shadow-sm cursor-pointer"
+                  >
+                    <img
+                      src={product.images[(activePromoImageIdx - 1 + product.images.length) % product.images.length].url}
+                      alt="Previous promo slide"
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ) : (
+                  <div className="hidden md:block" />
+                )}
+
+                {/* Center Column (Active Slide) */}
+                <div className="w-full rounded-[1.5rem] overflow-hidden border-1 border-brand-600 shadow-xl bg-white aspect-square relative flex items-center justify-center z-40">
+                  <img
+                    src={product.images[activePromoImageIdx].url}
+                    alt={`Promo Slide ${activePromoImageIdx + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Navigation Buttons inside Center Slide */}
+                  {product.images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActivePromoImageIdx((prev) =>
+                            prev === 0 ? product.images.length - 1 : prev - 1
+                          )
+                        }
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-brand-600 shadow-md hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer border border-gray-150"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={3}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 19.5L8.25 12l7.5-7.5"
+                          />
+                        </svg>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActivePromoImageIdx((prev) =>
+                            (prev + 1) % product.images.length
+                          )
+                        }
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-brand-600 shadow-md hover:scale-105 active:scale-95 transition-all flex items-center justify-center cursor-pointer border border-gray-150"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={3}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                          />
+                        </svg>
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Right Column (Next Slide preview - scaled down) */}
+                {product.images.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActivePromoImageIdx((prev) =>
+                        (prev + 1) % product.images.length
+                      )
+                    }
+                    className="hidden md:block w-full scale-120 transition-all duration-500 rounded-2xl overflow-hidden border border-gray-200 aspect-square bg-white shadow-sm cursor-pointer"
+                  >
+                    <img
+                      src={product.images[(activePromoImageIdx + 1) % product.images.length].url}
+                      alt="Next promo slide"
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ) : (
+                  <div className="hidden md:block" />
+                )}
+
+              </div>
+
+              {/* Dot Indicators */}
+              {product.images.length > 1 && (
+                <div className="flex justify-center gap-2 mt-6">
+                  {product.images.map((_, idx) => {
+                    const isActive = idx === activePromoImageIdx;
+                    return (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setActivePromoImageIdx(idx)}
+                        className={cn(
+                          "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                          isActive
+                            ? "bg-brand-600 w-6"
+                            : "bg-brand-300 hover:bg-brand-450"
+                        )}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </AnimatedContainer>
+        </div>
+      )}
 
       {/* Video Demonstration Section */}
       {product?.videos && product.videos.length > 0 && (
