@@ -9,6 +9,7 @@ export interface SelectedVariant {
 
 export interface CartItem {
   id: string;
+  productId?: string;
   itemKey: string;
   name: string;
   price: number; // Current adjusted unit price (effective price)
@@ -20,6 +21,8 @@ export interface CartItem {
   deliveryChargeInsideDhaka?: number;
   deliveryChargeOutsideDhaka?: number;
   freeShipping?: boolean;
+  isBundle?: boolean;
+  bundleInfo?: any;
 }
 
 interface CartState {
@@ -28,6 +31,9 @@ interface CartState {
 
 // Helper to calculate effective unit price (considering variants and combo pricing)
 const calculateEffectiveUnitPrice = (item: CartItem): number => {
+  if ((item.isBundle || item.bundleInfo) && item.price && item.price > 0) {
+    return item.price;
+  }
   const totalQuantity = item.quantity;
   if (totalQuantity <= 0) return 0;
 
@@ -170,12 +176,14 @@ const cartSlice = createSlice({
           state.cartItems[existingItemIndex]
         );
       } else {
+        const realProductId = action.payload.productId || (typeof id === 'string' && id.includes('-bundle-') ? id.split('-bundle-')[0] : id);
         const newItem: CartItem = {
           id,
+          productId: realProductId,
           itemKey: variantKey,
           name,
           basePrice: basePrice,
-          price: 0, // Will be calculated
+          price: action.payload.price || basePrice,
           image,
           quantity,
           selectedVariants: selectedVariants || [],
@@ -183,6 +191,8 @@ const cartSlice = createSlice({
           deliveryChargeInsideDhaka,
           deliveryChargeOutsideDhaka,
           freeShipping,
+          isBundle: action.payload.isBundle || !!action.payload.bundleInfo,
+          bundleInfo: action.payload.bundleInfo,
         };
         newItem.price = calculateEffectiveUnitPrice(newItem);
         state.cartItems.push(newItem);

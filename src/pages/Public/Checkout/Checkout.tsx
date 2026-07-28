@@ -187,7 +187,8 @@ const Checkout = () => {
                 : {};
 
             return {
-              product: item.id,
+              product: item.productId || (typeof item.id === 'string' && item.id.includes('-bundle-') ? item.id.split('-bundle-')[0] : item.id),
+              name: item.name,
               image: item.image,
               quantity: item.quantity,
               itemKey: item.itemKey,

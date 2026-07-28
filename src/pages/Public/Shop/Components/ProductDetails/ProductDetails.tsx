@@ -37,6 +37,7 @@ import { useVariantQuantity } from "@/hooks/useVariantQuantity";
 import { usePriceCalculation } from "@/hooks/usePriceCalculation";
 import SavingsGauge from "@/components/SavingsGauge";
 import ProductOrderWidget from "@/common/Components/ProductOrderWidget";
+import { ProductBundle } from "@/pages/Public/Shop/Components/ProductDetails/BundleSelector";
 
 const ProductDetailsSkeleton = () => (
   <div className="min-h-screen bg-slate-50/50 pb-20 font-primary">
@@ -161,11 +162,40 @@ const ProductDetails = () => {
     }
   }, [product, trackViewItem]);
 
-  // Pass totalQuantity (which is sum of variant quantities) as effectiveQuantity
+  // Active bundle state
+  const [activeBundle, setActiveBundle] = useState<ProductBundle | null>(null);
+  const [bundleQuantity, setBundleQuantity] = useState<number>(1);
+
+  // Calculate base price calculation
   const {
     finalTotal
-  } = usePriceCalculation(product, selectedVariants, totalQuantity);
+  } = usePriceCalculation(product, selectedVariants, totalQuantity, activeBundle);
 
+  // Calculate bundle pricing if active
+  const getBundleUnitPrice = (bundle: ProductBundle): number => {
+    const bvName = product?.price?.baseVariantName;
+    const basePrice = product?.price?.discounted || product?.price?.regular || 0;
+    return (bundle.variants || []).reduce((total: number, val: string) => {
+      if (val === bvName) return total + basePrice;
+      for (const group of product?.variants || []) {
+        const item = group.items.find((i: any) => i.value === val);
+        if (item) return total + (!item.price || item.price === 0 ? basePrice : item.price);
+      }
+      return total + basePrice;
+    }, 0);
+  };
+
+  const bundleUnitPrice = activeBundle ? getBundleUnitPrice(activeBundle) : 0;
+  const bundleFinalUnitPrice = (() => {
+    if (!activeBundle) return 0;
+    if (["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(activeBundle.discountType)) return bundleUnitPrice;
+    if (activeBundle.discountType === "percentage") return Math.max(0, bundleUnitPrice - (bundleUnitPrice * activeBundle.discount) / 100);
+    return Math.max(0, bundleUnitPrice - activeBundle.discount);
+  })();
+
+  const effectiveFinalTotal = activeBundle
+    ? bundleFinalUnitPrice * bundleQuantity
+    : finalTotal;
 
   const currentDiscountedPrice = product?.price?.discounted || product?.price?.regular || 0;
   const currentRegularPrice = product?.price?.regular || currentDiscountedPrice;
@@ -192,8 +222,47 @@ const ProductDetails = () => {
     ? wishlistItems.some((item) => item._id === product._id)
     : false;
 
+  const getVariantUnitPrice = (val: string): number => {
+    const basePrice = product?.price?.discounted || product?.price?.regular || 0;
+    const baseVariantName = product?.price?.baseVariantName;
+    if (val === baseVariantName) return basePrice;
+    for (const group of product?.variants || []) {
+      const item = group.items.find((i: any) => i.value === val);
+      if (item) return !item.price || item.price === 0 ? basePrice : item.price;
+    }
+    return basePrice;
+  };
+
   const handleAddToCart = () => {
     if (!product) return;
+
+    if (activeBundle) {
+      dispatch(addToCart({
+        id: `${product._id}-bundle-${activeBundle.variants.join('-')}`,
+        productId: product._id,
+        name: `${product.basicInfo.title} (${activeBundle.name || "Bundle Offer"})`,
+        price: bundleFinalUnitPrice,
+        image: productImages[0]?.url || product.images?.[0]?.url,
+        quantity: bundleQuantity,
+        isBundle: true,
+        bundleInfo: activeBundle,
+        selectedVariants: [{
+          group: "Bundle Package",
+          items: activeBundle.variants.map((v: string) => ({
+            value: v,
+            price: getVariantUnitPrice(v),
+            quantity: 1
+          }))
+        }],
+        deliveryChargeInsideDhaka: product.basicInfo.deliveryChargeInsideDhaka,
+        deliveryChargeOutsideDhaka: product.basicInfo.deliveryChargeOutsideDhaka,
+        freeShipping: ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(activeBundle.discountType) || product.additionalInfo?.freeShipping,
+        comboPricing: product.comboPricing
+      }));
+      dispatch(openCart());
+      toast.success(`"${activeBundle.name || "Bundle"}" added to cart!`);
+      return;
+    }
 
     if (totalQuantity === 0) {
       toast.error('Please select at least one item');
@@ -218,6 +287,7 @@ const ProductDetails = () => {
 
     dispatch(addToCart({
       id: product._id,
+      productId: product._id,
       name: product.basicInfo.title,
       price: product.price.discounted || product.price.regular,
       image: productImages[0]?.url || product.images?.[0]?.url,
@@ -242,6 +312,34 @@ const ProductDetails = () => {
 
   const handleOrderNow = () => {
     if (!product) return;
+
+    if (activeBundle) {
+      dispatch(addToCart({
+        id: `${product._id}-bundle-${activeBundle.variants.join('-')}`,
+        productId: product._id,
+        name: `${product.basicInfo.title} (${activeBundle.name || "Bundle Offer"})`,
+        price: bundleFinalUnitPrice,
+        image: productImages[0]?.url || product.images?.[0]?.url,
+        quantity: bundleQuantity,
+        isBundle: true,
+        bundleInfo: activeBundle,
+        selectedVariants: [{
+          group: "Bundle Package",
+          items: activeBundle.variants.map((v: string) => ({
+            value: v,
+            price: getVariantUnitPrice(v),
+            quantity: 1
+          }))
+        }],
+        deliveryChargeInsideDhaka: product.basicInfo.deliveryChargeInsideDhaka,
+        deliveryChargeOutsideDhaka: product.basicInfo.deliveryChargeOutsideDhaka,
+        freeShipping: ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(activeBundle.discountType) || product.additionalInfo?.freeShipping,
+        comboPricing: product.comboPricing
+      }));
+      navigate("/checkout");
+      return;
+    }
+
     if (totalQuantity === 0) {
       toast.error('Please select at least one item');
       return;
@@ -505,6 +603,17 @@ const ProductDetails = () => {
                   updateVariantQuantity(activeVar.group, activeVar.item.value, newQty);
                 }
               }}
+              activeBundle={activeBundle}
+              bundleQuantity={bundleQuantity}
+              onBundleSelect={(b) => {
+                setActiveBundle(b);
+                setBundleQuantity(1);
+              }}
+              onBundleClear={() => {
+                setActiveBundle(null);
+                setBundleQuantity(1);
+              }}
+              onBundleQuantityChange={(q) => setBundleQuantity(q)}
               locale="en"
             />
 
@@ -524,11 +633,11 @@ const ProductDetails = () => {
                   <Button
                     size="lg"
                     onPress={handleAddToCart}
-                    isDisabled={totalQuantity === 0}
+                    isDisabled={!activeBundle && totalQuantity === 0}
                     className="flex-1 h-12 bg-secondary text-white font-bold text-base shadow-lg shadow-secondary/20 rounded-xl hover:shadow-secondary/40 transition-all cursor-pointer"
                     startContent={<ShoppingCart className="w-5 h-5" />}
                   >
-                    Add to Cart - ৳{finalTotal.toLocaleString()}
+                    Add to Cart - ৳{effectiveFinalTotal.toLocaleString()}
                   </Button>
                   <Button
                     isIconOnly
