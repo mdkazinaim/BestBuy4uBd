@@ -12,6 +12,7 @@ interface PriceBreakdownProps {
   comboPricing: ComboPricing[];
   subtotal?: number;
   className?: string;
+  selectedVariants?: any[];
 }
 
 const PriceBreakdown: React.FC<PriceBreakdownProps> = ({
@@ -21,9 +22,21 @@ const PriceBreakdown: React.FC<PriceBreakdownProps> = ({
   comboPricing,
   subtotal,
   className,
+  selectedVariants,
 }) => {
+  const applicableComboPricing = selectedVariants 
+    ? comboPricing.filter((tier: any) => {
+        if (!tier.variantValue || tier.variantValue === "") {
+          return true;
+        }
+        const activeSelectedVariants = selectedVariants.filter((v) => (v.quantity || 0) > 0);
+        const selectedValues = activeSelectedVariants.map(v => v.item?.value || v.value);
+        return selectedValues.includes(tier.variantValue);
+      })
+    : comboPricing;
+
   const { appliedTier, discountAmount, finalPrice, originalTotal } =
-    calculateComboPricing(quantity, unitPrice, comboPricing, subtotal);
+    calculateComboPricing(quantity, unitPrice, applicableComboPricing, subtotal);
 
   if (quantity === 0) return null;
 

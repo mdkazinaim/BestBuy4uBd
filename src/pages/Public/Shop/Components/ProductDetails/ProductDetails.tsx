@@ -120,10 +120,17 @@ const ProductDetails = () => {
   } = usePriceCalculation(product, selectedVariants, totalQuantity);
 
   const activeSelectedVariant = selectedVariants.find((v) => v.quantity > 0 && !v.isBaseVariant);
-  const variantExtraPrice = activeSelectedVariant?.item?.price || 0;
   const currentDiscountedPrice = product?.price?.discounted || product?.price?.regular || 0;
-  const activeUnitPrice = currentDiscountedPrice + variantExtraPrice;
-  const activeRegularPrice = (product?.price?.regular || currentDiscountedPrice) + variantExtraPrice;
+  const currentRegularPrice = product?.price?.regular || currentDiscountedPrice;
+
+  const activeUnitPrice = (activeSelectedVariant && activeSelectedVariant.item?.price && activeSelectedVariant.item.price > 0)
+    ? activeSelectedVariant.item.price
+    : currentDiscountedPrice;
+
+  const activeRegularPrice = (activeSelectedVariant && activeSelectedVariant.item?.price && activeSelectedVariant.item.price > 0)
+    ? activeSelectedVariant.item.price + Math.max(0, currentRegularPrice - currentDiscountedPrice)
+    : currentRegularPrice;
+
   const activeUnitSavings = Math.max(0, activeRegularPrice - activeUnitPrice);
 
   const selectSingleVariant = (group: string, item: any) => {

@@ -405,6 +405,7 @@ const LandingPage = ({ product }: { product: Product }) => {
                   unitPrice={Math.round(basePrice)} 
                   comboPricing={product.comboPricing || []}
                   subtotal={subtotal}
+                  selectedVariants={selectedVariants}
                 />
               </div>
 

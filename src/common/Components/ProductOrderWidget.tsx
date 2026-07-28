@@ -111,9 +111,12 @@ export default function ProductOrderWidget({
                 <div className="grid grid-cols-2 gap-2.5">
                   {itemsToRender.map((item: VariantItem) => {
                     const isSelected = item.value === selectedValue;
-                    const itemExtraPrice = item.price || 0;
-                    const itemBasePrice = basePrice + itemExtraPrice;
-                    const itemWasPrice = regularPrice + itemExtraPrice;
+                    const itemBasePrice = (item.isBaseVariant || !item.price || item.price === 0)
+                      ? basePrice
+                      : item.price;
+                    const itemWasPrice = (item.isBaseVariant || !item.price || item.price === 0)
+                      ? regularPrice
+                      : item.price + Math.max(0, regularPrice - basePrice);
                     return (
                       <button
                         key={item.value}

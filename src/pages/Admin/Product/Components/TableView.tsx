@@ -201,21 +201,31 @@ const TableView = ({ products }: TableViewProps) => {
                   {/* Price */}
                   <td className="px-4 py-3 w-[120px]">
                     <div className="flex flex-col min-w-[120px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
-                          {formatPrice(product.price.discounted)}
-                        </span>
-                        {product.price.discounted < product.price.regular && (
-                          <span className="text-xs line-through text-slate-400 dark:text-slate-500 font-medium">
-                            {formatPrice(product.price.regular)}
-                          </span>
-                        )}
-                      </div>
-                      {product.price.discounted < product.price.regular && (
-                        <span className="inline-flex mt-1 text-[10px] font-semibold text-red-500">
-                          Save {formatPrice(product.price.regular - product.price.discounted)}
-                        </span>
-                      )}
+                      {(() => {
+                        const discounted = product.price.discounted;
+                        const regular = product.price.regular;
+                        const hasDiscount = typeof discounted === "number" && discounted > 0 && discounted < regular;
+                        const displayPrice = hasDiscount ? discounted : regular;
+                        return (
+                          <>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                                {formatPrice(displayPrice)}
+                              </span>
+                              {hasDiscount && (
+                                <span className="text-xs line-through text-slate-400 dark:text-slate-500 font-medium">
+                                  {formatPrice(regular)}
+                                </span>
+                              )}
+                            </div>
+                            {hasDiscount && (
+                              <span className="inline-flex mt-1 text-[10px] font-semibold text-red-500">
+                                Save {formatPrice(regular - discounted)}
+                              </span>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </td>
 
@@ -344,7 +354,11 @@ const TableView = ({ products }: TableViewProps) => {
                 <p className="text-xs text-slate-400 mt-0.5">{product.basicInfo.productCode}</p>
                 <div className="flex items-center justify-between mt-2">
                   <span className="font-semibold text-blue-600 dark:text-blue-450 text-base">
-                    {formatPrice(product.price.discounted)}
+                    {formatPrice(
+                      product.price.discounted && product.price.discounted > 0 && product.price.discounted < product.price.regular
+                        ? product.price.discounted
+                        : product.price.regular
+                    )}
                   </span>
                   {getStockBadge(product.stockStatus)}
                 </div>

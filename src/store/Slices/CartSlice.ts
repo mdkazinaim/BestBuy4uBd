@@ -31,32 +31,57 @@ const calculateEffectiveUnitPrice = (item: CartItem): number => {
   const totalQuantity = item.quantity;
   if (totalQuantity <= 0) return 0;
 
-  // 1. Calculate Total Base Cost
-  let totalCost = item.basePrice * totalQuantity;
+  // 1. Calculate Total Cost using variant replacement prices if defined
+  let unitPrice = item.basePrice;
 
-  // 2. Add Variant Costs
   if (item.selectedVariants) {
      const variantsToIterate = Array.isArray(item.selectedVariants) 
       ? item.selectedVariants 
       : Object.entries(item.selectedVariants).map(([group, items]) => ({ group, items }));
 
-     variantsToIterate.forEach((group: any) => {
+     for (const group of variantsToIterate) {
         if (group.items && Array.isArray(group.items)) {
-            group.items.forEach((v: any) => {
-                const variantQty = typeof v.quantity === 'number' ? v.quantity : totalQuantity;
-                if (variantQty > 0) {
-                    totalCost += (v.price || 0) * variantQty;
-                }
-            });
-        } else if (typeof group.price === 'number') {
-             totalCost += group.price * totalQuantity;
+            const activeVar = group.items.find((v: any) => v.quantity > 0 || typeof v.quantity === 'undefined');
+            if (activeVar && activeVar.price && activeVar.price > 0) {
+                unitPrice = activeVar.price;
+                break;
+            }
+        } else if (group.price && group.price > 0) {
+             unitPrice = group.price;
+             break;
         }
-     });
+     }
   }
+
+  let totalCost = unitPrice * totalQuantity;
 
   // 3. Apply Combo Discount
   if (item.comboPricing && item.comboPricing.length > 0) {
-      const sortedCombo = [...item.comboPricing].sort((a, b) => b.minQuantity - a.minQuantity);
+      const selectedVariantValues: string[] = [];
+      if (item.selectedVariants) {
+         const variantsToIterate = Array.isArray(item.selectedVariants) 
+          ? item.selectedVariants 
+          : Object.entries(item.selectedVariants).map(([group, items]) => ({ group, items }));
+
+         variantsToIterate.forEach((group: any) => {
+            if (group.items && Array.isArray(group.items)) {
+                group.items.forEach((v: any) => {
+                    if (v.quantity > 0 || typeof v.quantity === 'undefined') {
+                        selectedVariantValues.push(v.value);
+                    }
+                });
+            }
+         });
+      }
+
+      const applicableCombo = item.comboPricing.filter((tier: any) => {
+          if (!tier.variantValue || tier.variantValue === "") {
+              return true;
+          }
+          return selectedVariantValues.includes(tier.variantValue);
+      });
+
+      const sortedCombo = [...applicableCombo].sort((a, b) => b.minQuantity - a.minQuantity);
       const tier = sortedCombo.find(t => totalQuantity >= t.minQuantity);
       if (tier) {
           const discountAmt = tier.discountType === "per_product" 

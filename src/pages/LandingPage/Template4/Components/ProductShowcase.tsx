@@ -121,6 +121,7 @@ export default function ProductShowcase({
                 comboPricing={product.comboPricing || []}
                 subtotal={subtotal}
                 className="bg-transparent text-white backdrop-blur-sm rounded-2xl p-6 border border-white/10"
+                selectedVariants={selectedVariants}
               />
             </div>
 

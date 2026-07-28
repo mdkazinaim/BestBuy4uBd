@@ -209,14 +209,24 @@ const CardView = ({ products }: CardViewProps) => {
               {/* Price */}
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-base font-semibold text-slate-800 dark:text-slate-200">
-                    {formatPrice(product.price.discounted)}
-                  </span>
-                  {product.price.discounted < product.price.regular && (
-                    <span className="text-xs line-through text-slate-400 dark:text-slate-500 ml-2 font-medium">
-                      {formatPrice(product.price.regular)}
-                    </span>
-                  )}
+                  {(() => {
+                    const discounted = product.price.discounted;
+                    const regular = product.price.regular;
+                    const hasDiscount = typeof discounted === "number" && discounted > 0 && discounted < regular;
+                    const displayPrice = hasDiscount ? discounted : regular;
+                    return (
+                      <>
+                        <span className="text-base font-semibold text-slate-800 dark:text-slate-200">
+                          {formatPrice(displayPrice)}
+                        </span>
+                        {hasDiscount && (
+                          <span className="text-xs line-through text-slate-400 dark:text-slate-500 ml-2 font-medium">
+                            {formatPrice(regular)}
+                          </span>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />

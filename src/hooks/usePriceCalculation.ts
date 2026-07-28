@@ -34,11 +34,17 @@ export const usePriceCalculation = (
 
     // Base price is discounted price if available, otherwise regular price
     const basePrice = product.price.discounted || product.price.regular;
-    // Normalize comboPricing and bulkPricing into a single tiers array
-    const normalizedTiers: ComboPricing[] = [...(product.comboPricing || [])];
-    
-    // Legacy Bulk Pricing Logic REMOVED per user request
-    // We now strictly use comboPricing tiers
+    // Filter comboPricing based on selected variants if variantValue is specified
+    const activeSelectedVariants = selectedVariants.filter((v) => (v.quantity || 0) > 0);
+    const selectedValues = activeSelectedVariants.map(v => v.item?.value || v.value);
+    const applicableTiers = (product.comboPricing || []).filter((tier: any) => {
+      if (!tier.variantValue || tier.variantValue === "") {
+        return true;
+      }
+      return selectedValues.includes(tier.variantValue);
+    });
+
+    const normalizedTiers: ComboPricing[] = [...applicableTiers];
 
     // Calculate subtotal for all active selected variants
     const activeVariants = selectedVariants.filter((v) => (v.quantity || 0) > 0);
@@ -48,14 +54,16 @@ export const usePriceCalculation = (
 
     if (activeVariants.length > 0) {
       subtotal = activeVariants.reduce((sum, v) => {
-        const itemExtraPrice = v.isBaseVariant ? 0 : (v.item?.price || 0);
-        const unitPriceForVariant = basePrice + itemExtraPrice;
+        const unitPriceForVariant = (v.isBaseVariant || !v.item?.price || v.item.price === 0)
+          ? basePrice
+          : v.item.price;
         return sum + (unitPriceForVariant * v.quantity);
       }, 0);
 
       variantTotal = activeVariants.reduce((sum, v) => {
-        if (v.isBaseVariant) return sum;
-        return sum + ((v.item?.price || 0) * v.quantity);
+        if (v.isBaseVariant || !v.item?.price || v.item.price === 0) return sum;
+        const extra = v.item.price - basePrice;
+        return sum + (extra * v.quantity);
       }, 0);
     } else {
       subtotal = basePrice * totalQuantity;

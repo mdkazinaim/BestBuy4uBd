@@ -52,35 +52,40 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
 
   // Calculate active unit price based on selected variant
   const activeUnitPrice = (() => {
-    let extra = 0;
+    const basePrice = product?.price?.discounted || product?.price?.regular || price;
+    let selectedPrice = 0;
     if (product?.variants && product.variants.length > 0) {
       product.variants.forEach((variantGroup: any) => {
         const selectedInGroup = variants?.find(
           (sv: any) => sv.group === variantGroup.group && sv.quantity > 0 && !sv.isBaseVariant
         );
-        if (selectedInGroup) {
-          extra += selectedInGroup.item?.price || 0;
+        if (selectedInGroup && selectedInGroup.item?.price && selectedInGroup.item.price > 0) {
+          selectedPrice = selectedInGroup.item.price;
         }
       });
     }
-    const basePrice = product?.price?.discounted || product?.price?.regular || price;
-    return basePrice + extra;
+    return selectedPrice > 0 ? selectedPrice : basePrice;
   })();
 
   const activeOriginalPrice = (() => {
-    let extra = 0;
+    const regPrice = product?.price?.regular || price;
+    const basePrice = product?.price?.discounted || product?.price?.regular || price;
+    let selectedPrice = 0;
     if (product?.variants && product.variants.length > 0) {
       product.variants.forEach((variantGroup: any) => {
         const selectedInGroup = variants?.find(
           (sv: any) => sv.group === variantGroup.group && sv.quantity > 0 && !sv.isBaseVariant
         );
-        if (selectedInGroup) {
-          extra += selectedInGroup.item?.price || 0;
+        if (selectedInGroup && selectedInGroup.item?.price && selectedInGroup.item.price > 0) {
+          selectedPrice = selectedInGroup.item.price;
         }
       });
     }
-    const regPrice = product?.price?.regular || price;
-    return regPrice + extra;
+    if (selectedPrice > 0) {
+      const discountAmount = Math.max(0, regPrice - basePrice);
+      return selectedPrice + discountAmount;
+    }
+    return regPrice;
   })();
 
   const [deliveryChargeType, setDeliveryChargeType] = useState("");

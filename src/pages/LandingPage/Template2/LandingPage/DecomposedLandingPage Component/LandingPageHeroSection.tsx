@@ -169,6 +169,7 @@ const LandingPageHeroSection: React.FC<LandingPageHeroSectionProps> = ({
                   quantity={quantity}
                   unitPrice={product.price.discounted || product.price.regular}
                   comboPricing={product.comboPricing || []}
+                  selectedVariants={selectedVariants}
                 />
               </div>
 
