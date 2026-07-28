@@ -448,12 +448,12 @@ const OrderDetails = () => {
                                   Array.isArray(variant) ? (
                                     variant.map((v: any, vIdx: number) => (
                                       <span key={`${group}-${vIdx}`} className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350">
-                                        {group}: {v.value}
+                                        {group}: {v.value}{v.price && v.price > 0 ? ` (৳${v.price})` : ''}
                                       </span>
                                     ))
                                   ) : (
                                     <span key={group} className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350">
-                                      {group}: {variant.value}
+                                      {group}: {variant.value}{variant.price && variant.price > 0 ? ` (৳${variant.price})` : ''}
                                     </span>
                                   )
                                 ))}

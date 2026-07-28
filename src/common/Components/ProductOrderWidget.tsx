@@ -34,6 +34,11 @@ interface ProductOrderWidgetProps {
   discount?: number;
   isDark?: boolean;
   locale?: "bn" | "en";
+  activeBundle?: ProductBundle | null;
+  bundleQuantity?: number;
+  onBundleSelect?: (bundle: ProductBundle) => void;
+  onBundleClear?: () => void;
+  onBundleQuantityChange?: (newQuantity: number) => void;
 }
 
 export default function ProductOrderWidget({
@@ -45,9 +50,55 @@ export default function ProductOrderWidget({
   deliveryCharge = 0,
   discount = 0,
   isDark = false,
+  activeBundle: propActiveBundle,
+  bundleQuantity: propBundleQuantity,
+  onBundleSelect,
+  onBundleClear,
+  onBundleQuantityChange,
 }: ProductOrderWidgetProps) {
-  const [activeBundle, setActiveBundle] = useState<ProductBundle | null>(null);
-  const [bundleQuantity, setBundleQuantity] = useState(1);
+  const [internalActiveBundle, setInternalActiveBundle] = useState<ProductBundle | null>(null);
+  const [internalBundleQuantity, setInternalBundleQuantity] = useState(1);
+
+  const activeBundle = propActiveBundle !== undefined ? propActiveBundle : internalActiveBundle;
+  const bundleQuantity = propBundleQuantity !== undefined ? propBundleQuantity : internalBundleQuantity;
+
+  const handleSelectBundle = (b: ProductBundle) => {
+    if (onBundleSelect) {
+      onBundleSelect(b);
+    } else {
+      setInternalActiveBundle(b);
+      setInternalBundleQuantity(1);
+    }
+  };
+
+  const handleClearBundle = () => {
+    if (onBundleClear) {
+      onBundleClear();
+    } else {
+      setInternalActiveBundle(null);
+      setInternalBundleQuantity(1);
+    }
+  };
+
+  const handleQuantityMinus = () => {
+    if (activeBundle) {
+      const nextQ = Math.max(1, bundleQuantity - 1);
+      if (onBundleQuantityChange) onBundleQuantityChange(nextQ);
+      else setInternalBundleQuantity(nextQ);
+    } else {
+      onQuantityChange(Math.max(1, quantity - 1));
+    }
+  };
+
+  const handleQuantityPlus = () => {
+    if (activeBundle) {
+      const nextQ = bundleQuantity + 1;
+      if (onBundleQuantityChange) onBundleQuantityChange(nextQ);
+      else setInternalBundleQuantity(nextQ);
+    } else {
+      onQuantityChange(quantity + 1);
+    }
+  };
 
   const { subtotal, comboDiscount, bundleDiscount, finalTotal, isFreeDelivery, isFreeDeliveryInside, isFreeDeliveryOutside } =
     usePriceCalculation(product, selectedVariants, quantity, activeBundle);
@@ -110,8 +161,8 @@ export default function ProductOrderWidget({
           product={product}
           activeBundle={activeBundle}
           bundleQuantity={bundleQuantity}
-          onSelectBundle={(b) => { setActiveBundle(b); setBundleQuantity(1); }}
-          onClearBundle={() => { setActiveBundle(null); setBundleQuantity(1); }}
+          onSelectBundle={handleSelectBundle}
+          onClearBundle={handleClearBundle}
           isDark={isDark}
         />
       )}
@@ -236,7 +287,7 @@ export default function ProductOrderWidget({
           )}>
             <button
               type="button"
-              onClick={() => activeBundle ? setBundleQuantity((q) => Math.max(1, q - 1)) : onQuantityChange(Math.max(1, quantity - 1))}
+              onClick={handleQuantityMinus}
               className={cn(
                 "w-9 h-9 flex items-center justify-center transition-colors cursor-pointer",
                 isDark ? "text-white/50 hover:bg-white/10 hover:text-white" : "text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
@@ -252,7 +303,7 @@ export default function ProductOrderWidget({
             </span>
             <button
               type="button"
-              onClick={() => activeBundle ? setBundleQuantity((q) => q + 1) : onQuantityChange(quantity + 1)}
+              onClick={handleQuantityPlus}
               className={cn(
                 "w-9 h-9 flex items-center justify-center transition-colors cursor-pointer",
                 isDark ? "text-white/50 hover:bg-white/10 hover:text-white" : "text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
