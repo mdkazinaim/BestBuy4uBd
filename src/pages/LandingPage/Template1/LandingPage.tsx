@@ -67,11 +67,23 @@ const LandingPage = ({ product }: { product: Product }) => {
   });
   const [discount, setDiscount] = useState<number>(0);
 
+  const activeSelectedVariant = selectedVariants.find((v: any) => (v.quantity || 0) > 0 && !v.isBaseVariant);
+  const activeVariantImage = activeSelectedVariant?.item?.image || product?.price?.image;
+
   useEffect(() => {
-    if (product) {
+    if (activeVariantImage?.url) {
+      setCurrentImage(activeVariantImage);
+    } else if (product && product.images && product.images.length > 0) {
       setCurrentImage(product.images[0]);
+    } else if (product) {
+      const variantWithImg = product.variants
+        ?.flatMap((v: any) => v.items || [])
+        .find((item: any) => item.image?.url);
+      if (variantWithImg?.image) {
+        setCurrentImage(variantWithImg.image);
+      }
     }
-  }, [product]);
+  }, [product, activeVariantImage?.url]);
 
   if (!product) {
     return (
@@ -425,10 +437,7 @@ const LandingPage = ({ product }: { product: Product }) => {
                   onVariantAdd={(group, item) => {
                     addVariant(group, item);
                     if (item.image?.url) {
-                      const imgIndex = images.findIndex(
-                        (img: any) => img.url === item.image.url,
-                      );
-                      if (imgIndex !== -1) setSelectedImage(imgIndex);
+                      setCurrentImage(item.image);
                     }
                   }}
                   onVariantUpdate={updateVariantQuantity}

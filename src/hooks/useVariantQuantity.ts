@@ -21,6 +21,7 @@ export interface UseVariantQuantityReturn {
   clearVariants: () => void;
   getVariantQuantity: (group: string, value: string) => number;
   initVariants: (variants: any[], product?: any) => void;
+  selectSingleVariant: (group: string, item: any, quantity: number) => void;
 }
 
 /**
@@ -149,6 +150,11 @@ export const useVariantQuantity = (
     [selectedVariants]
   );
 
+  const selectSingleVariant = useCallback((group: string, item: any, quantity: number) => {
+    const isBase = item.isBaseVariant === true;
+    setSelectedVariants([{ group, item, quantity, isBaseVariant: isBase }]);
+  }, []);
+
   return {
     selectedVariants,
     totalQuantity,
@@ -158,6 +164,7 @@ export const useVariantQuantity = (
     clearVariants,
     getVariantQuantity,
     initVariants,
+    selectSingleVariant,
   };
 };
 

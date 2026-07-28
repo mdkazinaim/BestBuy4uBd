@@ -81,6 +81,7 @@ export default function ProductOrderWidget({
               price: 0,
               stock: product.stockQuantity,
               isBaseVariant: true,
+              image: product.price?.image,
             };
             const itemsToRender = gIdx === 0
               ? [baseVariantItem, ...variantGroup.items.filter((i: VariantItem) => i.value !== (product.price?.baseVariantName || "Standard"))]

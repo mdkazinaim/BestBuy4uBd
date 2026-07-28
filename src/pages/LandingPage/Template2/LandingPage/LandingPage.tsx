@@ -72,11 +72,24 @@ const LandingPage = ({ product }: { product: Product }) => {
     }
   };
 
+  const activeSelectedVariant = selectedVariants.find((v: any) => (v.quantity || 0) > 0 && !v.isBaseVariant);
+  const activeVariantImage = activeSelectedVariant?.item?.image || product?.price?.image;
+
   useEffect(() => {
-    if (product) {
+    if (activeVariantImage?.url) {
+      setCurrentImage(activeVariantImage);
+    } else if (product && product.images && product.images.length > 0) {
       setCurrentImage(product.images[0]);
+    } else if (product) {
+      // Find if any variant item has an image
+      const variantWithImg = product.variants
+        ?.flatMap((v: any) => v.items || [])
+        .find((item: any) => item.image?.url);
+      if (variantWithImg?.image) {
+        setCurrentImage(variantWithImg.image);
+      }
     }
-  }, [product]);
+  }, [product, activeVariantImage?.url]);
 
   const [activeTab, setActiveTab] = useState<string>("description");
 

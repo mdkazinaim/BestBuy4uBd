@@ -62,15 +62,27 @@ const LandingPage = ({ product }: { product: Product }) => {
 
   const [createOrder, { isLoading: isOrderLoading }] = useCreateOrderMutation();
 
+  const activeSelectedVariant = selectedVariants.find((v: any) => (v.quantity || 0) > 0 && !v.isBaseVariant);
+  const activeVariantImage = activeSelectedVariant?.item?.image || product?.price?.image;
+
   useEffect(() => {
-    if (product) {
+    if (activeVariantImage?.url) {
+      setCurrentImage(activeVariantImage);
+    } else if (product && product.images && product.images.length > 0) {
       setCurrentImage(product.images[0]);
+    } else if (product) {
+      const variantWithImg = product.variants
+        ?.flatMap((v: any) => v.items || [])
+        .find((item: any) => item.image?.url);
+      if (variantWithImg?.image) {
+        setCurrentImage(variantWithImg.image);
+      }
     }
 
     return () => {
       if (product) dispatch(clearCart());
     };
-  }, [product, dispatch]);
+  }, [product, dispatch, activeVariantImage?.url]);
 
   if (!product) return null;
 

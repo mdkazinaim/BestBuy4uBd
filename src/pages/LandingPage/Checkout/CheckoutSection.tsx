@@ -606,7 +606,9 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
               <div className=" relative">
                 <img
                   src={
-                    image?.url || "https://placehold.co/400x400?text=Product"
+                    image?.url ||
+                    variants?.find((v: any) => v.item?.image?.url)?.item?.image?.url ||
+                    "https://placehold.co/400x400?text=Product"
                   }
                   alt={image?.alt || title}
                   className="size-40 mx-auto object-cover rounded-xl"

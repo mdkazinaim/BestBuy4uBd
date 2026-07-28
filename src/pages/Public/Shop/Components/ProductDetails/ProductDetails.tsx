@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -95,9 +95,55 @@ const ProductDetails = () => {
   const {
     selectedVariants,
     totalQuantity,
-    addVariant,
-    updateVariantQuantity
+    updateVariantQuantity,
+    selectSingleVariant: selectSingleVariantAtomic
   } = useVariantQuantity(product?.variants, product);
+
+  // Get active variant image and compute productImages list
+  const activeSelectedVariant = selectedVariants.find((v) => v.quantity > 0 && !v.isBaseVariant);
+  const activeVariantImage = activeSelectedVariant?.item?.image || product?.price?.image;
+  
+  const firstAvailableVariantImage = useMemo(() => {
+    if (!product?.variants) return null;
+    for (const group of product.variants) {
+      for (const item of (group.items || [])) {
+        if (item.image?.url) {
+          return item.image;
+        }
+      }
+    }
+    return null;
+  }, [product?.variants]);
+
+  const productImages = useMemo(() => {
+    const list = product?.images ? [...product.images] : [];
+    if (activeVariantImage?.url) {
+      const exists = list.some(img => img.url === activeVariantImage.url);
+      if (!exists) {
+        list.push({ url: activeVariantImage.url, alt: activeVariantImage.alt || "" });
+      }
+    }
+    // If the list is still empty, fallback to the default variant price image or first available variant image
+    if (list.length === 0) {
+      if (product?.price?.image?.url) {
+        list.push({ url: product.price.image.url, alt: product.price.image.alt || "" });
+      } else if (firstAvailableVariantImage?.url) {
+        list.push({ url: firstAvailableVariantImage.url, alt: firstAvailableVariantImage.alt || "" });
+      }
+    }
+    return list;
+  }, [product?.images, activeVariantImage, product?.price?.image, firstAvailableVariantImage]);
+
+  useEffect(() => {
+    if (activeVariantImage?.url) {
+      const idx = productImages.findIndex(img => img.url === activeVariantImage.url);
+      if (idx >= 0) {
+        setSelectedImage(idx);
+      }
+    } else {
+      setSelectedImage(0);
+    }
+  }, [activeVariantImage?.url, productImages]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -119,7 +165,7 @@ const ProductDetails = () => {
     finalTotal
   } = usePriceCalculation(product, selectedVariants, totalQuantity);
 
-  const activeSelectedVariant = selectedVariants.find((v) => v.quantity > 0 && !v.isBaseVariant);
+
   const currentDiscountedPrice = product?.price?.discounted || product?.price?.regular || 0;
   const currentRegularPrice = product?.price?.regular || currentDiscountedPrice;
 
@@ -135,13 +181,7 @@ const ProductDetails = () => {
 
   const selectSingleVariant = (group: string, item: any) => {
     const currentQty = Math.max(1, totalQuantity);
-    selectedVariants.forEach((sv) => {
-      if (sv.quantity > 0) {
-        updateVariantQuantity(sv.group, sv.item.value, 0);
-      }
-    });
-    addVariant(group, item);
-    updateVariantQuantity(group, item.value, currentQty);
+    selectSingleVariantAtomic(group, item, currentQty);
     if (product) {
       trackVariantSelect(product._id, group, item.value);
     }
@@ -179,7 +219,7 @@ const ProductDetails = () => {
       id: product._id,
       name: product.basicInfo.title,
       price: product.price.discounted || product.price.regular,
-      image: product.images[0]?.url,
+      image: productImages[0]?.url || product.images?.[0]?.url,
       quantity: totalQuantity,
       selectedVariants: variantsPayload,
       deliveryChargeInsideDhaka: product.basicInfo.deliveryChargeInsideDhaka,
@@ -226,7 +266,7 @@ const ProductDetails = () => {
       id: product._id,
       name: product.basicInfo.title,
       price: product.price.discounted || product.price.regular,
-      image: product.images[0]?.url,
+      image: productImages[0]?.url || product.images?.[0]?.url,
       quantity: totalQuantity,
       selectedVariants: variantsPayload,
       deliveryChargeInsideDhaka: product.basicInfo.deliveryChargeInsideDhaka,
@@ -360,7 +400,7 @@ const ProductDetails = () => {
                   }}
                 >
                   <img
-                    src={product.images[selectedImage]?.url}
+                    src={productImages[selectedImage]?.url}
                     alt={product.basicInfo.title}
                     className="w-full h-full object-contain p-8 transition-opacity duration-300"
                   />
@@ -385,7 +425,7 @@ const ProductDetails = () => {
               </div>
 
               <div className="flex gap-3 overflow-x-auto py-1 px-1 justify-center lg:justify-start">
-                {product.images.map((img, idx) => (
+                {productImages.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
@@ -675,7 +715,7 @@ const ProductDetails = () => {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              src={product.images[selectedImage]?.url}
+              src={productImages[selectedImage]?.url}
               className="max-w-full max-h-full object-contain pointer-events-none select-none"
               onClick={(e) => e.stopPropagation()}
             />

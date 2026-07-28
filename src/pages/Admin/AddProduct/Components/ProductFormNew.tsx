@@ -461,8 +461,27 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
     try {
       setIsUploading(true);
 
+      // Process default variant image
+      let defaultVariantImageUrl = data.price?.image?.url || "";
+      if (data.price?.file && data.price.file.length > 0) {
+        defaultVariantImageUrl = await uploadToCloudinary(data.price.file[0], "image");
+      }
+
+      const processedPrice = {
+        ...data.price,
+        image: defaultVariantImageUrl ? {
+          url: defaultVariantImageUrl,
+          alt: data.price.baseVariantName || "Standard",
+        } : data.price?.image?.url ? {
+          url: data.price.image.url,
+          alt: data.price.baseVariantName || "Standard"
+        } : undefined
+      };
+      delete (processedPrice as any).file;
+
+      // Process main images
       const processedImages = await Promise.all(
-        data.images.map(async (img: any) => {
+        (data.images || []).map(async (img: any) => {
           if (img.file && img.file.length > 0) {
             const url = await uploadToCloudinary(img.file[0], "image");
             return { url, alt: img.alt };
@@ -470,6 +489,14 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           return { url: img.url || "", alt: img.alt };
         }),
       );
+
+      // Fallback: If main images list is empty, but we uploaded a default variant image, add it to main images list
+      if (processedImages.length === 0 && defaultVariantImageUrl) {
+        processedImages.push({
+          url: defaultVariantImageUrl,
+          alt: data.price.baseVariantName || "Standard",
+        });
+      }
 
       const processedVideos = await Promise.all(
         (data.videos || []).map(async (vid: any) => {
@@ -481,7 +508,38 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
         }),
       );
 
-      onSubmit({ ...data, images: processedImages, videos: processedVideos });
+      const processedVariants = data.variants
+        ? await Promise.all(
+            data.variants.map(async (group: any) => {
+              const processedItems = await Promise.all(
+                (group.items || []).map(async (item: any) => {
+                  let imageUrl = item.image?.url || "";
+                  if (item.file && item.file.length > 0) {
+                    imageUrl = await uploadToCloudinary(item.file[0], "image");
+                  }
+                  const rest = { ...item };
+                  delete rest.file;
+                  return {
+                    ...rest,
+                    image: {
+                      url: imageUrl,
+                      alt: item.value,
+                    },
+                  };
+                })
+              );
+              return { ...group, items: processedItems };
+            })
+          )
+        : [];
+
+      onSubmit({
+        ...data,
+        price: processedPrice,
+        images: processedImages,
+        videos: processedVideos,
+        variants: processedVariants,
+      });
     } catch (error) {
       console.error("Cloudinary Upload Error:", error);
       alert(
@@ -682,6 +740,52 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                   control={control}
                 />
               ))}
+            </div>
+
+            {/* Default Variant Image Uploader */}
+            <div className="mt-6 p-4 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/10">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-350 mb-2">
+                Default Variant Image
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
+                  {(() => {
+                    const file = watch("price.file");
+                    const existingUrl = watch("price.image.url");
+                    const preview = (file && file.length > 0) ? URL.createObjectURL(file[0]) : existingUrl;
+                    return preview ? (
+                      <img src={preview} alt="default variant" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                    );
+                  })()}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      {...register("price.file")}
+                      className="hidden"
+                      id="default-variant-image-upload"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const el = document.getElementById("default-variant-image-upload");
+                        if (el) el.click();
+                      }}
+                      className="h-10 text-xs font-semibold"
+                    >
+                      Choose Image File
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Upload an image for the standard base product/variant (e.g. {watch("price.baseVariantName") || "Standard"})
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">

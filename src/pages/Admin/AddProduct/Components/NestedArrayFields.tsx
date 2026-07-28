@@ -558,7 +558,7 @@ function VariantGroup({
         {fields.map((item, itemIndex) => (
           <div
             key={item.id}
-            className="grid grid-cols-1 md:grid-cols-5 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg items-end"
+            className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 bg-white dark:bg-slate-950/20 border border-slate-200 dark:border-slate-800 rounded-lg items-end"
           >
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
@@ -570,6 +570,46 @@ function VariantGroup({
                 placeholder="e.g., XL, Blue"
                 className={textInputClasses(false)}
               />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
+                Image
+              </label>
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden shrink-0">
+                  {(() => {
+                    const file = watch(`variants.${variantIndex}.items.${itemIndex}.file`);
+                    const existingUrl = watch(`variants.${variantIndex}.items.${itemIndex}.image.url`);
+                    const preview = (file && file.length > 0) ? URL.createObjectURL(file[0]) : existingUrl;
+                    return preview ? (
+                      <img src={preview} alt="variant" className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                    );
+                  })()}
+                </div>
+                <label className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    {...register(`variants.${variantIndex}.items.${itemIndex}.file`)}
+                    className="hidden"
+                    id={`file-upload-${variantIndex}-${itemIndex}`}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-[38px] text-[11px] font-medium"
+                    onClick={() => {
+                      const el = document.getElementById(`file-upload-${variantIndex}-${itemIndex}`);
+                      if (el) el.click();
+                    }}
+                  >
+                    Select
+                  </Button>
+                </label>
+              </div>
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">

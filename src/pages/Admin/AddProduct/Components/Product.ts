@@ -61,6 +61,7 @@ const ProductVariantItemSchema = z.object({
       alt: z.string().optional(),
     })
     .optional(),
+  file: z.any().optional(),
 });
 
 const ProductVariantSchema = z.object({
@@ -97,6 +98,13 @@ const ProductPriceSchema = z.object({
   savingsPercentage: preprocessOptionalNumber,
   baseVariantName: z.string().optional(),
   selectedVariants: z.record(z.string()).optional(),
+  image: z
+    .object({
+      url: z.string().url().optional().or(z.literal("")),
+      alt: z.string().optional(),
+    })
+    .optional(),
+  file: z.any().optional(),
 });
 
 const ComboPricingSchema = z.object({
@@ -143,7 +151,7 @@ export const ProductFormSchema = z.object({
   stockStatus: z.enum(["In Stock", "Out of Stock", "Pre-order"]).optional().default("In Stock"),
   stockQuantity: preprocessOptionalIntNonNegative,
   sold: preprocessOptionalIntNonNegative.default(0),
-  images: z.array(ProductImageSchema).min(1, "At least one image is required"),
+  images: z.array(ProductImageSchema).optional().default([]),
   videos: z.array(ProductVideoSchema).optional(),
   variants: z.array(ProductVariantSchema).optional(),
   comboPricing: z.array(ComboPricingSchema).optional(),
