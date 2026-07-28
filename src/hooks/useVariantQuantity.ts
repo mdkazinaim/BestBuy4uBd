@@ -22,6 +22,7 @@ export interface UseVariantQuantityReturn {
   getVariantQuantity: (group: string, value: string) => number;
   initVariants: (variants: any[], product?: any) => void;
   selectSingleVariant: (group: string, item: any, quantity: number) => void;
+  selectBundleVariants: (variants: any[]) => void;
 }
 
 /**
@@ -155,6 +156,15 @@ export const useVariantQuantity = (
     setSelectedVariants([{ group, item, quantity, isBaseVariant: isBase }]);
   }, []);
 
+  const selectBundleVariants = useCallback((variantsToSelect: any[]) => {
+    setSelectedVariants(variantsToSelect.map((v) => ({
+      group: v.group,
+      item: v.item,
+      quantity: v.quantity || 1,
+      isBaseVariant: v.isBaseVariant === true
+    })));
+  }, []);
+
   return {
     selectedVariants,
     totalQuantity,
@@ -165,6 +175,7 @@ export const useVariantQuantity = (
     getVariantQuantity,
     initVariants,
     selectSingleVariant,
+    selectBundleVariants,
   };
 };
 

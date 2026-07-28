@@ -941,24 +941,35 @@ export const ComboPricingField = memo(
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
-                    Discount Amount (৳) <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    {...register(`comboPricing.${index}.discount`, {
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                    placeholder="0"
-                    className={textInputClasses(!!errors.comboPricing?.[index]?.discount)}
-                  />
-                  {errors.comboPricing?.[index]?.discount && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {errors.comboPricing[index]?.discount?.message}
-                    </p>
-                  )}
-                </div>
+                {["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(watch(`comboPricing.${index}.discountType`)) ? (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 dark:text-slate-500 mb-1.5">
+                      Discount Amount (৳)
+                    </label>
+                    <div className="h-10 px-3 flex items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs text-slate-450 italic">
+                      N/A (Free Shipping)
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                      Discount Amount (৳) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register(`comboPricing.${index}.discount`, {
+                        valueAsNumber: true,
+                      })}
+                      type="number"
+                      placeholder="0"
+                      className={textInputClasses(!!errors.comboPricing?.[index]?.discount)}
+                    />
+                    {errors.comboPricing?.[index]?.discount && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.comboPricing[index]?.discount?.message}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
@@ -970,6 +981,9 @@ export const ComboPricingField = memo(
                     options={[
                       { value: "total", label: "Total Amount" },
                       { value: "per_product", label: "Each Product" },
+                      { value: "free_delivery", label: "Free Delivery (All)" },
+                      { value: "free_delivery_inside", label: "Free Delivery (Dhaka)" },
+                      { value: "free_delivery_outside", label: "Free Delivery (Outside)" },
                     ]}
                     placeholder="Select Type"
                   />
@@ -1002,7 +1016,13 @@ export const ComboPricingField = memo(
               </div>
               
               <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic">
-                {watch(`comboPricing.${index}.discountType`) === "per_product"
+                {watch(`comboPricing.${index}.discountType`) === "free_delivery"
+                  ? `Customer receives FREE delivery when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`
+                  : watch(`comboPricing.${index}.discountType`) === "free_delivery_inside"
+                  ? `Customer receives FREE delivery INSIDE Dhaka when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`
+                  : watch(`comboPricing.${index}.discountType`) === "free_delivery_outside"
+                  ? `Customer receives FREE delivery OUTSIDE Dhaka when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`
+                  : watch(`comboPricing.${index}.discountType`) === "per_product"
                   ? `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF on EACH unit purchased when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more (Total: ৳${(watch(`comboPricing.${index}.discount`) || 0) * (watch(`comboPricing.${index}.minQuantity`) || 0)} discount).`
                   : `Customer receives ৳${watch(`comboPricing.${index}.discount`) || 0} OFF the aggregate total when buying ${watch(`comboPricing.${index}.minQuantity`) || 0} or more.`}
               </p>
@@ -1021,3 +1041,195 @@ export const ComboPricingField = memo(
 );
 
 ComboPricingField.displayName = "ComboPricingField";
+
+interface BundlesFieldProps {
+  control: Control<ProductFormValues>;
+  register: UseFormRegister<ProductFormValues>;
+  errors: FieldErrors<ProductFormValues>;
+  watch: any;
+  setValue: any;
+}
+
+export const BundlesField = memo(
+  ({ control, register, errors, watch, setValue }: BundlesFieldProps) => {
+    const { fields, append, remove } = useFieldArray({
+      control,
+      name: "bundles",
+    });
+
+    const watchVariants = watch("variants") || [];
+    const baseVariantName = watch("price.baseVariantName") || "Standard";
+
+    const availableVariantValues = useMemo(() => {
+      const vals: string[] = [];
+      vals.push(baseVariantName);
+      watchVariants.forEach((group: any) => {
+        if (group?.items && Array.isArray(group.items)) {
+          group.items.forEach((item: any) => {
+            if (item?.value && item.value !== baseVariantName) {
+              vals.push(item.value);
+            }
+          });
+        }
+      });
+      return vals;
+    }, [watchVariants, baseVariantName]);
+
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
+            Variant Combination Bundles
+          </h3>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              append({ name: "", variants: [] as unknown as [string, ...string[]], discount: 0, discountType: "flat" })
+            }
+            className="flex items-center gap-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Bundle Offer</span>
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          {fields.map((field, index) => {
+            const currentVariants: string[] = watch(`bundles.${index}.variants`) || [];
+            const discountType = watch(`bundles.${index}.discountType`) || "flat";
+
+            return (
+              <div
+                key={field.id}
+                className="p-5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/40 shadow-none space-y-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                  <div className="md:col-span-4">
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                      Bundle Name <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      {...register(`bundles.${index}.name`)}
+                      type="text"
+                      placeholder="e.g. Super Combo Pack"
+                      className={textInputClasses(!!errors.bundles?.[index]?.name)}
+                    />
+                  </div>
+
+                  <div className="md:col-span-3">
+                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                      Discount Type <span className="text-red-500">*</span>
+                    </label>
+                    <PopoverSelect
+                      name={`bundles.${index}.discountType`}
+                      control={control}
+                      options={[
+                        { value: "flat", label: "Flat Discount (৳)" },
+                        { value: "percentage", label: "Percentage (%)" },
+                        { value: "free_delivery", label: "Free Delivery (All)" },
+                        { value: "free_delivery_inside", label: "Free Delivery (Dhaka)" },
+                        { value: "free_delivery_outside", label: "Free Delivery (Outside Dhaka)" },
+                      ]}
+                      placeholder="Select Type"
+                    />
+                  </div>
+
+                  {!["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(discountType) && (
+                    <div className="md:col-span-4">
+                      <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350 mb-1.5">
+                        Discount Value <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        {...register(`bundles.${index}.discount`, {
+                          valueAsNumber: true,
+                        })}
+                        type="number"
+                        placeholder={discountType === "percentage" ? "10" : "200"}
+                        className={textInputClasses(!!errors.bundles?.[index]?.discount)}
+                      />
+                    </div>
+                  )}
+
+                  <div className={["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(discountType) ? "md:col-span-4 flex justify-end md:pb-1" : "md:col-span-1 flex justify-end md:pb-1"}>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => remove(index)}
+                      className="text-red-500 hover:bg-red-50 hover:text-red-650 dark:hover:bg-red-950/20 rounded-lg p-2 h-9 w-9"
+                      title="Remove Bundle"
+                    >
+                      <Trash2 className="w-4.5 h-4.5" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Selected Variants Checkboxes */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-350">
+                    Included Variant Items <span className="text-red-500">*</span> (Select 2 or more)
+                  </label>
+                  <div className="flex flex-wrap gap-2.5 pt-1">
+                    {availableVariantValues.map((vVal) => {
+                      const isChecked = currentVariants.includes(vVal);
+                      return (
+                        <label
+                          key={vVal}
+                          className={`flex items-center gap-2 px-3 py-1.5 border rounded-lg cursor-pointer transition-all text-xs font-medium select-none ${
+                            isChecked
+                              ? "border-emerald-500 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+                              : "border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-600 dark:text-slate-400"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={isChecked}
+                            onChange={() => {
+                              const updated = isChecked
+                                ? currentVariants.filter((v) => v !== vVal)
+                                : [...currentVariants, vVal];
+                              setValue(`bundles.${index}.variants`, updated, { shouldValidate: true });
+                            }}
+                          />
+                          <span>{vVal}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {errors.bundles?.[index]?.variants && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {errors.bundles[index]?.variants?.message}
+                    </p>
+                  )}
+                </div>
+
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 italic">
+                  {discountType === "free_delivery"
+                    ? `Customers receive FREE delivery (all zones) when purchasing: ${currentVariants.join(" + ") || "None"}.`
+                    : discountType === "free_delivery_inside"
+                    ? `Customers receive FREE delivery INSIDE Dhaka when purchasing: ${currentVariants.join(" + ") || "None"}.`
+                    : discountType === "free_delivery_outside"
+                    ? `Customers receive FREE delivery OUTSIDE Dhaka when purchasing: ${currentVariants.join(" + ") || "None"}.`
+                    : discountType === "percentage"
+                    ? `Customers receive ${watch(`bundles.${index}.discount`) || 0}% OFF the combined price of: ${currentVariants.join(" + ") || "None"}.`
+                    : `Customers receive ৳${watch(`bundles.${index}.discount`) || 0} OFF the combined price of: ${currentVariants.join(" + ") || "None"}.`}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {fields.length === 0 && (
+          <div className="text-center py-6 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+            <p className="text-sm text-slate-400 dark:text-slate-500">No variant combination bundle offers defined.</p>
+          </div>
+        )}
+      </div>
+    );
+  },
+);
+
+BundlesField.displayName = "BundlesField";

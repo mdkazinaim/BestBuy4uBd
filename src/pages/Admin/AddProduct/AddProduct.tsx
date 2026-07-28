@@ -168,10 +168,13 @@ const transformProductData = (draft: any) => {
     variants: formattedVariants,
     comboPricing:
       draft.comboPricing
-        ?.filter((tier: any) => tier.minQuantity > 0 && tier.discount > 0)
+        ?.filter((tier: any) => {
+          const isFreeType = ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(tier.discountType);
+          return tier.minQuantity > 0 && (isFreeType || tier.discount > 0);
+        })
         .map((tier: any) => ({
           minQuantity: Number(tier.minQuantity),
-          discount: Number(tier.discount),
+          discount: Number(tier.discount) || 0,
           discountType: tier.discountType || "total",
           variantValue: tier.variantValue || "",
         })) || [],
@@ -211,6 +214,15 @@ const transformProductData = (draft: any) => {
       metaDescription: draft.seo?.metaDescription || undefined,
       slug: draft.seo?.slug || undefined,
     },
+    bundles:
+      draft.bundles
+        ?.filter((bundle: any) => bundle.variants && bundle.variants.length >= 2)
+        .map((bundle: any) => ({
+          name: bundle.name || undefined,
+          variants: bundle.variants,
+          discount: Number(bundle.discount) || 0,
+          discountType: bundle.discountType || "flat",
+        })) || [],
     tags: draft.tags?.filter((tag: any) => tag.trim() !== "") || [],
   };
 };

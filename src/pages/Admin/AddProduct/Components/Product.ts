@@ -110,8 +110,15 @@ const ProductPriceSchema = z.object({
 const ComboPricingSchema = z.object({
   minQuantity: z.number().int().positive("Minimum quantity must be at least 1"),
   discount: z.number().nonnegative("Discount must be non-negative"),
-  discountType: z.enum(["total", "per_product"]).default("total"),
+  discountType: z.enum(["total", "per_product", "free_delivery", "free_delivery_inside", "free_delivery_outside"]).default("total"),
   variantValue: z.string().optional(),
+});
+
+const BundleSchemaZod = z.object({
+  name: z.string().optional(),
+  variants: z.array(z.string()).nonempty("Variants cannot be empty"),
+  discount: z.number().nonnegative("Discount must be non-negative"),
+  discountType: z.enum(["flat", "percentage", "free_delivery", "free_delivery_inside", "free_delivery_outside"]).default("flat"),
 });
 
 const ProductShippingSchema = z.object({
@@ -155,6 +162,7 @@ export const ProductFormSchema = z.object({
   videos: z.array(ProductVideoSchema).optional(),
   variants: z.array(ProductVariantSchema).optional(),
   comboPricing: z.array(ComboPricingSchema).optional(),
+  bundles: z.array(BundleSchemaZod).optional(),
   specifications: z.array(ProductSpecGroupSchema).optional(),
   reviews: z.array(ProductReviewSchema).optional(),
   rating: z

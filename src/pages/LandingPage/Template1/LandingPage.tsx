@@ -37,6 +37,7 @@ const LandingPage = ({ product }: { product: Product }) => {
     addVariant,
     updateVariantQuantity,
     initVariants,
+    selectBundleVariants,
   } = useVariantQuantity(product?.variants, product);
 
   // Initialize variants when product loads
@@ -606,6 +607,7 @@ const LandingPage = ({ product }: { product: Product }) => {
               onQuantityChange={() => {}}
               onVariantChange={addVariant}
               onVariantUpdate={updateVariantQuantity}
+              selectBundleVariants={selectBundleVariants}
               isLoading={isOrderLoading}
               couponCode={couponCode}
               setCouponCode={setCouponCode}

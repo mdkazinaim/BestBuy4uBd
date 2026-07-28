@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ProductOrderWidget from "@/common/Components/ProductOrderWidget";
+import { usePriceCalculation } from "@/hooks/usePriceCalculation";
 
 interface OrderDetails {
   title: string;
@@ -27,6 +28,7 @@ interface CheckoutSectionProps {
   setCouponCode: (code: string) => void;
   applyCoupon: () => void;
   isDark?: boolean;
+  selectBundleVariants?: (variants: any[]) => void;
 }
 
 const CheckoutSection: React.FC<CheckoutSectionProps> = ({
@@ -39,6 +41,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
   setCouponCode,
   applyCoupon,
   isDark = false,
+  selectBundleVariants,
 }) => {
   const {
     title,
@@ -92,15 +95,14 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
   const [deliveryError, setDeliveryError] = useState("");
   const [formValid, setFormValid] = useState(false);
 
-  // Quantity controls handled by VariantSelector
+  const { isFreeDelivery, isFreeDeliveryInside, isFreeDeliveryOutside } = usePriceCalculation(product, variants, quantity);
 
-
-  const deliveryCharge = product?.additionalInfo?.freeShipping
+  const deliveryCharge = (product?.additionalInfo?.freeShipping || isFreeDelivery)
     ? 0
     : deliveryChargeType === "insideDhaka"
-      ? (product?.basicInfo?.deliveryChargeInsideDhaka ?? 80)
+      ? (isFreeDeliveryInside ? 0 : (product?.basicInfo?.deliveryChargeInsideDhaka ?? 80))
       : deliveryChargeType === "outsideDhaka"
-      ? (product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150)
+      ? (isFreeDeliveryOutside ? 0 : (product?.basicInfo?.deliveryChargeOutsideDhaka ?? 150))
       : 0;
 
   const checkFormValidity = (e: React.FormEvent<HTMLFormElement>) => {
@@ -485,112 +487,139 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
             )}
           </button>
 
-          {/* Combo Pricing Offers Card */}
-          {product?.comboPricing && product.comboPricing.length > 0 && (
-            <div className={cn(
-              "mt-6 border-2 rounded-2xl p-4 md:p-6",
-              isDark 
-                ? "bg-emerald-500/10 border-emerald-500/20" 
-                : "bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200"
-            )}>
-              <div className="flex items-start gap-3 mb-4">
-                <div className="bg-emerald-500 p-2 rounded-lg">
-                  <svg
-                    className="w-5 h-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className={cn(
-                    "text-base md:text-lg font-bold mb-1",
-                    isDark ? "text-white" : "text-emerald-900"
-                  )}>
-                    🎉 কম্বো অফার পাওয়া যাচ্ছে!
-                  </h3>
-                  <p className={cn(
-                    "text-xs md:text-sm",
-                    isDark ? "text-emerald-400" : "text-emerald-700"
-                  )}>
-                    বেশি পরিমাণে কিনুন এবং সাশ্রয় করুন
-                  </p>
-                </div>
-              </div>
+          {/* Combo & Bundle Offers — 2-col card grid */}
+          {((product?.comboPricing && product.comboPricing.length > 0) ||
+            (product?.bundles && product.bundles.length > 0)) && (
+            <div className="mt-5 grid grid-cols-2 gap-3">
 
-              <div className="space-y-2">
-                {[...product.comboPricing]
-                  .sort((a: any, b: any) => a.minQuantity - b.minQuantity)
-                  .map((combo: any, index: number) => {
-                    const savingsPerUnit =
-                      combo.discountType === "per_product"
-                        ? combo.discount
-                        : combo.discount / combo.minQuantity;
-                    const totalSavings =
-                      combo.discountType === "per_product"
-                        ? combo.discount * combo.minQuantity
-                        : combo.discount;
+              {/* ── Combo Pricing Card ── */}
+              {product?.comboPricing && product.comboPricing.length > 0 && (() => {
+                const sorted = [...product.comboPricing].sort((a: any, b: any) => a.minQuantity - b.minQuantity);
+                const best = sorted[sorted.length - 1];
+                const isFreeDelivery = ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(best?.discountType);
+                const totalSavings = best?.discountType === "per_product"
+                  ? best.discount * best.minQuantity
+                  : best?.discount || 0;
+                const freeLabel = best?.discountType === "free_delivery"
+                  ? "ফ্রি ডেলিভারি (সারাদেশ)"
+                  : best?.discountType === "free_delivery_inside"
+                  ? "ফ্রি ডেলিভারি (ঢাকায়)"
+                  : "ফ্রি ডেলিভারি (বাইরে)";
 
-                    return (
-                      <div
-                        key={index}
-                        className={cn(
-                          "rounded-xl p-3 md:p-4 border transition-colors",
-                          isDark 
-                            ? "bg-white/5 border-emerald-500/20 hover:border-emerald-500" 
-                            : "bg-white border-emerald-100 hover:border-emerald-300"
-                        )}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              "px-2 md:px-3 py-1 rounded-lg text-xs md:text-sm font-bold",
-                              isDark ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-700"
-                            )}>
-                              {combo.minQuantity}+ টি
-                            </span>
-                            <span className={cn(
-                              "text-xs md:text-sm font-medium",
-                              isDark ? "text-white/70" : "text-gray-700"
-                            )}>
-                              কিনুন
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <div className={cn(
-                              "font-bold text-sm md:text-base",
-                              isDark ? "text-emerald-400" : "text-emerald-600"
-                            )}>
-                              ৳{totalSavings} সাশ্রয়
-                            </div>
-                            <div className={cn(
-                              "text-[10px] md:text-xs",
-                              isDark ? "text-white/40" : "text-gray-500"
-                            )}>
-                              (৳{savingsPerUnit.toFixed(0)}/pcs ছাড়)
-                            </div>
-                          </div>
-                        </div>
+                return (
+                  <div className={cn(
+                    "rounded-2xl p-4 flex flex-col gap-4 border",
+                    isDark ? "bg-violet-950/30 border-violet-500/20" : "bg-violet-50/70 border-violet-200/60"
+                  )}>
+                    {/* Icon + title */}
+                    <div className="flex items-center gap-2.5">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                        isDark ? "bg-violet-500/25" : "bg-violet-100"
+                      )}>
+                        <span className="text-lg">⚡</span>
                       </div>
-                    );
-                  })}
-              </div>
+                      <span className={cn("text-base md:text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                        কম্বো অফার
+                      </span>
+                    </div>
 
-              <div className="mt-4 pt-4 border-t border-emerald-200">
-                <p className="text-xs text-emerald-700 text-center italic">
-                  💡 পরিমাণ বাড়ান এবং স্বয়ংক্রিয়ভাবে ছাড় পান!
-                </p>
-              </div>
+                    {/* Subtitle + pill */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className={cn("text-sm font-medium", isDark ? "text-white/70" : "text-gray-600")}>
+                        একসাথে কিনলে বিশেষ ছাড়
+                      </span>
+                      {isFreeDelivery ? (
+                        <span className={cn("text-sm font-semibold flex items-center gap-1", isDark ? "text-sky-400" : "text-sky-600")}>
+                          ✅ {freeLabel}
+                        </span>
+                      ) : (
+                        <span className="shrink-0 text-sm md:text-base font-semibold px-3.5 py-1.5 rounded-full bg-emerald-600 text-white shadow-sm">
+                          ৳ {totalSavings} সাশ্রয়
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Tier dots or count of remaining offers */}
+                    {sorted.length > 1 && (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {sorted.map((c: any, i: number) => (
+                          <span key={i} className={cn(
+                            "text-xs md:text-sm font-medium px-2.5 py-0.5 rounded-full",
+                            isDark ? "bg-violet-500/20 text-violet-300" : "bg-violet-100 text-violet-700"
+                          )}>
+                            {c.minQuantity}+ টি
+                          </span>
+                        ))}
+                        <span className={cn("text-xs md:text-sm font-medium ml-auto", isDark ? "text-white/40" : "text-gray-500")}>
+                          +{sorted.length - 1}টি আরও স্তর
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* ── Bundle Offers Card ── */}
+              {product?.bundles && product.bundles.length > 0 && (() => {
+                const bundle = product.bundles[0];
+                const isFreeShip = ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(bundle?.discountType);
+                const freeShipLabel = bundle?.discountType === "free_delivery"
+                  ? "ফ্রি ডেলিভারি (সারাদেশ)"
+                  : bundle?.discountType === "free_delivery_inside"
+                  ? "ফ্রি ডেলিভারি (ঢাকায়)"
+                  : "ফ্রি ডেলিভারি (ঢাকার বাইরে)";
+
+                return (
+                  <div className={cn(
+                    "rounded-2xl p-4 md:p-5 flex flex-col gap-4 border",
+                    isDark ? "bg-emerald-950/30 border-emerald-500/20" : "bg-emerald-50/70 border-emerald-200/60"
+                  )}>
+                    {/* Icon + title */}
+                    <div className="flex items-center gap-2.5">
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                        isDark ? "bg-emerald-500/25" : "bg-emerald-100"
+                      )}>
+                        <span className="text-lg">🎁</span>
+                      </div>
+                      <span className={cn("text-base md:text-lg font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                        স্পেশাল বান্ডেল
+                      </span>
+                    </div>
+
+                    {/* Bundle name + discount */}
+                    <div className="space-y-2">
+                      <p className={cn("text-sm md:text-base font-semibold uppercase tracking-wide", isDark ? "text-white/80" : "text-gray-700")}>
+                        {bundle?.name || "Bundle Offer"}
+                      </p>
+                      {isFreeShip ? (
+                        <span className={cn("text-sm font-semibold flex items-center gap-1.5", isDark ? "text-teal-400" : "text-teal-700")}>
+                          ✅ {freeShipLabel}
+                        </span>
+                      ) : (
+                        <span className="inline-block text-sm md:text-base font-semibold px-3.5 py-1.5 rounded-full bg-emerald-600 text-white shadow-sm">
+                          {bundle?.discountType === "percentage" ? `${bundle.discount}% ছাড়` : `৳${bundle?.discount} ছাড়`}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* More bundles indicator */}
+                    {product.bundles.length > 1 && (
+                      <span className={cn("text-xs md:text-sm font-medium", isDark ? "text-white/40" : "text-gray-500")}>
+                        +{product.bundles.length - 1}টি আরও অফার
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           )}
         </form>
+
+
+
+
 
         {/* Order Summary Section */}
         <div className={cn(
@@ -660,6 +689,7 @@ const CheckoutSection: React.FC<CheckoutSectionProps> = ({
               product={product}
               selectedVariants={variants}
               quantity={quantity}
+              selectBundleVariants={selectBundleVariants}
               onVariantSelect={(groupName, item) => {
                 const currentQty = Math.max(1, quantity);
                 // 1. Zero out all active variants

@@ -1,7 +1,7 @@
 export interface ComboPricing {
   minQuantity: number;
   discount: number;
-  discountType?: "total" | "per_product";
+  discountType?: "total" | "per_product" | "free_delivery" | "free_delivery_inside" | "free_delivery_outside";
 }
 
 export interface PricingResult {
@@ -11,6 +11,7 @@ export interface PricingResult {
   savings: number;
   unitPrice: number;
   originalTotal: number;
+  isFreeDelivery?: boolean;
 }
 
 /**
@@ -21,6 +22,7 @@ export interface PricingResult {
  * 2. The first tier that satisfies quantity >= minQuantity is selected.
  * 3. Total Discount Mode: Discount is subtracted once from the total.
  * 4. Per Product Mode: Discount is multiplied by quantity and subtracted.
+ * 5. Free Delivery Mode: courier charge is waived (isFreeDelivery = true).
  * 
  * @param quantity Number of items selected
  * @param unitPrice Price per single item
@@ -42,7 +44,8 @@ export const calculateComboPricing = (
       finalPrice: originalTotal,
       savings: 0,
       unitPrice,
-      originalTotal
+      originalTotal,
+      isFreeDelivery: false
     };
   }
 
@@ -59,14 +62,18 @@ export const calculateComboPricing = (
       finalPrice: originalTotal,
       savings: 0,
       unitPrice,
-      originalTotal
+      originalTotal,
+      isFreeDelivery: false
     };
   }
 
   // 3. Calculate discount based on type
   let discountAmount = 0;
+  let isFreeDelivery = false;
   
-  if (applicableTier.discountType === "per_product") {
+  if (applicableTier.discountType === "free_delivery") {
+    isFreeDelivery = true;
+  } else if (applicableTier.discountType === "per_product") {
     // Discount is per product
     discountAmount = applicableTier.discount * quantity;
   } else {
@@ -85,7 +92,8 @@ export const calculateComboPricing = (
     finalPrice,
     savings: discountAmount,
     unitPrice,
-    originalTotal
+    originalTotal,
+    isFreeDelivery
   };
 };
 

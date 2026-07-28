@@ -1,9 +1,11 @@
 import React from "react";
+import { Flame, Truck, Package, BadgePercent, ChevronRight } from "lucide-react";
 
 interface ComboPricingTier {
   minQuantity: number;
   discount: number;
-  discountType?: "total" | "per_product";
+  discountType?: "total" | "per_product" | "free_delivery" | "free_delivery_inside" | "free_delivery_outside";
+  variantValue?: string;
 }
 
 interface ComboPricingDisplayProps {
@@ -13,112 +15,132 @@ interface ComboPricingDisplayProps {
   variant?: "primary" | "secondary" | "success";
 }
 
-/**
- * Reusable component to display combo pricing tiers
- * Shows all available tiers with visual indicators for active/met tiers
- */
 const ComboPricingDisplay: React.FC<ComboPricingDisplayProps> = ({
   comboPricing,
   currentQuantity,
   appliedTier,
-  variant = "primary",
 }) => {
-  if (!comboPricing || comboPricing.length === 0) {
-    return null;
-  }
+  if (!comboPricing || comboPricing.length === 0) return null;
 
-  const colorClasses = {
-    primary: {
-      bg: "bg-blue-50",
-      border: "border-blue-100",
-      text: "text-blue-700",
-      dot: "bg-blue-600",
-      active: "border-blue-600 ring-2 ring-blue-600 bg-blue-50",
-      met: "border-blue/50",
-      inactive: "border-blue-100",
-      activeText: "text-blue-700",
-      inactiveText: "text-blue-600 opacity-80",
-    },
-    secondary: {
-      bg: "bg-green-50",
-      border: "border-green-100",
-      text: "text-green-700",
-      dot: "bg-green-600",
-      active: "border-green-600 ring-1 ring-green-600",
-      met: "border-green-600/50",
-      inactive: "border-green-100",
-      activeText: "text-green-600",
-      inactiveText: "text-green-600 opacity-80",
-    },
-    success: {
-      bg: "bg-primary-green/5",
-      border: "border-primary-green/10",
-      text: "text-primary-green",
-      dot: "bg-primary-green",
-      active:
-        "border-primary-green ring-1 ring-primary-green bg-primary-green/5",
-      met: "border-primary-green/50",
-      inactive: "border-primary-green/10",
-      activeText: "text-primary-green scale-110",
-      inactiveText: "text-primary-green opacity-80",
-    },
+  const sorted = [...comboPricing].sort((a, b) => a.minQuantity - b.minQuantity);
+  const nextTier = sorted.find((t) => currentQuantity < t.minQuantity);
+  const remaining = nextTier ? nextTier.minQuantity - currentQuantity : 0;
+
+  const isFreeType = (dt?: string) =>
+    ["free_delivery", "free_delivery_inside", "free_delivery_outside"].includes(dt || "");
+
+  const getDiscountLabel = (tier: ComboPricingTier) => {
+    if (tier.discountType === "free_delivery") return "ফ্রি ডেলিভারি";
+    if (tier.discountType === "free_delivery_inside") return "ফ্রি ডেলিভারি (ঢাকায়)";
+    if (tier.discountType === "free_delivery_outside") return "ফ্রি ডেলিভারি (ঢাকার বাইরে)";
+    if (tier.discountType === "per_product") return `৳${tier.discount} সাশ্রয় (৳${tier.discount}/pcs ছাড়)`;
+    return `৳${tier.discount} সাশ্রয়`;
   };
 
-  const colors = colorClasses[variant];
+  const getSavingSubLabel = (tier: ComboPricingTier) => {
+    if (isFreeType(tier.discountType)) return null;
+    if (tier.discountType === "per_product") return `৳${tier.discount}/pcs ছাড়`;
+    return `মোট ৳${tier.discount} ছাড়`;
+  };
+
+  const getTierIcon = (tier: ComboPricingTier) => {
+    if (isFreeType(tier.discountType)) return <Truck className="w-4 h-4" />;
+    if (tier.discountType === "per_product") return <Package className="w-4 h-4" />;
+    return <BadgePercent className="w-4 h-4" />;
+  };
 
   return (
-    <div
-      className={`${colors.bg} rounded-2xl p-6 border ${colors.border} space-y-4`}
-    >
-      <h3
-        className={`text-[10px] font-bold ${colors.text} uppercase tracking-[0.2em] flex items-center gap-2`}
-      >
-        <span className={`w-1.5 h-1.5 rounded-full ${colors.dot}`} />
-        Combo Savings
-      </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {comboPricing.map((tier, idx) => {
-          const isApplied =
-            appliedTier && appliedTier.minQuantity === tier.minQuantity;
+    <div className="rounded-2xl overflow-hidden border border-emerald-200 dark:border-emerald-900/40">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500">
+        <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+          <Flame className="w-4 h-4 text-white fill-white" />
+        </div>
+        <div>
+          <p className="text-sm font-black text-white leading-tight">কম্বো অফার পাওয়া যাচ্ছে!</p>
+          <p className="text-[11px] text-emerald-100 font-medium">বেশি পরিমাণে কিনুন এবং সাশ্রয় করুন</p>
+        </div>
+      </div>
+
+      {/* Tiers */}
+      <div className="bg-emerald-50/60 dark:bg-emerald-950/10 px-4 py-3 space-y-2">
+        {sorted.map((tier, idx) => {
+          const isApplied = appliedTier && appliedTier.minQuantity === tier.minQuantity;
           const isMet = currentQuantity >= tier.minQuantity;
+          const subLabel = getSavingSubLabel(tier);
 
           return (
             <div
               key={idx}
-              className={`bg-white p-3 rounded-xl border flex flex-col justify-between shadow-sm relative overflow-hidden transition-all duration-300 ${
-                isApplied ? colors.active : isMet ? colors.met : colors.inactive
+              className={`relative flex items-center justify-between gap-3 rounded-xl px-3.5 py-3 border transition-all ${
+                isApplied
+                  ? "bg-emerald-500 border-emerald-500 shadow-sm"
+                  : isMet
+                  ? "bg-white dark:bg-slate-900 border-emerald-300 dark:border-emerald-700"
+                  : "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800"
               }`}
             >
+              {/* Left: qty label */}
+              <div className="flex items-center gap-2.5">
+                <span className={`text-sm font-black px-2.5 py-1 rounded-lg ${
+                  isApplied
+                    ? "bg-white/20 text-white"
+                    : isMet
+                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                    : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400"
+                }`}>
+                  {tier.minQuantity}+ টি
+                </span>
+                <span className={`text-sm font-semibold ${isApplied ? "text-white" : "text-gray-700 dark:text-slate-300"}`}>
+                  কিনুন
+                </span>
+                {tier.variantValue && (
+                  <span className={`text-[10px] font-medium ${isApplied ? "text-white/70" : "text-gray-400"}`}>
+                    ({tier.variantValue})
+                  </span>
+                )}
+              </div>
+
+              {/* Right: discount */}
+              <div className="flex flex-col items-end">
+                <div className={`flex items-center gap-1.5 font-black text-sm ${
+                  isApplied ? "text-white" : isMet ? "text-emerald-600 dark:text-emerald-400" : "text-gray-800 dark:text-slate-200"
+                }`}>
+                  {getTierIcon(tier)}
+                  {getDiscountLabel(tier)}
+                </div>
+                {subLabel && (
+                  <span className={`text-[10px] font-semibold mt-0.5 ${
+                    isApplied ? "text-white/70" : "text-gray-400 dark:text-slate-500"
+                  }`}>
+                    ({subLabel})
+                  </span>
+                )}
+              </div>
+
+              {/* Applied badge */}
               {isApplied && (
-                <div className={`absolute top-0 right-0 px-2 py-0.5 text-[9px] font-bold text-white rounded-bl-lg ${colors.dot}`}>
-                  APPLIED
+                <div className="absolute -top-px -right-px bg-yellow-400 text-yellow-900 text-[8px] font-black uppercase px-2 py-0.5 rounded-bl-lg rounded-tr-xl tracking-widest">
+                  ✓ প্রযোজ্য
                 </div>
               )}
-              
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                  Buy {tier.minQuantity}+
-                </span>
-                <span
-                  className={`font-bold ${isApplied ? colors.activeText : colors.inactiveText}`}
-                >
-                  -৳{tier.discount.toLocaleString()}
-                  {tier.discountType === 'per_product' && <span className="text-[9px] ml-0.5 opacity-80">/each</span>}
-                </span>
-              </div>
-              
-              <div className="flex items-center gap-1">
-                <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${
-                  tier.discountType === 'per_product' 
-                    ? 'bg-green-50 border-green-100 text-green-700' 
-                    : 'bg-blue-50 border-blue-100 text-blue-700'
-                }`}>
-                  {tier.discountType === 'per_product' ? 'Per Item Discount' : 'Flat Discount'}
-                </span>
-              </div>
             </div>
           );
         })}
+      </div>
+
+      {/* Footer nudge */}
+      <div className="px-4 py-2.5 bg-emerald-50 dark:bg-emerald-950/10 border-t border-emerald-200 dark:border-emerald-900/30">
+        {nextTier && remaining > 0 ? (
+          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+            <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+            আরও <span className="font-black">{remaining}টি</span> যোগ করুন এবং স্বয়ংক্রিয়ভাবে ছাড় পান!
+          </div>
+        ) : (
+          <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+            💡 পরিমাণ বাড়ান এবং স্বয়ংক্রিয়ভাবে ছাড় পান!
+          </div>
+        )}
       </div>
     </div>
   );

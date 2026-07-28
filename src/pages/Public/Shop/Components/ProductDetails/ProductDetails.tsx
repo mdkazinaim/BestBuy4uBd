@@ -96,7 +96,8 @@ const ProductDetails = () => {
     selectedVariants,
     totalQuantity,
     updateVariantQuantity,
-    selectSingleVariant: selectSingleVariantAtomic
+    selectSingleVariant: selectSingleVariantAtomic,
+    selectBundleVariants
   } = useVariantQuantity(product?.variants, product);
 
   // Get active variant image and compute productImages list
@@ -497,6 +498,7 @@ const ProductDetails = () => {
               selectedVariants={selectedVariants}
               quantity={totalQuantity}
               onVariantSelect={selectSingleVariant}
+              selectBundleVariants={selectBundleVariants}
               onQuantityChange={(newQty) => {
                 const activeVar = selectedVariants.find((v) => v.quantity > 0) || selectedVariants[0];
                 if (activeVar) {

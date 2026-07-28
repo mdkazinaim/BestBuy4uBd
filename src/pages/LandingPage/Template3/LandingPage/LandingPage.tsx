@@ -30,6 +30,7 @@ const LandingPage = ({ product }: { product: Product }) => {
     addVariant,
     updateVariantQuantity,
     initVariants,
+    selectBundleVariants,
   } = useVariantQuantity(product?.variants, product);
 
   useEffect(() => {
@@ -635,6 +636,7 @@ const LandingPage = ({ product }: { product: Product }) => {
                 onQuantityChange={() => {}}
                 onVariantChange={handleVariantChange}
                 onVariantUpdate={updateVariantQuantity}
+                selectBundleVariants={selectBundleVariants}
                 isLoading={isOrderLoading}
                 couponCode={couponCode}
                 setCouponCode={setCouponCode}

@@ -145,5 +145,13 @@ export interface Product {
   updatedAt: string | Date;
   
   // Combo Pricing
-  comboPricing?: { minQuantity: number; discount: number; discountType?: "total" | "per_product"; variantValue?: string }[];
+  comboPricing?: { minQuantity: number; discount: number; discountType?: "total" | "per_product" | "free_delivery" | "free_delivery_inside" | "free_delivery_outside"; variantValue?: string }[];
+  bundles?: ProductBundle[];
+}
+
+export interface ProductBundle {
+  name?: string;
+  variants: string[];
+  discount: number;
+  discountType: "flat" | "percentage" | "free_delivery" | "free_delivery_inside" | "free_delivery_outside";
 }

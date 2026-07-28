@@ -17,6 +17,7 @@ import {
   VariantsField,
   SpecificationsField,
   ComboPricingField,
+  BundlesField,
 } from "./NestedArrayFields";
 import {
   FileText,
@@ -410,6 +411,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
     reset,
   } = form;
@@ -420,7 +422,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
   const TABS = useMemo(() => [
     { id: "basic", label: "Basic Info", icon: FileText, fields: ["basicInfo"] },
     { id: "media", label: "Images & Videos", icon: ImageIcon, fields: ["images", "videos"] },
-    { id: "pricing", label: "Price & Stock", icon: Coins, fields: ["price", "stockStatus", "stockQuantity", "comboPricing", "variants"] },
+    { id: "pricing", label: "Price & Stock", icon: Coins, fields: ["price", "stockStatus", "stockQuantity", "comboPricing", "variants", "bundles"] },
     { id: "specs", label: "Specifications", icon: Sliders, fields: ["specifications"] },
     { id: "shipping", label: "Shipping & Extra", icon: Truck, fields: ["shippingDetails", "additionalInfo"] },
     { id: "seo", label: "SEO & Tags", icon: Search, fields: ["seo", "tags"] },
@@ -798,6 +800,16 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                 register={register}
                 errors={errors}
                 watch={watch}
+              />
+            </div>
+
+            <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
+              <BundlesField
+                control={control}
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
               />
             </div>
           </div>
