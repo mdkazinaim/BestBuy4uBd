@@ -7,10 +7,8 @@ import { removeFromCart, incrementQuantity, decrementQuantity } from "@/store/Sl
 import { useTracking } from "@/hooks/useTracking";
 import SEO from "@/components/common/SEO";
 import { Button } from "@/common/Components/Button";
-import { useGetHost } from "@/utils/useGetHost";
 
 const Cart = () => {
-    const host = useGetHost();
     const dispatch = useDispatch();
     const { cartItems } = useSelector((state: RootState) => state.cart);
     const { trackRemoveFromCart, trackBeginCheckout } = useTracking();
