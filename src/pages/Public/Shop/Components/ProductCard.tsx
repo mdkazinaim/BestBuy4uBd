@@ -215,6 +215,14 @@ const ProductCard = ({ product }: ProductCardProps) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              trackSelectItem({
+                id: product._id,
+                name: basicInfo.title,
+                price: price.discounted || price.regular,
+                category: basicInfo.category,
+                list_name: "Product List",
+                list_id: "product_list",
+              });
               navigate(`/product/${product._id}`);
             }}
           >

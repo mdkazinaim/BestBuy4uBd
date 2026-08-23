@@ -4,10 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart3, Facebook, ExternalLink, Eye, EyeOff, Video,
   Search, LayoutDashboard, Code2, Trash2, Settings2, Plus,
-  Truck, MessageCircle, X, Plug,
+  Truck, MessageCircle, X, Plug, BookOpen,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 import { useGetTrackingSettingsQuery, useUpdateTrackingSettingsMutation } from "@/store/Api/TrackingApi";
 import { Button } from "@/common/Components/Button";
 
@@ -44,6 +45,7 @@ export default function Services() {
   const [activeService, setActiveService] = useState<string | null>(null);
   const { register, handleSubmit, reset, setValue } = useForm();
   const [showKey, setShowKey] = useState<Record<string, boolean>>({});
+  const navigate = useNavigate();
 
   const handleEdit = (serviceKey: string, currentVal: any) => {
     setActiveService(serviceKey);
@@ -128,10 +130,19 @@ export default function Services() {
                     Official Site <ExternalLink className="w-2.5 h-2.5" />
                   </a>
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold ${isConfigured ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60" : "bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-emerald-500" : "bg-slate-400"}`} />
-                  {isConfigured ? "Active" : "Idle"}
-                </span>
+                <div className="flex flex-col gap-1 items-end shrink-0">
+                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-semibold ${isConfigured ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60" : "bg-slate-50 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isConfigured ? "bg-emerald-500" : "bg-slate-400"}`} />
+                    {isConfigured ? "Active" : "Idle"}
+                  </span>
+                  <button
+                    onClick={() => navigate(`/admin/services/${item.key}/guide`)}
+                    className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors border border-transparent hover:border-blue-200 dark:hover:border-blue-800 flex items-center gap-1"
+                    title="View Setup Guide"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
               <div className="p-4 flex-1 flex flex-col justify-between gap-3">
                 {isConfigured ? (

@@ -6,9 +6,11 @@ import AddProduct from "@/pages/Admin/AddProduct/AddProduct";
 import Product from "@/pages/Admin/Product/Product";
 import CMS from "@/pages/Admin/CMS/CMS";
 import Services from "@/pages/Admin/Services/Services";
+import ServiceGuide from "@/pages/Admin/Services/ServiceGuide";
 import SteadfastManager from "@/pages/Admin/Steadfast/SteadfastManager";
 import AllOrders from "@/pages/Admin/Order/AllOrders";
 import OrderDetails from "@/pages/Admin/Order/OrderDetails";
+import { Navigate } from "react-router-dom";
 import InvoiceContainer from "@/pages/Admin/Order/Invoice/InvoiceContainer";
 import {
   LayoutDashboard,
@@ -101,6 +103,14 @@ export const adminRoutes = [
         icon: <Briefcase />,
         path: "services",
         element: <Services />,
+      },
+      {
+        path: "services/:serviceId",
+        element: <Navigate to="/admin/services" replace />,
+      },
+      {
+        path: "services/:serviceId/guide",
+        element: <ServiceGuide />,
       },
       {
         label: "Steadfast Courier",

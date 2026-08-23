@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import { flattenRoutes } from "@/utils/Generator/BreadcrumbsGenerator";
 import { RouteGroup } from "@/utils/Generator/MenuGenerator";
-
+import { serviceNames } from "@/pages/Admin/Services/ServiceGuide";
 interface BreadcrumbProps {
   config: RouteGroup[];
   basePath: string;
@@ -35,6 +35,7 @@ const Breadcrumbs = ({ config, basePath }: BreadcrumbProps) => {
 
         const displayName =
           routeData?.name ||
+          serviceNames[rawSegment] ||
           rawSegment
             .replace(/-/g, " ")
             .replace(/\b\w/g, (l) => l.toUpperCase());

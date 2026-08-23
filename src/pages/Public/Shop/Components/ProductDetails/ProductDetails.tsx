@@ -75,7 +75,9 @@ const ProductDetails = () => {
     trackAddToCart, 
     trackAddToWishlist, 
     trackWishlistRemove, 
-    trackVariantSelect 
+    trackVariantSelect,
+    trackShare,
+    trackImageZoom
   } = useTracking();
   
   const { wishlistItems } = useSelector((state: RootState) => state.wishlist);
@@ -417,6 +419,7 @@ const ProductDetails = () => {
     };
 
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      trackShare("native_share", "product", product._id);
       navigator.share(shareData)
         .then(() => toast.success("Shared successfully!"))
         .catch((err) => {
@@ -425,6 +428,7 @@ const ProductDetails = () => {
           }
         });
     } else {
+      trackShare("copy_link", "product", product._id);
       navigator.clipboard.writeText(window.location.href)
         .then(() => toast.success("Product link copied to clipboard!"))
         .catch(() => toast.error("Failed to copy link"));
@@ -489,7 +493,10 @@ const ProductDetails = () => {
                 onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                onClick={() => setIsLightboxOpen(true)}
+                onClick={() => {
+                  trackImageZoom(product._id, productImages[selectedImage]?.url);
+                  setIsLightboxOpen(true);
+                }}
               >
                 <div
                   className="w-full h-full transition-transform duration-300 ease-out"
