@@ -168,7 +168,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           }
         >
           <h3
-            className="text-slate-900 dark:text-slate-100 line-clamp-2 text-xs sm:text-sm leading-tight group-hover:text-secondary transition-colors duration-300 min-h-[32px] sm:min-h-[40px]"
+            className="text-slate-900 dark:text-slate-100 line-clamp-2 text-xs sm:text-sm leading-tight group-hover:text-secondary transition-colors duration-300 "
             title={basicInfo.title}
           >
             {basicInfo.title}

@@ -59,9 +59,20 @@ export const serviceGuides: Record<string, ServiceGuideData> = {
         image: "/assets/guides/Goolge Analytics/1.jpeg"
       },
       {
-        title: "ধাপ ২: ই-কমার্স ইভেন্ট চেক করা",
-        content: "ডাটা আসা শুরু করলে আপনি ইভেন্টগুলো চেক করতে পারবেন:\n\n1. বাম পাশের মেনু থেকে **Reports** > **Engagement** > **Events** -এ যান।\n2. এখানে আপনি `add_to_cart`, `purchase`, `view_item` ইত্যাদি ইভেন্টগুলো দেখতে পাবেন।\n\n> **নোট:** নতুন ইভেন্ট GA4 ড্যাশবোর্ডে শো করতে সাধারণত ২৪-৪৮ ঘণ্টা সময় লাগতে পারে।",
-        image: "/assets/guides/Goolge Analytics/2.jpeg"
+        title: "ধাপ ২: Property ID সংগ্রহ করুন (ড্যাশবোর্ডের জন্য)",
+        content: "আপনার এডমিন ড্যাশবোর্ডে অ্যানালিটিক্স ডাটা দেখানোর জন্য Property ID প্রয়োজন:\n1. Google Analytics এর **Admin** পেজে যান।\n2. **Property settings** এর নিচে **Property details** -এ ক্লিক করুন।\n3. ডানদিকের পেজে উপরে **PROPERTY ID** নামের একটি সংখ্যা দেখতে পাবেন।\n4. এটি কপি করে সার্ভিসের `Property ID` ঘরে বসান।"
+      },
+      {
+        title: "ধাপ ৩: গুগল ক্লাউডে (Google Cloud) সার্ভিস একাউন্ট তৈরি করুন",
+        content: "ডাটা সুরক্ষিতভাবে ফেচ করার জন্য একটি JSON ফাইল প্রয়োজন:\n1. [Google Cloud Console](https://console.cloud.google.com/) এ যান এবং একটি নতুন প্রজেক্ট তৈরি করুন।\n2. **APIs & Services > Library** থেকে `Google Analytics Data API` সার্চ করে Enable করুন।\n3. **Credentials** পেজে গিয়ে `Create Credentials` > `Service Account` এ ক্লিক করুন।\n4. একটি নাম দিন এবং তৈরি করুন।\n5. নতুন তৈরি হওয়া সার্ভিস একাউন্টের ইমেইল অ্যাড্রেসটি কপি করুন (যেমন: `analytics-viewer@your-project.iam...`)।"
+      },
+      {
+        title: "ধাপ ৪: JSON Key জেনারেট করুন",
+        content: "1. আপনার তৈরি করা সার্ভিস একাউন্টে ক্লিক করুন এবং **Keys** ট্যাবে যান।\n2. `Add Key` > `Create new key` এ ক্লিক করুন।\n3. **JSON** সিলেক্ট করে Create চাপুন। একটি ফাইল ডাউনলোড হবে।\n4. এই ফাইলটি আমাদের ওয়েবসাইটের সার্ভিসে Upload করুন।"
+      },
+      {
+        title: "ধাপ ৫: সার্ভিস একাউন্টকে Analytics এ পারমিশন দিন",
+        content: "1. আবার Google Analytics এর **Admin** পেজে ফিরে যান।\n2. **Property access management** এ ক্লিক করুন। (এটি না পেলে একাউন্ট মালিককে বলুন আপনাকে Administrator করতে)।\n3. উপরে ডানদিকে নীল **+** আইকনে ক্লিক করে `Add users` চাপুন।\n4. ধাপ ৩ এ কপি করা সার্ভিস একাউন্টের ইমেইলটি দিন এবং **Viewer** পারমিশন দিয়ে Add করুন।"
       }
     ]
   },

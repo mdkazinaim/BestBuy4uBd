@@ -53,6 +53,7 @@ export default function Services() {
     if (serviceKey === "facebook") { setValue("facebookPixelId", currentVal?.facebookPixelId); setValue("facebookAccessToken", currentVal?.facebookAccessToken); }
     else if (serviceKey === "facebookChat") { setValue("facebookPageId", currentVal?.facebookPageId); }
     else if (serviceKey === "steadfast") { setValue("steadfastApiKey", currentVal?.steadfastApiKey); setValue("steadfastSecretKey", currentVal?.steadfastSecretKey); setValue("steadfastEnabled", currentVal?.steadfastEnabled); }
+    else if (serviceKey === "googleAnalyticsId") { setValue("googleAnalyticsId", currentVal?.googleAnalyticsId); setValue("googleAnalyticsPropertyId", currentVal?.googleAnalyticsPropertyId); setValue("googleAnalyticsServiceAccountJson", currentVal?.googleAnalyticsServiceAccountJson); }
     else { setValue(serviceKey, currentVal); }
     setIsOpen(true);
   };
@@ -115,7 +116,7 @@ export default function Services() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {integrations.map((item) => {
           const isConfigured = item.key === "facebook" ? !!settings.facebookPixelId : item.key === "facebookChat" ? !!settings.facebookPageId : item.key === "steadfast" ? !!settings.steadfastApiKey : !!settings[item.key];
-          const currentValue = item.key === "facebook" ? { facebookPixelId: settings.facebookPixelId, facebookAccessToken: settings.facebookAccessToken } : item.key === "facebookChat" ? { facebookPageId: settings.facebookPageId } : item.key === "steadfast" ? { steadfastApiKey: settings.steadfastApiKey, steadfastSecretKey: settings.steadfastSecretKey, steadfastEnabled: settings.steadfastEnabled } : settings[item.key];
+          const currentValue = item.key === "facebook" ? { facebookPixelId: settings.facebookPixelId, facebookAccessToken: settings.facebookAccessToken } : item.key === "facebookChat" ? { facebookPageId: settings.facebookPageId } : item.key === "steadfast" ? { steadfastApiKey: settings.steadfastApiKey, steadfastSecretKey: settings.steadfastSecretKey, steadfastEnabled: settings.steadfastEnabled } : item.key === "googleAnalyticsId" ? { googleAnalyticsId: settings.googleAnalyticsId, googleAnalyticsPropertyId: settings.googleAnalyticsPropertyId, googleAnalyticsServiceAccountJson: settings.googleAnalyticsServiceAccountJson } : settings[item.key];
           const displayValue = item.key === "facebook" ? settings.facebookPixelId : item.key === "facebookChat" ? settings.facebookPageId : item.key === "steadfast" ? settings.steadfastApiKey : settings[item.key];
           const maskKey = item.key === "facebook" ? "facebookPixelId" : item.key === "facebookChat" ? "facebookPageId" : item.key === "steadfast" ? "steadfastApiKey" : item.key;
 
@@ -205,6 +206,34 @@ export default function Services() {
                     <input type="checkbox" {...register("steadfastEnabled")} className="w-4 h-4 text-blue-600 border-slate-300 rounded" />
                     <span>Enable Automation</span>
                   </label>
+                </>
+              ) : activeService === "googleAnalyticsId" ? (
+                <>
+                  <FormInput label="Measurement ID (G-XXXXXXX)" placeholder="G-XXXXXXX" register={register} name="googleAnalyticsId" />
+                  <FormInput label="Property ID (For Dashboard)" placeholder="123456789" register={register} name="googleAnalyticsPropertyId" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Service Account JSON</label>
+                    <input 
+                      type="file" 
+                      accept=".json"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const text = ev.target?.result;
+                            if (typeof text === 'string') {
+                              setValue('googleAnalyticsServiceAccountJson', text);
+                              toast.success("JSON loaded successfully");
+                            }
+                          };
+                          reader.readAsText(file);
+                        }
+                      }}
+                      className="w-full px-3.5 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-sm bg-white dark:bg-slate-950/20 focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-400 dark:text-slate-300" 
+                    />
+                    <p className="text-[10px] text-slate-500">Upload the JSON key file from Google Cloud.</p>
+                  </div>
                 </>
               ) : (
                 <FormInput label={integrations.find((i) => i.key === activeService)?.idLabel || "Tracking ID"} placeholder="Paste your ID or Key here" register={register} name={activeService || ""} />

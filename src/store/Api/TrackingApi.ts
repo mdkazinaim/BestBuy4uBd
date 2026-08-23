@@ -17,7 +17,13 @@ export const TrackingApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Tracking"],
     }),
+    getAnalyticsDashboard: builder.query({
+      query: () => ({
+        url: "/analytics/dashboard",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetTrackingSettingsQuery, useUpdateTrackingSettingsMutation } = TrackingApi;
+export const { useGetTrackingSettingsQuery, useUpdateTrackingSettingsMutation, useGetAnalyticsDashboardQuery } = TrackingApi;
