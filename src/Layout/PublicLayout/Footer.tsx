@@ -28,9 +28,7 @@ const Footer: React.FC = () => {
               {!host.logo && !host.title && <span className="uppercase tracking-widest">About Us</span>}
             </h3>
             <p className="text-sm text-slate-200 leading-relaxed">
-              We are a team of passionate developers building amazing web
-              applications with modern technologies. {host.title || "Our store"} is your
-              one-stop shop for premium products.
+              {host.description || `Welcome to ${host.title || "our store"}. Your one-stop shop for premium products.`}
             </p>
           </div>
           {/* Quick Links Section */}

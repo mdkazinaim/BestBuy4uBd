@@ -3,6 +3,7 @@ import { useGetSettingsQuery } from "@/store/Api/SettingsApi";
 export type HostConfig = {
   title: string;
   name?: string;
+  description?: string;
   logo: string;
   phone: string;
   email: string;
@@ -16,6 +17,7 @@ export const useGetHost = (): HostConfig => {
   return {
     title: adminInfo?.siteName || "",
     name: adminInfo?.name || "",
+    description: adminInfo?.description || "",
     logo: adminInfo?.logo || "",
     phone: adminInfo?.contact || "",
     email: adminInfo?.email || "",

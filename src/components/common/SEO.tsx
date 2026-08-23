@@ -13,10 +13,21 @@ interface SEOProps {
 const SEO: React.FC<SEOProps> = ({ title, description, keywords, image, url }) => {
   const host = useGetHost();
 
+  const getHostnameTitle = () => {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname.replace('www.', '');
+      const parts = hostname.split('.');
+      if (parts.length > 0) {
+        return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+      }
+    }
+    return 'Store';
+  };
+
   // Use dynamic host config for site identity
-  const siteTitle = host?.title || import.meta.env.VITE_SITE_TITLE || 'Store';
-  const defaultDescription = import.meta.env.VITE_SITE_DESCRIPTION || 'Your trusted online shopping destination.';
-  const defaultImage = host?.logo || import.meta.env.VITE_SITE_IMAGE || '/logo.png';
+  const siteTitle = host?.title || getHostnameTitle();
+  const defaultDescription = host?.description || `Your trusted online shopping destination at ${siteTitle}.`;
+  const defaultImage = host?.logo || '/logo.png';
 
   // Construct the full title
   // If the title already includes the site name (or we are on home page where title might just be the site name)
