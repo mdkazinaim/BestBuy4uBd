@@ -9,7 +9,7 @@ import {
 import { useTheme } from "next-themes";
 import { Link } from "react-router-dom";
 import { TbCurrencyTaka } from "react-icons/tb";
-import { Helmet } from "react-helmet";
+import SEO from "@/components/common/SEO";
 
 interface CartItem {
   itemKey: string;
@@ -47,14 +47,11 @@ const Cart: React.FC<{ toggleCart: () => void }> = ({ toggleCart }) => {
 
   return (
     <>
-      <Helmet>
-        <title>Shopping Cart | BestBuy4uBD</title>
-        <meta
-          name="description"
-          content="Review your shopping cart, update quantities, and proceed to checkout."
-        />
-        <meta name="keywords" content="shopping cart, checkout, order" />
-      </Helmet>
+      <SEO 
+        title="Shopping Cart"
+        description="Review your shopping cart, update quantities, and proceed to checkout."
+        keywords="shopping cart, checkout, order"
+      />
       <div
         className={`fixed top-0 right-0 h-full w-full sm:w-96 ${isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-lg z-50 flex flex-col`}

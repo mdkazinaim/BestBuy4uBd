@@ -5,7 +5,7 @@ import CommonWrapper from "@/common/CommonWrapper";
 import { RootState } from "@/store/store";
 import { removeFromCart, incrementQuantity, decrementQuantity } from "@/store/Slices/CartSlice";
 import { useTracking } from "@/hooks/useTracking";
-import { Helmet } from "react-helmet";
+import SEO from "@/components/common/SEO";
 import { Button } from "@/common/Components/Button";
 import { useGetHost } from "@/utils/useGetHost";
 
@@ -35,9 +35,7 @@ const Cart = () => {
 
     return (
         <div className="min-h-[80vh] py-10 bg-bg-base font-primary text-text-primary">
-            <Helmet>
-                <title>Shopping Cart | {host.title || "BestBuy4uBD"}</title>
-            </Helmet>
+            <SEO title="Shopping Cart" />
             <CommonWrapper>
                 <h1 className="text-3xl font-semibold text-text-primary mb-8 uppercase tracking-tighter">Shopping Cart</h1>
 

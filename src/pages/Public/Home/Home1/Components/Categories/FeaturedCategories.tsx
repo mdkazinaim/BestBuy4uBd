@@ -104,16 +104,14 @@ const FeaturedCategories = () => {
     <section className="">
       <div className="container mx-auto px-4 mt-4 sm:mt-10">
         {/* Section Header */}
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-6 sm:mb-12"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-6 sm:mb-10 text-left"
         >
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-brand-700 dark:text-brand-200 mb-4 text-center">
-            Shop by Category
-          </h2>
         </motion.div>
 
         {/* Categories Carousel Container */}
@@ -144,64 +142,72 @@ const FeaturedCategories = () => {
                 "linear-gradient(to right, transparent, black 1%, black 99%, transparent)",
             }}
           >
-            <div className="flex w-max animate-marquee gap-3 sm:gap-6">
+            <div className="flex w-max  gap-3 sm:gap-6">
               {isLoading
                 ? Array.from({ length: 12 }).map((_, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-lg border border-gray-100 shadow-sm animate-pulse w-[130px] sm:w-[180px] aspect-[1/1.1] p-2 sm:p-4 flex flex-col items-center justify-center"
+                      className="bg-gray-100 dark:bg-slate-800 rounded-2xl animate-pulse w-[200px] sm:w-[240px] h-[220px] sm:h-[260px] p-5 flex flex-col"
                     >
-                      <div className="w-24 h-24 rounded bg-gray-50 mb-6" />
-                      <div className="w-full h-8 bg-gray-100 rounded" />
+                      <div className="w-3/4 h-6 bg-gray-200 dark:bg-slate-700 rounded mb-2" />
+<div className="w-1/2 h-4 bg-gray-200 dark:bg-slate-700 rounded mb-6" />
+<div className="mt-auto w-full h-full flex justify-end items-end"><div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-slate-700" /></div>
+                      
                     </div>
                   ))
-                : [...categories, ...categories].map(
-                    (category: any, index: number) => {
+                : categories.map((category: any, index: number) => {
                       const { icon: Icon } = getCategoryConfig(category.name);
+                      const bgClasses = [
+                        "bg-gradient-to-br from-blue-50/80 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-800/10",
+                        "bg-gradient-to-br from-purple-50/80 to-fuchsia-50/50 dark:from-purple-900/20 dark:to-fuchsia-800/10",
+                        "bg-gradient-to-br from-rose-50/80 to-orange-50/50 dark:from-rose-900/20 dark:to-orange-800/10",
+                        "bg-gradient-to-br from-emerald-50/80 to-teal-50/50 dark:from-emerald-900/20 dark:to-teal-800/10",
+                        "bg-gradient-to-br from-amber-50/80 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-800/10"
+                      ];
+                      const bgClass = bgClasses[index % bgClasses.length];
                       return (
                         <motion.div
-                          key={`${category._id}-${index}`}
+                          key={category._id}
                           initial={{ opacity: 0 }}
                           whileInView={{ opacity: 1 }}
                           viewport={{ once: true }}
                           transition={{ duration: 0.5 }}
-                          whileHover={{
-                            y: -5,
-                          }}
-                          onClick={() =>
-                            navigate(
-                              `/shop?category=${encodeURIComponent(category.name)}`,
-                            )
-                          }
-                          className="group cursor-pointer w-[130px] sm:w-[180px] flex-shrink-0 rounded-lg overflow-hidden"
+                          whileHover={{ y: -5 }}
+                          onClick={() => navigate(`/shop?category=${encodeURIComponent(category.name)}`)}
+                          className={`group cursor-pointer w-[200px] sm:w-[240px] h-[220px] sm:h-[260px] flex-shrink-0 rounded-2xl overflow-hidden relative p-5 ${bgClass} border border-white/50 dark:border-slate-800/50 shadow-sm`}
                         >
-                          {/* Simple Brand Card */}
-                          <div className="relative bg-white dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-slate-800 shadow-sm transition-all duration-300 flex flex-col items-center justify-center">
-                            {/* Image/Icon Container */}
-                            <div className="w-full aspect-square flex items-center justify-center">
-                              {category.image ? (
-                                <img
-                                  src={category.image}
-                                  alt={category.name}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                              ) : (
-                                <div className="size-16 rounded-full bg-gray-50 dark:bg-slate-800 flex items-center justify-center">
-                                  <Icon
-                                    className="w-8 h-8 text-gray-400 dark:text-slate-500"
-                                    strokeWidth={1.5}
-                                  />
-                                </div>
-                              )}
-                            </div>
+                          {/* Image as Background */}
+                          <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+                             {category.image ? (
+                               <img
+                                 src={category.image}
+                                 alt={category.name}
+                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                               />
+                             ) : (
+                               <div className="w-full h-full flex items-center justify-center opacity-20">
+                                 <Icon className="w-24 h-24 text-slate-800 dark:text-white" strokeWidth={1} />
+                               </div>
+                             )}
+                          </div>
 
-                            {/* Pill Label at Bottom */}
-                            <div className="absolute bottom-3 left-3 right-3">
-                              <div className="bg-brand-500 group-hover:bg-brand-600/80 transition-colors py-1.5 px-2 rounded flex items-center justify-center">
-                                <h3 className="text-[11px] font-normal sm:font-medium text-white uppercase tracking-wider text-center truncate">
-                                  {category.name}
-                                </h3>
-                              </div>
+                          {/* Gradient Overlay for Text Readability */}
+                          {category.image && (
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-transparent z-[5]"></div>
+                          )}
+
+                          {/* Text Content */}
+                          <div className="relative z-10 flex flex-col h-full">
+                            <h3 className={`text-base sm:text-lg font-bold mb-1 line-clamp-2 ${category.image ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>
+                              {category.name}
+                            </h3>
+                            <p className={`text-xs mb-2 ${category.image ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'}`}>
+                              Explore Products
+                            </p>
+                            <div className="mt-1">
+                               <span className={`text-xs sm:text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all ${category.image ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`}>
+                                  Explore <span aria-hidden="true">&rarr;</span>
+                               </span>
                             </div>
                           </div>
                         </motion.div>

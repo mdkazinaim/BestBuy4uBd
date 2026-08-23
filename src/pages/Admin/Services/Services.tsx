@@ -140,7 +140,7 @@ export default function Services() {
                     className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors border border-transparent hover:border-blue-200 dark:hover:border-blue-800 flex items-center gap-1"
                     title="View Setup Guide"
                   >
-                    <BookOpen className="w-3.5 h-3.5" />
+                    <BookOpen className="size-5" />
                   </button>
                 </div>
               </div>

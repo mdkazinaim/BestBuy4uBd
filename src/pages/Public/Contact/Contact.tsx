@@ -3,7 +3,7 @@ import { useTracking } from "@/hooks/useTracking";
 import { useEffect, useState } from "react";
 import { Mail, Phone, MapPin, Clock, Send, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { motion } from "framer-motion";
-import { Helmet } from "react-helmet";
+import SEO from "@/components/common/SEO";
 import { Button } from "@/common/Components/Button";
 import { useGetHost } from "@/utils/useGetHost";
 
@@ -74,10 +74,10 @@ const Contact = () => {
 
   return (
     <CommonWrapper>
-      <Helmet>
-        <title>Contact Us | {host.title} - Premium Ecommerce Experience</title>
-        <meta name="description" content={`Reach out to ${host.title} for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs.`} />
-      </Helmet>
+      <SEO 
+        title="Contact Us - Premium Ecommerce Experience"
+        description={`Reach out to ${host.title} for any inquiries, support, or feedback. We are here to help you 24/7 with your tech needs.`}
+      />
       <div className="py-12">
         {/* Header Section */}
         <motion.div 

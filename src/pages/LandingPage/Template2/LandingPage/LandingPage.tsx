@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet";
+import SEO from "@/components/common/SEO";
 import { useCreateOrderMutation } from "../../../../store/Api/OrderApi";
 import { toast } from "sonner";
 import OrderSuccessModal from "../../Checkout/OrderSuccessModal";
@@ -271,10 +271,10 @@ const LandingPage = ({ product }: { product: Product }) => {
 
   return (
     <div className="bg-white min-h-screen">
-      <Helmet>
-        <title>{product.basicInfo.title} | BestBuy4U</title>
-        <meta name="description" content={product.basicInfo.description} />
-      </Helmet>
+      <SEO 
+        title={product.basicInfo.title}
+        description={product.basicInfo.description}
+      />
 
       {successOrderDetails && (
         <OrderSuccessModal

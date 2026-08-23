@@ -5,6 +5,7 @@ import NewArrival from "./Components/NewArrival/NewArrival";
 
 import RecommendedSection from "./Components/Recommended/RecommendedSection";
 import PromotionalSection from "./Components/Promotional/PromotionalSection";
+import StatsBanner from "./Components/StatsBanner";
 
 const Home = () => {
   return (
@@ -24,6 +25,11 @@ const Home = () => {
 
           {/* Promotional Section */}
           <PromotionalSection />
+
+          {/* Stats Banner */}
+          <div className="container mx-auto px-4">
+            <StatsBanner />
+          </div>
 
           {/* Today's Hot Deals */}
           {/* <DealsSection /> */}
