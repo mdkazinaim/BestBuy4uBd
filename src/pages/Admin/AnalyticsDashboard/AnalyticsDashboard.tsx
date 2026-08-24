@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
-import { Users, Eye, MousePointerClick, AlertTriangle, Settings } from "lucide-react";
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, PieChart, Pie, Cell } from "recharts";
+import { Users, Eye, MousePointerClick, AlertTriangle, Settings, Activity, DollarSign, Monitor, Smartphone, Tablet, Globe, FileText } from "lucide-react";
 import { useGetAnalyticsDashboardQuery } from "@/store/Api/TrackingApi";
 import { Button } from "@/common/Components/Button";
 
@@ -51,7 +51,14 @@ export default function AnalyticsDashboard() {
     );
   }
 
-  const { chartData, totals } = analyticsRes.data;
+  const { chartData, totals, topPages, devices, countries } = analyticsRes.data;
+
+  const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+  const getDeviceIcon = (category: string) => {
+    if (category.toLowerCase().includes('mobile')) return <Smartphone className="w-4 h-4 text-slate-500" />;
+    if (category.toLowerCase().includes('tablet')) return <Tablet className="w-4 h-4 text-slate-500" />;
+    return <Monitor className="w-4 h-4 text-slate-500" />;
+  };
 
   return (
     <div className="w-full space-y-6 pb-10">
@@ -70,12 +77,18 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
         <MetricCard 
           title="Active Users" 
           value={totals?.activeUsers || 0} 
           icon={Users} 
           colorClass="bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" 
+        />
+        <MetricCard 
+          title="Total Sessions" 
+          value={totals?.sessions || 0} 
+          icon={Activity} 
+          colorClass="bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" 
         />
         <MetricCard 
           title="Total Page Views" 
@@ -84,10 +97,22 @@ export default function AnalyticsDashboard() {
           colorClass="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400" 
         />
         <MetricCard 
+          title="Avg Bounce Rate" 
+          value={`${((totals?.bounceRate || 0) * 100).toFixed(1)}%`} 
+          icon={MousePointerClick} 
+          colorClass="bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400" 
+        />
+        <MetricCard 
+          title="Total Revenue" 
+          value={`$${(totals?.totalRevenue || 0).toFixed(2)}`} 
+          icon={DollarSign} 
+          colorClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" 
+        />
+        <MetricCard 
           title="Total Events" 
           value={totals?.eventCount || 0} 
           icon={MousePointerClick} 
-          colorClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" 
+          colorClass="bg-pink-50 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400" 
         />
       </div>
 
@@ -118,6 +143,98 @@ export default function AnalyticsDashboard() {
               <Area type="monotone" dataKey="activeUsers" name="Active Users" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Grid for Bottom Data */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Top Pages */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-6">
+            <FileText className="w-5 h-5 text-slate-500" />
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white">Top Pages</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-500 dark:text-slate-400">
+              <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-800/50 dark:text-slate-400">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Page Title</th>
+                  <th className="px-4 py-3 font-medium">Path</th>
+                  <th className="px-4 py-3 font-medium text-right">Views</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topPages?.map((page: any, idx: number) => (
+                  <tr key={idx} className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white truncate max-w-[200px]">{page.title || '(not set)'}</td>
+                    <td className="px-4 py-3 text-slate-500 truncate max-w-[200px]">{page.path}</td>
+                    <td className="px-4 py-3 text-right font-medium">{page.views.toLocaleString()}</td>
+                  </tr>
+                ))}
+                {(!topPages || topPages.length === 0) && (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-8 text-center">No page data available yet</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Devices */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-sm">
+            <h3 className="text-base font-semibold text-slate-800 dark:text-white mb-6">Devices</h3>
+            {devices && devices.length > 0 ? (
+              <div className="h-[200px] w-full relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={devices} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="users" nameKey="category" stroke="none">
+                      {devices.map((_: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none flex-col">
+                  <Monitor className="w-8 h-8 text-slate-300 dark:text-slate-600 mb-1" />
+                </div>
+              </div>
+            ) : (
+              <div className="h-[200px] w-full flex items-center justify-center text-slate-400 text-sm">No device data</div>
+            )}
+            <div className="mt-4 space-y-2">
+              {devices?.map((device: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                    {getDeviceIcon(device.category)}
+                    <span className="capitalize">{device.category}</span>
+                  </div>
+                  <span className="font-medium text-slate-900 dark:text-white">{device.users.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Countries */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 sm:p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Globe className="w-5 h-5 text-slate-500" />
+              <h3 className="text-base font-semibold text-slate-800 dark:text-white">Top Countries</h3>
+            </div>
+            <div className="space-y-3">
+              {countries?.map((country: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between text-sm">
+                  <span className="text-slate-600 dark:text-slate-300 truncate pr-4">{country.country}</span>
+                  <span className="font-medium text-slate-900 dark:text-white">{country.users.toLocaleString()}</span>
+                </div>
+              ))}
+              {(!countries || countries.length === 0) && (
+                <div className="text-center text-slate-400 text-sm py-4">No country data</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
