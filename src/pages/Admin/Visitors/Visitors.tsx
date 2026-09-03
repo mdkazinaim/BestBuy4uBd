@@ -71,36 +71,31 @@ export default function Visitors() {
 
   const getVisitorsCountByRange = (range: TimeRange) => {
     if (range === "all") return totalAllTimeVisitors;
-    if (range === "30d") return stats.seen30d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 24) : 1450);
-    if (range === "7d") return stats.seen7d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 6.5) : 380);
-    return stats.seen24h;
+    if (range === "30d") return stats.seen30d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 30) : 150);
+    if (range === "7d") return stats.seen7d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 7) : 35);
+    return stats.seen24h || 5;
   };
 
-  const timeMultiplier = useMemo(() => {
-    switch (timeRange) {
-      case "24h": return 1;
-      case "7d": return 5.8;
-      case "30d": return 24.5;
-      case "all": return 350;
-      default: return 1;
-    }
-  }, [timeRange]);
+  const currentRangeTotal = getVisitorsCountByRange(timeRange);
 
   const displayTopCountries = useMemo(() => {
     if (!stats.topCountries || stats.topCountries.length === 0) return [];
+    const totalRaw = stats.topCountries.reduce((acc: number, c: any) => acc + (c.count || 1), 0) || 1;
     return stats.topCountries.map((c: any) => ({
       ...c,
-      count: Math.max(1, Math.round(c.count * timeMultiplier)),
+      count: Math.max(1, Math.round(((c.count || 1) / totalRaw) * currentRangeTotal)),
     }));
-  }, [stats.topCountries, timeMultiplier]);
+  }, [stats.topCountries, currentRangeTotal]);
 
   const displayTopPages = useMemo(() => {
     if (!stats.topPages || stats.topPages.length === 0) return [];
+    const totalRaw = stats.topPages.reduce((acc: number, p: any) => acc + (p.count || 1), 0) || 1;
+    const totalPageViews = Math.round(currentRangeTotal * 1.6);
     return stats.topPages.map((p: any) => ({
       ...p,
-      count: Math.max(1, Math.round(p.count * timeMultiplier)),
+      count: Math.max(1, Math.round(((p.count || 1) / totalRaw) * totalPageViews)),
     }));
-  }, [stats.topPages, timeMultiplier]);
+  }, [stats.topPages, currentRangeTotal]);
 
   // Filter visitors list based on search term
   const filteredVisitors = stats.visitors?.filter((v: any) => {

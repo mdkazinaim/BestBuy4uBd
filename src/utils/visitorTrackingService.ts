@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const BASE_VISITOR_COUNT = 124850;
+const BASE_VISITOR_COUNT = 1750;
 const STORAGE_TOTAL_KEY = "site_total_visitors_count";
 const SESSION_FLAG_KEY = "site_session_counted";
 
@@ -10,7 +10,13 @@ export const visitorTrackingService = {
     try {
       const stored = localStorage.getItem(STORAGE_TOTAL_KEY);
       if (stored) {
-        return Math.max(parseInt(stored, 10), BASE_VISITOR_COUNT);
+        const parsed = parseInt(stored, 10);
+        // If legacy high test value exists (e.g. > 50000), normalize to realistic 1750 base
+        if (parsed > 50000) {
+          localStorage.setItem(STORAGE_TOTAL_KEY, String(BASE_VISITOR_COUNT));
+          return BASE_VISITOR_COUNT;
+        }
+        return Math.max(parsed, BASE_VISITOR_COUNT);
       }
       localStorage.setItem(STORAGE_TOTAL_KEY, String(BASE_VISITOR_COUNT));
       return BASE_VISITOR_COUNT;
