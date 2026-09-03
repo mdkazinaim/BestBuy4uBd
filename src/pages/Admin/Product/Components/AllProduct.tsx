@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useGetAllProductsQuery } from "@/store/Api/ProductApi";
+import { useGetAllCategoriesQuery } from "@/store/Api/CategoriesApi";
 import { Card } from "@heroui/react";
 import {
   Search,
@@ -123,16 +124,22 @@ const AllProduct = () => {
     category: categoryFilter !== "all" ? categoryFilter : undefined,
   });
 
+  const { data: categoriesData } = useGetAllCategoriesQuery({});
+
   const meta = data?.meta || { page: 1, limit: 12, total: 0, totalPage: 1 };
   const apiProducts = data?.data || [];
   const products: ProductDisplay[] = apiProducts.map(normalizeProduct);
 
-  const categories = [
-    "all",
-    ...Array.from(
-      new Set(products.map((p: ProductDisplay) => p.basicInfo.category))
-    ),
-  ];
+  const categories = useMemo(() => {
+    const fetchedCategories = (categoriesData?.data || []).map((c: any) => c.name);
+    const existingProductCategories = products
+      .map((p: ProductDisplay) => p.basicInfo?.category)
+      .filter(Boolean);
+    return [
+      "all",
+      ...Array.from(new Set([...fetchedCategories, ...existingProductCategories])),
+    ];
+  }, [categoriesData, products]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

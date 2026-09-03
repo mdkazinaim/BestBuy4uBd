@@ -486,7 +486,7 @@ const ProductDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Image Gallery (Sticky) */}
-          <div className="lg:col-span-6 lg:sticky lg:top-24">
+          <div className="lg:col-span-6 lg:sticky lg:top-50">
             <div className="flex flex-col gap-4">
               <div 
                 className="relative aspect-square bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex items-center justify-center group overflow-hidden cursor-zoom-in"

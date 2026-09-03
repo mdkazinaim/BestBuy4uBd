@@ -2,6 +2,7 @@ import { useForm, Controller, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProductFormSchema, ProductFormValues } from "./Product";
 import { uploadToCloudinary } from "@/utils/cloudinary";
+import { useGetAllCategoriesQuery } from "@/store/Api/CategoriesApi";
 import {
   basicInfoFields,
   priceStockFields,
@@ -120,7 +121,7 @@ TagsInput.displayName = "TagsInput";
 // ============================================
 // 🎨 Field Renderer for Simple Fields (Memoized)
 // ============================================
-const FieldRenderer = memo(({ field, register, errors, watch, control }: any) => {
+const FieldRenderer = memo(({ field, register, errors, watch, control, categoryOptions, subCategoryOptions }: any) => {
   const error = errors[field.name.split(".")[0]]?.[field.name.split(".")[1]];
   const errorMessage = error?.message as string | undefined;
 
@@ -137,6 +138,60 @@ const FieldRenderer = memo(({ field, register, errors, watch, control }: any) =>
   const inputClasses = `w-full px-3.5 py-2 border rounded-lg text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-900 ${
     error ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" : "border-slate-200 dark:border-slate-800"
   } ${field.disabled ? "bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed" : "bg-white dark:bg-slate-900/50"}`;
+
+  // Dynamic API Categories
+  if (field.name === "basicInfo.category") {
+    const opts = categoryOptions && categoryOptions.length > 0 ? categoryOptions : field.options;
+    return (
+      <div key={field.name} className={field.className}>
+        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+          {field.label}
+          {field.required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        <PopoverSelect
+          name={field.name}
+          control={control}
+          options={opts || []}
+          placeholder={field.placeholder || "Select category"}
+          error={errorMessage}
+          disabled={field.disabled}
+        />
+        {field.helpText && (
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{field.helpText}</p>
+        )}
+        {errorMessage && (
+          <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
+        )}
+      </div>
+    );
+  }
+
+  // Dynamic API Subcategories
+  if (field.name === "basicInfo.subcategory") {
+    const opts = subCategoryOptions || [];
+    return (
+      <div key={field.name} className={field.className}>
+        <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+          {field.label}
+          {field.required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        <PopoverSelect
+          name={field.name}
+          control={control}
+          options={opts}
+          placeholder={opts.length > 0 ? (field.placeholder || "Select subcategory") : "Select a category first"}
+          error={errorMessage}
+          disabled={field.disabled || opts.length === 0}
+        />
+        {field.helpText && (
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{field.helpText}</p>
+        )}
+        {errorMessage && (
+          <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
+        )}
+      </div>
+    );
+  }
 
   switch (field.type) {
     case "text":
@@ -376,6 +431,19 @@ FieldRenderer.displayName = "FieldRenderer";
 // 📝 Main Product Form Component
 // ============================================
 export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
+  // Fetch real categories from API
+  const { data: categoriesData } = useGetAllCategoriesQuery({});
+  const categoriesList = useMemo(() => categoriesData?.data || [], [categoriesData]);
+
+  const categoryOptions = useMemo(() => {
+    return categoriesList.map((cat: any) => ({
+      label: cat.name,
+      value: cat.name,
+      image: cat.image,
+      subCategories: cat.subCategory || cat.subCategories || cat.subcategories || [],
+    }));
+  }, [categoriesList]);
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: defaultValues ?? {
@@ -418,6 +486,42 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
 
   const [isUploading, setIsUploading] = useState(false);
 
+  const selectedCategoryName = watch("basicInfo.category");
+
+  const selectedCategoryObj = useMemo(() => {
+    return categoriesList.find((cat: any) => cat.name === selectedCategoryName || cat._id === selectedCategoryName);
+  }, [categoriesList, selectedCategoryName]);
+
+  const subCategoryOptions = useMemo(() => {
+    let rawSubs: any[] = [];
+    if (selectedCategoryObj) {
+      rawSubs = selectedCategoryObj.subCategory || selectedCategoryObj.subCategories || selectedCategoryObj.subcategories || [];
+    }
+
+    return rawSubs.map((sub: any) => {
+      const name = typeof sub === "string" ? sub : sub.name;
+      const image = typeof sub === "string" ? null : sub.image;
+      return {
+        label: name,
+        value: name,
+        image: image,
+      };
+    });
+  }, [selectedCategoryObj]);
+
+  // Reset subcategory if invalid for newly selected category
+  useEffect(() => {
+    if (selectedCategoryName) {
+      const currentSub = watch("basicInfo.subcategory");
+      if (currentSub && subCategoryOptions.length > 0) {
+        const isValid = subCategoryOptions.some((opt: any) => opt.value === currentSub);
+        if (!isValid) {
+          setValue("basicInfo.subcategory", "");
+        }
+      }
+    }
+  }, [selectedCategoryName, subCategoryOptions, setValue, watch]);
+
   // Tabbed wizard states & memoized tabs configurations
   const TABS = useMemo(() => [
     { id: "basic", label: "Basic Info", icon: FileText, fields: ["basicInfo"] },
@@ -433,31 +537,6 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
   const getTabErrors = useCallback((tabFields: string[]) => {
     return tabFields.some((field) => !!errors[field as keyof typeof errors]);
   }, [errors]);
-
-  const handlePrevTab = useCallback(() => {
-    const currentIdx = TABS.findIndex((t) => t.id === activeTab);
-    if (currentIdx > 0) {
-      setActiveTab(TABS[currentIdx - 1].id);
-    }
-  }, [activeTab, TABS]);
-
-  const handleNextTab = useCallback(() => {
-    const currentIdx = TABS.findIndex((t) => t.id === activeTab);
-    if (currentIdx < TABS.length - 1) {
-      setActiveTab(TABS[currentIdx + 1].id);
-    }
-  }, [activeTab, TABS]);
-
-  const onValidationError = useCallback((errs: any) => {
-    console.log("Form validation failed:", errs);
-    // Find the first tab that has fields with errors and navigate there
-    const firstTabWithError = TABS.find((tab) =>
-      tab.fields.some((field) => !!errs[field])
-    );
-    if (firstTabWithError) {
-      setActiveTab(firstTabWithError.id);
-    }
-  }, [TABS]);
 
   const handleFormSubmit = async (data: ProductFormValues) => {
     try {
@@ -561,14 +640,12 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
   // Memoize field groups to prevent re-renders
   const basicInfoFieldsSlice1 = useMemo(() => basicInfoFields.slice(0, 6), []);
   const basicInfoFieldsSlice2 = useMemo(() => basicInfoFields.slice(7), []);
-  const shippingFieldsSlice1 = useMemo(() => shippingFields.slice(0, 4), []);
-  const shippingFieldsSlice2 = useMemo(() => shippingFields.slice(4), []);
   const activeIdx = TABS.findIndex((t) => t.id === activeTab);
 
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={handleSubmit(handleFormSubmit, onValidationError)}
+        onSubmit={handleSubmit(handleFormSubmit)}
         className="w-full space-y-6"
       >
       {/* Horizontal Tabs / Step Indicator */}
@@ -601,7 +678,6 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                 onClick={() => setActiveTab(tab.id)}
                 className="flex flex-col items-center gap-2 text-center group cursor-pointer focus:outline-none flex-1 min-w-[75px]"
               >
-                {/* Active Indicator Spring Scale Animation */}
                 <motion.div
                   animate={{ scale: isActive ? 1.08 : 1 }}
                   transition={{ type: "spring", stiffness: 450, damping: 22 }}
@@ -640,7 +716,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
       </div>
 
       {/* ============================================================== */}
-      {/* TAB CONTENTS (Animate Entrance Switch)                          */}
+      {/* TAB CONTENTS                                                    */}
       {/* ============================================================== */}
 
       {/* Tab 1: Basic Info */}
@@ -665,6 +741,8 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                   errors={errors}
                   watch={watch}
                   control={control}
+                  categoryOptions={categoryOptions}
+                  subCategoryOptions={subCategoryOptions}
                 />
               ))}
             </div>
@@ -675,6 +753,8 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                 errors={errors}
                 watch={watch}
                 control={control}
+                categoryOptions={categoryOptions}
+                subCategoryOptions={subCategoryOptions}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -686,6 +766,8 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                   errors={errors}
                   watch={watch}
                   control={control}
+                  categoryOptions={categoryOptions}
+                  subCategoryOptions={subCategoryOptions}
                 />
               ))}
             </div>
@@ -706,7 +788,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           className="space-y-6"
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <ImagesField control={control} register={register} errors={errors} />
+            <ImagesField control={control} register={register} errors={errors} watch={watch} />
             <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
               <VideosField
                 control={control}
@@ -791,7 +873,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
             </div>
 
             <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
-              <VariantsField control={control} register={register} errors={errors} />
+              <VariantsField control={control} register={register} errors={errors} watch={watch} />
             </div>
 
             <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
@@ -804,13 +886,7 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
             </div>
 
             <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-8">
-              <BundlesField
-                control={control}
-                register={register}
-                errors={errors}
-                watch={watch}
-                setValue={setValue}
-              />
+              <BundlesField control={control} register={register} errors={errors} watch={watch} setValue={setValue} />
             </div>
           </div>
         </motion.div>
@@ -825,17 +901,13 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           transition={{ duration: 0.22, ease: "easeOut" }}
           className="space-y-6"
         >
-          <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-            <SpecificationsField
-              control={control}
-              register={register}
-              errors={errors}
-            />
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6">
+            <SpecificationsField control={control} register={register} errors={errors} />
           </div>
         </motion.div>
       </div>
 
-      {/* Tab 5: Shipping & Delivery */}
+      {/* Tab 5: Shipping & Extra */}
       <div className={activeTab === "shipping" ? "block" : "hidden"}>
         <motion.div
           key="shipping"
@@ -846,10 +918,10 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
         >
           <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
             <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
-              Shipping & Delivery Details
+              Shipping & Dimensions
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {shippingFieldsSlice1.map((field) => (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {shippingFields.slice(0, 4).map((field) => (
                 <FieldRenderer
                   key={field.name}
                   field={field}
@@ -860,8 +932,8 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                 />
               ))}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              {shippingFieldsSlice2.map((field) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {shippingFields.slice(4).map((field) => (
                 <FieldRenderer
                   key={field.name}
                   field={field}
@@ -872,22 +944,21 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
                 />
               ))}
             </div>
-            <div className="border-t border-slate-200 dark:border-slate-800 pt-8 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-2 border-b border-slate-100 dark:border-slate-800">
-                Warranty & Return Policies
-              </h2>
-              <div className="space-y-4">
-                {additionalInfoFields.map((field) => (
-                  <FieldRenderer
-                    key={field.name}
-                    field={field}
-                    register={register}
-                    errors={errors}
-                    watch={watch}
-                    control={control}
-                  />
-                ))}
-              </div>
+
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pt-6 pb-3 border-b border-slate-100 dark:border-slate-800">
+              Additional Information
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {additionalInfoFields.map((field) => (
+                <FieldRenderer
+                  key={field.name}
+                  field={field}
+                  register={register}
+                  errors={errors}
+                  watch={watch}
+                  control={control}
+                />
+              ))}
             </div>
           </div>
         </motion.div>
@@ -902,93 +973,74 @@ export default function ProductFormNew({ defaultValues, onSubmit }: Props) {
           transition={{ duration: 0.22, ease: "easeOut" }}
           className="space-y-6"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
-                Search Engine Optimization (SEO)
-              </h2>
-              <div className="space-y-4">
-                {seoFields.map((field) => (
-                  <FieldRenderer
-                    key={field.name}
-                    field={field}
-                    register={register}
-                    errors={errors}
-                    watch={watch}
-                    control={control}
-                  />
-                ))}
-              </div>
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
+              Search Engine Optimization (SEO)
+            </h2>
+            <div className="space-y-4">
+              {seoFields.map((field) => (
+                <FieldRenderer
+                  key={field.name}
+                  field={field}
+                  register={register}
+                  errors={errors}
+                  watch={watch}
+                  control={control}
+                />
+              ))}
             </div>
 
-            <div className="border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/60 p-4 md:p-6 space-y-6">
-              <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pb-3 border-b border-slate-100 dark:border-slate-800">
-                Tags & Categorization
-              </h2>
-              <div className="space-y-4">
-                {tagsField.map((field) => (
-                  <FieldRenderer
-                    key={field.name}
-                    field={field}
-                    register={register}
-                    errors={errors}
-                    watch={watch}
-                    control={control}
-                  />
-                ))}
-              </div>
-            </div>
+            <h2 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200 pt-6 pb-3 border-b border-slate-100 dark:border-slate-800">
+              Tags
+            </h2>
+            {tagsField.map((field) => (
+              <FieldRenderer
+                key={field.name}
+                field={field}
+                register={register}
+                errors={errors}
+                watch={watch}
+                control={control}
+              />
+            ))}
           </div>
         </motion.div>
       </div>
 
-      {/* Linear Navigation Controls & Footer Actions */}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handlePrevTab}
-            disabled={activeTab === TABS[0].id}
-            className="flex items-center gap-1.5"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Previous Step</span>
-          </Button>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleNextTab}
-            disabled={activeTab === TABS[TABS.length - 1].id}
-            className="flex items-center gap-1.5"
-          >
-            <span>Next Step</span>
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+      {/* Form Submission Actions Footer */}
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-800">
+        <div>
+          {activeIdx > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setActiveTab(TABS[activeIdx - 1].id)}
+              className="gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Previous Step
+            </Button>
+          )}
         </div>
-
-        {/* Submit Buttons */}
-        <div className="flex gap-3 w-full sm:w-auto justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => form.reset()}
-            disabled={isSubmitting || isUploading}
-            className="w-full sm:w-auto"
-          >
-            Reset Form
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            size="sm"
-            disabled={isSubmitting || isUploading}
-            className="w-full sm:w-auto"
-          >
-            {isSubmitting || isUploading ? "Saving..." : "Save Product"}
-          </Button>
+        <div className="flex items-center gap-3">
+          {activeIdx < TABS.length - 1 ? (
+            <Button
+              type="button"
+              onClick={() => setActiveTab(TABS[activeIdx + 1].id)}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Next Step
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              disabled={isSubmitting || isUploading}
+              className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-semibold"
+            >
+              {isSubmitting || isUploading ? "Saving Product..." : "Save Product"}
+            </Button>
+          )}
         </div>
       </div>
       </form>

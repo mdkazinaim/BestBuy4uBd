@@ -3,17 +3,18 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import NavItems from "./NavItems";
 import { useTracking } from "@/hooks/useTracking";
 import { useGetHost } from "@/utils/useGetHost";
+import { useVisitorCount } from "@/utils/visitorTrackingService";
 import { Button } from "@/common/Components/Button";
 import CommonWrapper from "@/common/CommonWrapper";
 
 const Footer: React.FC = () => {
   const host = useGetHost();
   const { trackContact, trackSubscribe } = useTracking();
+  const totalVisitors = useVisitorCount();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     trackSubscribe("footer_newsletter", "footer");
-    // Add newsletter subscription logic here
   };
 
   return (
@@ -31,6 +32,7 @@ const Footer: React.FC = () => {
               {host.description || `Welcome to ${host.title || "our store"}. Your one-stop shop for premium products.`}
             </p>
           </div>
+
           {/* Quick Links Section */}
           <div className="space-y-4">
             <h3 className="h6 text-white uppercase tracking-widest">
@@ -114,11 +116,22 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Copyright Section */}
-        <div className="border-t border-white/5 mt-8 sm:mt-12 pt-6 sm:pt-8 text-center">
+        {/* Copyright & Total Visitors Section */}
+        <div className="border-t border-white/5 mt-8 sm:mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-xs text-white/60 dark:text-slate-400 uppercase tracking-widest">
-            &copy; {new Date().getFullYear()} {host.title ? host.title : <span className="inline-block w-24 h-4 bg-slate-200 dark:bg-slate-700 animate-pulse rounded"></span>}. All rights reserved.
+            &copy; {new Date().getFullYear()} {host.title ? host.title : "Store"}. All rights reserved.
           </p>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 dark:bg-slate-900 border border-white/10 dark:border-slate-800 text-xs font-medium text-white/90 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-white/70">Total Site Visitors:</span>
+            <span className="font-bold font-mono text-emerald-400 text-sm">
+              {totalVisitors.toLocaleString()}
+            </span>
+          </div>
         </div>
       </CommonWrapper>
     </footer>

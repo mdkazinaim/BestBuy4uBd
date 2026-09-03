@@ -99,8 +99,15 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
         });
 
         const displayLabel = selectedOption
-          ? (typeof selectedOption === "string" ? selectedOption : selectedOption.label)
+          ? typeof selectedOption === "string"
+            ? selectedOption
+            : selectedOption.label
           : placeholder;
+
+        const displayImage =
+          selectedOption && typeof selectedOption !== "string"
+            ? selectedOption.image
+            : null;
 
         return (
           <Popover open={open} onOpenChange={setOpen}>
@@ -112,13 +119,28 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
                   error ? "border-red-500 focus:ring-red-500/20 focus:border-red-500" : ""
                 }`}
               >
-                <span className="truncate">{displayLabel}</span>
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {displayImage && (
+                    <img
+                      src={displayImage}
+                      alt={displayLabel}
+                      className="w-6 h-6 rounded-md object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                    />
+                  )}
+                  <span
+                    className={`truncate ${
+                      !selectedOption ? "text-slate-400 dark:text-slate-500" : ""
+                    }`}
+                  >
+                    {displayLabel}
+                  </span>
+                </div>
                 <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
               </button>
             </PopoverTrigger>
-            <PopoverContent 
+            <PopoverContent
               align="start"
-              className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-none z-50"
+              className="w-[var(--radix-popover-trigger-width)] p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg z-50"
             >
               <div className="py-0.5 max-h-60 overflow-y-auto">
                 {options.length === 0 ? (
@@ -129,8 +151,9 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
                   options.map((opt) => {
                     const optValue = typeof opt === "string" ? opt : opt.value;
                     const optLabel = typeof opt === "string" ? opt : opt.label;
+                    const optImage = typeof opt !== "string" ? opt.image : null;
                     const isSelected = value === optValue;
-                    
+
                     return (
                       <button
                         key={optValue}
@@ -141,12 +164,27 @@ export const PopoverSelect: React.FC<PopoverSelectProps> = ({
                         }}
                         className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors flex items-center justify-between cursor-pointer ${
                           isSelected
-                            ? "bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white font-medium"
+                            ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-semibold"
                             : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50"
                         }`}
                       >
-                        <span className="truncate">{optLabel}</span>
-                        {isSelected && <Check className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          {optImage ? (
+                            <img
+                              src={optImage}
+                              alt={optLabel}
+                              className="w-7 h-7 rounded-md object-cover border border-slate-200 dark:border-slate-700 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded-md bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500 dark:text-slate-400 shrink-0 border border-slate-200 dark:border-slate-700">
+                              {optLabel ? optLabel.charAt(0).toUpperCase() : "?"}
+                            </div>
+                          )}
+                          <span className="truncate">{optLabel}</span>
+                        </div>
+                        {isSelected && (
+                          <Check className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 ml-2" />
+                        )}
                       </button>
                     );
                   })

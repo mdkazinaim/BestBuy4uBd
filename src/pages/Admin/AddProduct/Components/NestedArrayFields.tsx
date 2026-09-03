@@ -5,6 +5,7 @@ import {
   FieldErrors,
   useWatch,
   useFormContext,
+  UseFormWatch,
 } from "react-hook-form";
 import { ProductFormValues } from "./Product";
 import { Plus, Trash2, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
@@ -25,6 +26,7 @@ interface ImagesFieldProps {
   control: Control<ProductFormValues>;
   register: UseFormRegister<ProductFormValues>;
   errors: FieldErrors<ProductFormValues>;
+  watch?: UseFormWatch<ProductFormValues>;
 }
 
 export const ImagesField = memo(
@@ -453,6 +455,7 @@ interface VariantsFieldProps {
   control: Control<ProductFormValues>;
   register: UseFormRegister<ProductFormValues>;
   errors: FieldErrors<ProductFormValues>;
+  watch?: UseFormWatch<ProductFormValues>;
 }
 
 export const VariantsField = memo(
@@ -694,11 +697,11 @@ function VariantGroup({
 interface SpecificationsFieldProps {
   control: Control<ProductFormValues>;
   register: UseFormRegister<ProductFormValues>;
-  errors: FieldErrors<ProductFormValues>;
+  errors?: FieldErrors<ProductFormValues>;
 }
 
 export const SpecificationsField = memo(
-  ({ control, register, errors }: SpecificationsFieldProps) => {
+  ({ control, register, errors = {} }: SpecificationsFieldProps) => {
     const { fields, append, remove } = useFieldArray({
       control,
       name: "specifications",
@@ -708,19 +711,22 @@ export const SpecificationsField = memo(
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-base md:text-lg font-semibold text-slate-800 dark:text-slate-200">
-            Specifications
+            Technical Specifications
           </h3>
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() =>
-              append({ group: "", items: [{ name: "", value: "" }] })
+              append({
+                group: "General",
+                items: [{ name: "", value: "" }],
+              })
             }
             className="flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            <span>Add Specification Group</span>
+            <span>Add Spec Category</span>
           </Button>
         </div>
 
@@ -753,13 +759,13 @@ function SpecificationGroup({
   specIndex,
   control,
   register,
-  errors,
+  errors = {},
   onRemove,
 }: {
   specIndex: number;
   control: Control<ProductFormValues>;
   register: UseFormRegister<ProductFormValues>;
-  errors: FieldErrors<ProductFormValues>;
+  errors?: FieldErrors<ProductFormValues>;
   onRemove: () => void;
 }) {
   const { fields, append, remove } = useFieldArray({
@@ -1045,13 +1051,13 @@ ComboPricingField.displayName = "ComboPricingField";
 interface BundlesFieldProps {
   control: Control<ProductFormValues>;
   register: UseFormRegister<ProductFormValues>;
-  errors: FieldErrors<ProductFormValues>;
-  watch: any;
-  setValue: any;
+  errors?: FieldErrors<ProductFormValues>;
+  watch?: any;
+  setValue?: any;
 }
 
 export const BundlesField = memo(
-  ({ control, register, errors, watch, setValue }: BundlesFieldProps) => {
+  ({ control, register, errors = {}, watch, setValue }: BundlesFieldProps) => {
     const { fields, append, remove } = useFieldArray({
       control,
       name: "bundles",

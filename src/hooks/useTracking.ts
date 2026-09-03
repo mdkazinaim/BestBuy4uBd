@@ -1,12 +1,17 @@
+import { websiteTrackingService } from "@/utils/websiteTrackingService";
 
 /**
- * Custom hook for Google Tag Manager and GA4 Tracking
- * Follows GA4 Ecommerce schema
+ * Custom hook for Google Tag Manager, GA4 Tracking & Internal Website Tracking
+ * Follows GA4 Ecommerce schema + captures internal website interaction logs
  */
 export const useTracking = () => {
   const pushToDataLayer = (eventData: any) => {
-    if (typeof window !== 'undefined' && window.dataLayer) {
+    if (typeof window !== "undefined" && window.dataLayer) {
       window.dataLayer.push(eventData);
+    }
+    if (eventData && eventData.event) {
+      const { event, ...payload } = eventData;
+      websiteTrackingService.logEvent(event, payload);
     }
   };
 
@@ -113,29 +118,33 @@ export const useTracking = () => {
     });
   };
 
-  const trackBeginCheckout = (items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    category?: string;
-    variant?: string;
-  }[], value: number, coupon?: string) => {
+  const trackBeginCheckout = (
+    items: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+      category?: string;
+      variant?: string;
+    }[],
+    value: number,
+    coupon?: string
+  ) => {
     pushToDataLayer({
       event: "begin_checkout",
       ecommerce: {
         currency: "BDT",
         value: value,
         coupon: coupon,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           item_id: item.id,
           item_name: item.name,
           item_category: item.category,
           item_variant: item.variant,
           price: item.price,
-          quantity: item.quantity
-        }))
-      }
+          quantity: item.quantity,
+        })),
+      },
     });
   };
 
@@ -156,9 +165,9 @@ export const useTracking = () => {
             item_name: product.name,
             item_category: product.category,
             price: product.price,
-          }
-        ]
-      }
+          },
+        ],
+      },
     });
   };
 
@@ -181,20 +190,22 @@ export const useTracking = () => {
             item_variant: product.variant,
             price: product.price,
             quantity: product.quantity,
-          }
-        ]
-      }
+          },
+        ],
+      },
     });
   };
 
-  const trackViewItemList = (items: {
-    id: string;
-    name: string;
-    price: number;
-    category?: string;
-    list_name?: string;
-    list_id?: string;
-  }[]) => {
+  const trackViewItemList = (
+    items: {
+      id: string;
+      name: string;
+      price: number;
+      category?: string;
+      list_name?: string;
+      list_id?: string;
+    }[]
+  ) => {
     pushToDataLayer({
       event: "view_item_list",
       ecommerce: {
@@ -205,9 +216,9 @@ export const useTracking = () => {
           item_name: item.name,
           item_category: item.category,
           price: item.price,
-          index: index + 1
-        }))
-      }
+          index: index + 1,
+        })),
+      },
     });
   };
 
@@ -224,101 +235,114 @@ export const useTracking = () => {
       ecommerce: {
         item_list_id: item.list_id || "general_list",
         item_list_name: item.list_name || "General List",
-        items: [{
-          item_id: item.id,
-          item_name: item.name,
-          item_category: item.category,
-          price: item.price
-        }]
-      }
+        items: [
+          {
+            item_id: item.id,
+            item_name: item.name,
+            item_category: item.category,
+            price: item.price,
+          },
+        ],
+      },
     });
   };
 
-  const trackViewCart = (items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    variant?: string;
-  }[], value: number) => {
+  const trackViewCart = (
+    items: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+      variant?: string;
+    }[],
+    value: number
+  ) => {
     pushToDataLayer({
       event: "view_cart",
       ecommerce: {
         currency: "BDT",
         value: value,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           item_id: item.id,
           item_name: item.name,
           item_variant: item.variant,
           price: item.price,
-          quantity: item.quantity
-        }))
-      }
+          quantity: item.quantity,
+        })),
+      },
     });
   };
 
-  const trackAddShippingInfo = (items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  }[], value: number, shipping_tier: string) => {
+  const trackAddShippingInfo = (
+    items: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+    }[],
+    value: number,
+    shipping_tier: string
+  ) => {
     pushToDataLayer({
       event: "add_shipping_info",
       ecommerce: {
         currency: "BDT",
         value: value,
         shipping_tier: shipping_tier,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           item_id: item.id,
           item_name: item.name,
           price: item.price,
-          quantity: item.quantity
-        }))
-      }
+          quantity: item.quantity,
+        })),
+      },
     });
   };
 
-  const trackAddPaymentInfo = (items: {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-  }[], value: number, payment_type: string) => {
+  const trackAddPaymentInfo = (
+    items: {
+      id: string;
+      name: string;
+      price: number;
+      quantity: number;
+    }[],
+    value: number,
+    payment_type: string
+  ) => {
     pushToDataLayer({
       event: "add_payment_info",
       ecommerce: {
         currency: "BDT",
         value: value,
         payment_type: payment_type,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           item_id: item.id,
           item_name: item.name,
           price: item.price,
-          quantity: item.quantity
-        }))
-      }
+          quantity: item.quantity,
+        })),
+      },
     });
   };
 
   const trackLogin = (method: string) => {
     pushToDataLayer({
       event: "login",
-      method: method
+      method: method,
     });
   };
 
   const trackSignUp = (method: string) => {
     pushToDataLayer({
       event: "sign_up",
-      method: method
+      method: method,
     });
   };
 
   const trackSearch = (search_term: string) => {
     pushToDataLayer({
       event: "search",
-      search_term: search_term
+      search_term: search_term,
     });
   };
 
@@ -327,7 +351,7 @@ export const useTracking = () => {
       event: "share",
       method: method,
       content_type: content_type,
-      item_id: item_id
+      item_id: item_id,
     });
   };
 
@@ -348,9 +372,9 @@ export const useTracking = () => {
             item_name: product.name,
             item_category: product.category,
             price: product.price,
-          }
-        ]
-      }
+          },
+        ],
+      },
     });
   };
 
@@ -358,7 +382,7 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "coupon_apply",
       coupon_name: coupon_name,
-      discount_amount: discount_amount
+      discount_amount: discount_amount,
     });
   };
 
@@ -372,14 +396,16 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "view_promotion",
       ecommerce: {
-        items: [{
-          item_id: promotion.id,
-          item_name: promotion.name,
-          creative_name: promotion.creative_name,
-          creative_slot: promotion.creative_slot,
-          location_id: promotion.location_id
-        }]
-      }
+        items: [
+          {
+            item_id: promotion.id,
+            item_name: promotion.name,
+            creative_name: promotion.creative_name,
+            creative_slot: promotion.creative_slot,
+            location_id: promotion.location_id,
+          },
+        ],
+      },
     });
   };
 
@@ -393,14 +419,16 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "select_promotion",
       ecommerce: {
-        items: [{
-          item_id: promotion.id,
-          item_name: promotion.name,
-          creative_name: promotion.creative_name,
-          creative_slot: promotion.creative_slot,
-          location_id: promotion.location_id
-        }]
-      }
+        items: [
+          {
+            item_id: promotion.id,
+            item_name: promotion.name,
+            creative_name: promotion.creative_name,
+            creative_slot: promotion.creative_slot,
+            location_id: promotion.location_id,
+          },
+        ],
+      },
     });
   };
 
@@ -408,7 +436,7 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "generate_lead",
       lead_type: lead_type,
-      method: method
+      method: method,
     });
   };
 
@@ -416,7 +444,7 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "contact",
       method: method,
-      content_id: content_id
+      content_id: content_id,
     });
   };
 
@@ -424,7 +452,7 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "subscribe",
       method: method,
-      location_id: location_id
+      location_id: location_id,
     });
   };
 
@@ -434,16 +462,15 @@ export const useTracking = () => {
       ecommerce: {
         transaction_id: transaction_id,
         value: value,
-        items: items
-      }
+        items: items,
+      },
     });
   };
 
-  // 'sign_up' is already implemented, but if 'complete_registration' is needed specifically:
   const trackCompleteRegistration = (method: string) => {
     pushToDataLayer({
       event: "complete_registration",
-      method: method
+      method: method,
     });
   };
 
@@ -451,7 +478,7 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "review_submit",
       product_id: product_id,
-      rating: rating
+      rating: rating,
     });
   };
 
@@ -459,21 +486,21 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "checkout_error",
       error_message: error_message,
-      error_code: error_code
+      error_code: error_code,
     });
   };
 
   const trackPaymentRetry = (transaction_id?: string) => {
     pushToDataLayer({
       event: "payment_retry",
-      transaction_id: transaction_id
+      transaction_id: transaction_id,
     });
   };
 
   const trackOrderCancel = (transaction_id: string) => {
     pushToDataLayer({
       event: "order_cancel",
-      transaction_id: transaction_id
+      transaction_id: transaction_id,
     });
   };
 
@@ -481,21 +508,21 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "filter_apply",
       filter_type: filter_type,
-      filter_value: filter_value
+      filter_value: filter_value,
     });
   };
 
   const trackSortChange = (sort_option: string) => {
     pushToDataLayer({
       event: "sort_change",
-      sort_option: sort_option
+      sort_option: sort_option,
     });
   };
 
   const trackCompareProducts = (product_ids: string[]) => {
     pushToDataLayer({
       event: "compare_products",
-      product_ids: product_ids
+      product_ids: product_ids,
     });
   };
 
@@ -503,23 +530,27 @@ export const useTracking = () => {
     pushToDataLayer({
       event: "image_zoom",
       product_id: product_id,
-      image_url: image_url
+      image_url: image_url,
     });
   };
 
-  const trackVariantSelect = (product_id: string, variant_name: string, variant_value: string) => {
+  const trackVariantSelect = (
+    product_id: string,
+    variant_name: string,
+    variant_value: string
+  ) => {
     pushToDataLayer({
       event: "variant_select",
       product_id: product_id,
       variant_name: variant_name,
-      variant_value: variant_value
+      variant_value: variant_value,
     });
   };
 
   const trackStockAlert = (product_id: string) => {
     pushToDataLayer({
       event: "stock_alert",
-      product_id: product_id
+      product_id: product_id,
     });
   };
 
@@ -559,6 +590,6 @@ export const useTracking = () => {
     trackImageZoom,
     trackVariantSelect,
     trackStockAlert,
-    pushToDataLayer
+    pushToDataLayer,
   };
 };
