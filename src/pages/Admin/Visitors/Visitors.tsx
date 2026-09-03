@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useGetVisitorStatsQuery } from "@/store/Api/VisitorApi";
 import { useVisitorCount } from "@/utils/visitorTrackingService";
 import { 
@@ -16,12 +16,10 @@ export default function Visitors() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
-  const totalAllTimeVisitors = useVisitorCount();
+  const totalRealVisitorsCount = useVisitorCount();
   
-  // Real-time polling: refetch statistics every 5 seconds to match live dashboards
-  const { data: statsData, isLoading, refetch, isFetching } = useGetVisitorStatsQuery(timeRange, {
-    pollingInterval: 5000,
-  });
+  // Fetch visitor statistics without auto-polling loops
+  const { data: statsData, isLoading, refetch, isFetching } = useGetVisitorStatsQuery(timeRange);
 
   // Live timer for local clock matching user location
   useEffect(() => {
@@ -52,6 +50,7 @@ export default function Visitors() {
     seen24h: 0,
     seen7d: 0,
     seen30d: 0,
+    totalVisitors: 0,
     returningPercentage: 0,
     avgSessionMin: 0,
     topCountries: [],
@@ -70,32 +69,16 @@ export default function Visitors() {
   };
 
   const getVisitorsCountByRange = (range: TimeRange) => {
-    if (range === "all") return totalAllTimeVisitors;
-    if (range === "30d") return stats.seen30d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 30) : 150);
-    if (range === "7d") return stats.seen7d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 7) : 35);
-    return stats.seen24h || 5;
+    if (range === "all") {
+      return stats.totalVisitors || Math.max(totalRealVisitorsCount, stats.seen24h);
+    }
+    if (range === "30d") return stats.seen30d || stats.seen24h;
+    if (range === "7d") return stats.seen7d || stats.seen24h;
+    return stats.seen24h;
   };
 
-  const currentRangeTotal = getVisitorsCountByRange(timeRange);
-
-  const displayTopCountries = useMemo(() => {
-    if (!stats.topCountries || stats.topCountries.length === 0) return [];
-    const totalRaw = stats.topCountries.reduce((acc: number, c: any) => acc + (c.count || 1), 0) || 1;
-    return stats.topCountries.map((c: any) => ({
-      ...c,
-      count: Math.max(1, Math.round(((c.count || 1) / totalRaw) * currentRangeTotal)),
-    }));
-  }, [stats.topCountries, currentRangeTotal]);
-
-  const displayTopPages = useMemo(() => {
-    if (!stats.topPages || stats.topPages.length === 0) return [];
-    const totalRaw = stats.topPages.reduce((acc: number, p: any) => acc + (p.count || 1), 0) || 1;
-    const totalPageViews = Math.round(currentRangeTotal * 1.6);
-    return stats.topPages.map((p: any) => ({
-      ...p,
-      count: Math.max(1, Math.round(((p.count || 1) / totalRaw) * totalPageViews)),
-    }));
-  }, [stats.topPages, currentRangeTotal]);
+  const topCountriesList = stats.topCountries || [];
+  const topPagesList = stats.topPages || [];
 
   // Filter visitors list based on search term
   const filteredVisitors = stats.visitors?.filter((v: any) => {
@@ -293,13 +276,13 @@ export default function Visitors() {
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 Top countries <span className="text-xs text-slate-400 font-normal ml-1">· {getTimeRangeLabel(timeRange)}</span>
               </h2>
-              <p className="text-xs text-slate-400 font-normal">Total sessions mapped in timeframe</p>
+              <p className="text-xs text-slate-400 font-normal">Real recorded sessions by country</p>
             </div>
             
             <div className="space-y-3.5">
-              {displayTopCountries.length > 0 ? (
-                displayTopCountries.map((country: any, idx: number) => {
-                  const maxCount = displayTopCountries[0]?.count || 1;
+              {topCountriesList.length > 0 ? (
+                topCountriesList.map((country: any, idx: number) => {
+                  const maxCount = topCountriesList[0]?.count || 1;
                   const ratio = (country.count / maxCount) * 100;
                   
                   return (
@@ -334,12 +317,12 @@ export default function Visitors() {
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 Top pages <span className="text-xs text-slate-400 font-normal ml-1">· {getTimeRangeLabel(timeRange)}</span>
               </h2>
-              <p className="text-xs text-slate-400 font-normal">Most visited site directories</p>
+              <p className="text-xs text-slate-400 font-normal">Real recorded visits by page</p>
             </div>
             
             <div className="space-y-3">
-              {displayTopPages.length > 0 ? (
-                displayTopPages.map((page: any, idx: number) => (
+              {topPagesList.length > 0 ? (
+                topPagesList.map((page: any, idx: number) => (
                   <div key={page.page + idx} className="flex justify-between items-center text-xs gap-3">
                     <div className="truncate flex-1">
                       <p className="font-medium text-slate-700 dark:text-slate-300 truncate">
