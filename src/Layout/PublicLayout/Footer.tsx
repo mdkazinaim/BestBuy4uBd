@@ -3,14 +3,15 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import NavItems from "./NavItems";
 import { useTracking } from "@/hooks/useTracking";
 import { useGetHost } from "@/utils/useGetHost";
-import { useVisitorCount } from "@/utils/visitorTrackingService";
+import { useGetVisitorStatsQuery } from "@/store/Api/VisitorApi";
 import { Button } from "@/common/Components/Button";
 import CommonWrapper from "@/common/CommonWrapper";
 
 const Footer: React.FC = () => {
   const host = useGetHost();
   const { trackContact, trackSubscribe } = useTracking();
-  const totalVisitors = useVisitorCount();
+  const { data: statsData } = useGetVisitorStatsQuery(undefined);
+  const totalVisitors = statsData?.data?.totalVisitors || statsData?.data?.seen24h || 0;
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();

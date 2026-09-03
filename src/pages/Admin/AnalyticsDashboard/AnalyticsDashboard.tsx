@@ -34,8 +34,8 @@ import {
   BarChart3,
 } from "lucide-react";
 import { useGetAnalyticsDashboardQuery } from "@/store/Api/TrackingApi";
+import { useGetVisitorStatsQuery } from "@/store/Api/VisitorApi";
 import { websiteTrackingService, TrackedEvent } from "@/utils/websiteTrackingService";
-import { useVisitorCount } from "@/utils/visitorTrackingService";
 import { Button } from "@/common/Components/Button";
 import { motion } from "framer-motion";
 
@@ -69,7 +69,8 @@ const MetricCard = ({ title, value, icon: Icon, colorClass, subtitle }: any) => 
 export default function AnalyticsDashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Mode>("website");
-  const totalVisitors = useVisitorCount();
+  const { data: visitorStatsRes } = useGetVisitorStatsQuery(undefined);
+  const totalVisitors = visitorStatsRes?.data?.totalVisitors || visitorStatsRes?.data?.seen24h || 0;
 
   // Internal Website Track state
   const [events, setEvents] = useState<TrackedEvent[]>(() => websiteTrackingService.getEvents());

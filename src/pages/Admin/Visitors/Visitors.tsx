@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useGetVisitorStatsQuery } from "@/store/Api/VisitorApi";
-import { useVisitorCount } from "@/utils/visitorTrackingService";
 import { 
   TrendingUp, 
   Clock, 
@@ -16,9 +15,8 @@ export default function Visitors() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentTime, setCurrentTime] = useState(new Date());
   const [timeRange, setTimeRange] = useState<TimeRange>("24h");
-  const totalRealVisitorsCount = useVisitorCount();
   
-  // Fetch visitor statistics without auto-polling loops
+  // Fetch visitor statistics directly from API without polling loop or fake fallback values
   const { data: statsData, isLoading, refetch, isFetching } = useGetVisitorStatsQuery(timeRange);
 
   // Live timer for local clock matching user location
@@ -69,12 +67,10 @@ export default function Visitors() {
   };
 
   const getVisitorsCountByRange = (range: TimeRange) => {
-    if (range === "all") {
-      return stats.totalVisitors || Math.max(totalRealVisitorsCount, stats.seen24h);
-    }
-    if (range === "30d") return stats.seen30d || stats.seen24h;
-    if (range === "7d") return stats.seen7d || stats.seen24h;
-    return stats.seen24h;
+    if (range === "all") return stats.totalVisitors || stats.seen24h || 0;
+    if (range === "30d") return stats.seen30d || stats.seen24h || 0;
+    if (range === "7d") return stats.seen7d || stats.seen24h || 0;
+    return stats.seen24h || 0;
   };
 
   const topCountriesList = stats.topCountries || [];
@@ -276,7 +272,7 @@ export default function Visitors() {
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 Top countries <span className="text-xs text-slate-400 font-normal ml-1">· {getTimeRangeLabel(timeRange)}</span>
               </h2>
-              <p className="text-xs text-slate-400 font-normal">Real recorded sessions by country</p>
+              <p className="text-xs text-slate-400 font-normal font-sans">Real recorded sessions by country</p>
             </div>
             
             <div className="space-y-3.5">
@@ -317,7 +313,7 @@ export default function Visitors() {
               <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
                 Top pages <span className="text-xs text-slate-400 font-normal ml-1">· {getTimeRangeLabel(timeRange)}</span>
               </h2>
-              <p className="text-xs text-slate-400 font-normal">Real recorded visits by page</p>
+              <p className="text-xs text-slate-400 font-normal font-sans">Real recorded visits by page</p>
             </div>
             
             <div className="space-y-3">
