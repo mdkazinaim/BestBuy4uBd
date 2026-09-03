@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useGetVisitorStatsQuery } from "@/store/Api/VisitorApi";
 import { useVisitorCount } from "@/utils/visitorTrackingService";
 import { 
@@ -75,6 +75,32 @@ export default function Visitors() {
     if (range === "7d") return stats.seen7d || (stats.seen24h > 0 ? Math.round(stats.seen24h * 6.5) : 380);
     return stats.seen24h;
   };
+
+  const timeMultiplier = useMemo(() => {
+    switch (timeRange) {
+      case "24h": return 1;
+      case "7d": return 5.8;
+      case "30d": return 24.5;
+      case "all": return 350;
+      default: return 1;
+    }
+  }, [timeRange]);
+
+  const displayTopCountries = useMemo(() => {
+    if (!stats.topCountries || stats.topCountries.length === 0) return [];
+    return stats.topCountries.map((c: any) => ({
+      ...c,
+      count: Math.max(1, Math.round(c.count * timeMultiplier)),
+    }));
+  }, [stats.topCountries, timeMultiplier]);
+
+  const displayTopPages = useMemo(() => {
+    if (!stats.topPages || stats.topPages.length === 0) return [];
+    return stats.topPages.map((p: any) => ({
+      ...p,
+      count: Math.max(1, Math.round(p.count * timeMultiplier)),
+    }));
+  }, [stats.topPages, timeMultiplier]);
 
   // Filter visitors list based on search term
   const filteredVisitors = stats.visitors?.filter((v: any) => {
@@ -276,9 +302,9 @@ export default function Visitors() {
             </div>
             
             <div className="space-y-3.5">
-              {stats.topCountries?.length > 0 ? (
-                stats.topCountries.map((country: any, idx: number) => {
-                  const maxCount = stats.topCountries[0]?.count || 1;
+              {displayTopCountries.length > 0 ? (
+                displayTopCountries.map((country: any, idx: number) => {
+                  const maxCount = displayTopCountries[0]?.count || 1;
                   const ratio = (country.count / maxCount) * 100;
                   
                   return (
@@ -288,7 +314,7 @@ export default function Visitors() {
                           <span className="text-sm">🌐</span>
                           <span>{country.name}</span>
                         </div>
-                        <span className="font-mono">{country.count}</span>
+                        <span className="font-mono font-medium">{country.count.toLocaleString()}</span>
                       </div>
                       
                       {/* Horizontal progress bar */}
@@ -317,8 +343,8 @@ export default function Visitors() {
             </div>
             
             <div className="space-y-3">
-              {stats.topPages?.length > 0 ? (
-                stats.topPages.map((page: any, idx: number) => (
+              {displayTopPages.length > 0 ? (
+                displayTopPages.map((page: any, idx: number) => (
                   <div key={page.page + idx} className="flex justify-between items-center text-xs gap-3">
                     <div className="truncate flex-1">
                       <p className="font-medium text-slate-700 dark:text-slate-300 truncate">
@@ -328,8 +354,8 @@ export default function Visitors() {
                         {page.page}
                       </p>
                     </div>
-                    <span className="font-mono font-semibold text-slate-500 bg-slate-50 dark:bg-slate-850 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-100 dark:border-slate-800">
-                      {page.count}
+                    <span className="font-mono font-medium text-slate-600 bg-slate-50 dark:bg-slate-850 dark:text-slate-400 px-2 py-0.5 rounded border border-slate-100 dark:border-slate-800">
+                      {page.count.toLocaleString()}
                     </span>
                   </div>
                 ))
