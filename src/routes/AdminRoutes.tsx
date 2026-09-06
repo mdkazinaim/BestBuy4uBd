@@ -107,6 +107,10 @@ export const adminRoutes = [
         element: <CMS />,
       },
       {
+        path: "cms/:section",
+        element: <CMS />,
+      },
+      {
         label: "Services",
         icon: <Briefcase />,
         path: "services",
