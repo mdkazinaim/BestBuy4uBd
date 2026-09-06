@@ -29,7 +29,7 @@ const DashboardLayout = () => {
 
       {/* 2. Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="print:hidden">
+        <div className="print:hidden sticky top-0 z-999">
           <Header onMenuClick={() => setSidebarOpen(true)} />
         </div>
 
